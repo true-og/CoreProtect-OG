@@ -53,21 +53,7 @@ nbproject
 target
 dependency-reduced-pom.xml
 test/
-
-# Wrapper files
-mvnw
-mvnw.cmd
-
-#################
-## Gradle
-#################
-
 build
-gradle
-
-# Wrapper files
-gradlew
-gradlew.bat
 
 #################
 ## Visual Studio
