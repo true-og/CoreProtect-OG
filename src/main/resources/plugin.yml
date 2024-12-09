@@ -1,4 +1,4 @@
-name: CoreProtect
+name: CoreProtect-OG
 main: net.coreprotect.CoreProtect
 version: ${project.version}
 branch: ${project.branch}

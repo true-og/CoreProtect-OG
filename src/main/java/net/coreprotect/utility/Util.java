@@ -16,13 +16,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -120,26 +120,32 @@ public class Util extends Queue {
         return name;
     }
 
-    public static CentralProcessor getProcessorInfo() {
-        CentralProcessor result = null;
-        try {
-            Class.forName("com.sun.jna.Platform");
-            if (System.getProperty("os.name").startsWith("Windows") && !System.getProperty("sun.arch.data.model").equals("64")) {
-                Class.forName("com.sun.jna.platform.win32.Win32Exception");
-            }
-            else if (System.getProperty("os.name").toLowerCase().contains("android") || System.getProperty("java.runtime.name").toLowerCase().contains("android")) {
-                return null;
-            }
-            Configurator.setLevel("oshi.hardware.common.AbstractCentralProcessor", Level.OFF);
-            SystemInfo systemInfo = new SystemInfo();
-            result = systemInfo.getHardware().getProcessor();
-        }
-        catch (Exception e) {
-            // unable to read processor information
-        }
+	public static CentralProcessor getProcessorInfo() {
+		CentralProcessor result = null;
+		try {
+		    Class.forName("com.sun.jna.Platform");
+		    if (System.getProperty("os.name").startsWith("Windows")
+		            && !System.getProperty("sun.arch.data.model").equals("64")) {
+		        Class.forName("com.sun.jna.platform.win32.Win32Exception");
+		    } else if (System.getProperty("os.name").toLowerCase().contains("android")
+		            || System.getProperty("java.runtime.name").toLowerCase().contains("android")) {
+		        return null;
+		    }
 
-        return result;
-    }
+		    // Disable logging for the OSHI class
+		    Logger logger = Logger.getLogger("oshi.hardware.common.AbstractCentralProcessor");
+		    logger.setLevel(Level.OFF);
+
+		    // Retrieve processor information
+		    SystemInfo systemInfo = new SystemInfo();
+		    result = systemInfo.getHardware().getProcessor();
+		} catch (Exception e) {
+		    // Unable to read processor information
+		}
+
+		return result;
+	}
+
 
     public static int getBlockId(Material material) {
         if (material == null) {

@@ -24,9 +24,9 @@ public class WorldEditHandler {
                     Region region = session.getSelection(world);
                     if (region != null && world.getName().equals(((Player) user).getWorld().getName())) {
                         BlockVector3 block = region.getMinimumPoint();
-                        int x = block.getBlockX();
-                        int y = block.getBlockY();
-                        int z = block.getBlockZ();
+                        int x = block.x();
+                        int y = block.y();
+                        int z = block.z();
                         int width = region.getWidth();
                         int height = region.getHeight();
                         int length = region.getLength();
