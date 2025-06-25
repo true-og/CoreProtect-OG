@@ -2,7 +2,6 @@ package net.coreprotect.consumer.process;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-
 import net.coreprotect.config.ConfigHandler;
 import net.coreprotect.database.statement.MaterialStatement;
 import net.coreprotect.database.statement.WorldStatement;
@@ -12,7 +11,8 @@ import net.coreprotect.utility.Chat;
 
 class WorldInsertProcess {
 
-    static void process(PreparedStatement preparedStmt, int batchCount, Statement statement, Object world, int worldId) {
+    static void process(
+            PreparedStatement preparedStmt, int batchCount, Statement statement, Object world, int worldId) {
         if (world instanceof String) {
             String query = "SELECT id FROM " + ConfigHandler.prefix + "world WHERE id = '" + worldId + "' LIMIT 0, 1";
             boolean hasMaterial = MaterialStatement.hasMaterial(statement, query);
@@ -25,8 +25,7 @@ class WorldInsertProcess {
                 if (worldId > ConfigHandler.worldId) {
                     ConfigHandler.worldId = worldId;
                 }
-            }
-            else {
+            } else {
                 Chat.console(Phrase.build(Phrase.CACHE_ERROR, "world"));
                 Chat.console(Phrase.build(Phrase.CACHE_RELOAD, Selector.SECOND));
                 ConfigHandler.loadWorlds(statement);

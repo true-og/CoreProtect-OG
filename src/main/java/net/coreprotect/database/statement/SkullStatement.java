@@ -3,12 +3,10 @@ package net.coreprotect.database.statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Skull;
-
 import net.coreprotect.database.Database;
 import net.coreprotect.paper.PaperAdapter;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 
 public class SkullStatement {
 
@@ -23,12 +21,10 @@ public class SkullStatement {
             preparedStmt.setString(3, skin);
             if (Database.hasReturningKeys()) {
                 return preparedStmt.executeQuery();
-            }
-            else {
+            } else {
                 preparedStmt.executeUpdate();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -57,8 +53,7 @@ public class SkullStatement {
             }
 
             resultSet.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

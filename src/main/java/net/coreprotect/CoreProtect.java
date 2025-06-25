@@ -3,14 +3,6 @@ package net.coreprotect;
 import java.io.File;
 import java.util.Iterator;
 import java.util.Map.Entry;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import net.coreprotect.command.CommandHandler;
 import net.coreprotect.command.TabHandler;
 import net.coreprotect.config.Config;
@@ -26,9 +18,14 @@ import net.coreprotect.thread.CacheHandler;
 import net.coreprotect.thread.NetworkHandler;
 import net.coreprotect.thread.Scheduler;
 import net.coreprotect.utility.Chat;
-import net.coreprotect.utility.Color;
 import net.coreprotect.utility.Teleport;
 import net.coreprotect.utility.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public final class CoreProtect extends JavaPlugin {
 
@@ -77,8 +74,7 @@ public final class CoreProtect extends JavaPlugin {
                     new File(ConfigHandler.path).mkdir();
                 }
                 start = ConfigHandler.performInitialization(true); // Perform any necessary initialization
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 start = false;
             }
@@ -86,11 +82,12 @@ public final class CoreProtect extends JavaPlugin {
 
         if (start) {
             PluginDescriptionFile pluginDescription = this.getDescription();
-            Util.sendConsoleComponentStartup(Bukkit.getServer().getConsoleSender(), Phrase.build(Phrase.ENABLE_SUCCESS, ConfigHandler.EDITION_NAME));
+            Util.sendConsoleComponentStartup(
+                    Bukkit.getServer().getConsoleSender(),
+                    Phrase.build(Phrase.ENABLE_SUCCESS, ConfigHandler.EDITION_NAME));
             if (Config.getGlobal().MYSQL) {
                 Chat.console(Phrase.build(Phrase.USING_MYSQL));
-            }
-            else {
+            } else {
                 Chat.console(Phrase.build(Phrase.USING_SQLITE));
             }
 
@@ -99,23 +96,24 @@ public final class CoreProtect extends JavaPlugin {
             Chat.console(Phrase.build(Phrase.LINK_DISCORD, "www.coreprotect.net/discord/"));
             Chat.console("--------------------");
 
-            Scheduler.scheduleSyncDelayedTask(this, () -> {
-                try {
-                    Thread networkHandler = new Thread(new NetworkHandler(true, true));
-                    networkHandler.start();
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }, 0);
+            Scheduler.scheduleSyncDelayedTask(
+                    this,
+                    () -> {
+                        try {
+                            Thread networkHandler = new Thread(new NetworkHandler(true, true));
+                            networkHandler.start();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    },
+                    0);
 
             Thread cacheCleanUpThread = new Thread(new CacheHandler());
             cacheCleanUpThread.start();
 
             Consumer.startConsumer();
 
-        }
-        else {
+        } else {
             Chat.console(Phrase.build(Phrase.ENABLE_FAILED, ConfigHandler.EDITION_NAME));
             getServer().getPluginManager().disablePlugin(this);
         }
@@ -133,8 +131,10 @@ public final class CoreProtect extends JavaPlugin {
                 Chat.console(Phrase.build(Phrase.VERSION_REQUIRED, "Minecraft", ConfigHandler.MINECRAFT_VERSION));
                 return false;
             }
-            if (Util.newVersion(ConfigHandler.LATEST_VERSION, bukkitVersion[0] + "." + bukkitVersion[1]) && Util.isBranch("master")) {
-                Chat.console(Phrase.build(Phrase.VERSION_INCOMPATIBLE, "Minecraft", bukkitVersion[0] + "." + bukkitVersion[1]));
+            if (Util.newVersion(ConfigHandler.LATEST_VERSION, bukkitVersion[0] + "." + bukkitVersion[1])
+                    && Util.isBranch("master")) {
+                Chat.console(Phrase.build(
+                        Phrase.VERSION_INCOMPATIBLE, "Minecraft", bukkitVersion[0] + "." + bukkitVersion[1]));
                 return false;
             }
             String[] javaVersion = (System.getProperty("java.version").replaceAll("[^0-9.]", "") + ".0").split("\\.");
@@ -144,8 +144,7 @@ public final class CoreProtect extends JavaPlugin {
             }
 
             ConfigHandler.SERVER_VERSION = Integer.parseInt(bukkitVersion[1]);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -163,7 +162,8 @@ public final class CoreProtect extends JavaPlugin {
             }
 
             if (!ConfigHandler.isFolia) {
-                Iterator<Entry<Location, BlockData>> iterator = Teleport.revertBlocks.entrySet().iterator();
+                Iterator<Entry<Location, BlockData>> iterator =
+                        Teleport.revertBlocks.entrySet().iterator();
                 while (iterator.hasNext()) {
                     Entry<Location, BlockData> entry = iterator.next();
                     entry.getKey().getBlock().setBlockData(entry.getValue());
@@ -176,8 +176,7 @@ public final class CoreProtect extends JavaPlugin {
             long alertTime = shutdownTime + (10 * 1000);
             if (ConfigHandler.converterRunning) {
                 Chat.console(Phrase.build(Phrase.FINISHING_CONVERSION));
-            }
-            else {
+            } else {
                 Chat.console(Phrase.build(Phrase.FINISHING_LOGGING));
             }
 
@@ -193,12 +192,10 @@ public final class CoreProtect extends JavaPlugin {
                         Chat.console(Phrase.build(Phrase.LOGGING_ITEMS, String.format("%,d", consumerCount)));
                     }
                     alertTime = alertTime + (30 * 1000);
-                }
-                else if (!ConfigHandler.databaseReachable && (time - shutdownTime) >= (5 * 60 * 1000)) {
+                } else if (!ConfigHandler.databaseReachable && (time - shutdownTime) >= (5 * 60 * 1000)) {
                     Chat.console(Phrase.build(Phrase.DATABASE_UNREACHABLE));
                     break;
-                }
-                else if ((time - shutdownTime) >= (15 * 60 * 1000)) {
+                } else if ((time - shutdownTime) >= (15 * 60 * 1000)) {
                     Chat.console(Phrase.build(Phrase.LOGGING_TIME_LIMIT));
                     break;
                 }
@@ -207,11 +204,11 @@ public final class CoreProtect extends JavaPlugin {
             }
 
             ConfigHandler.performDisable();
-            Chat.console(Phrase.build(Phrase.DISABLE_SUCCESS, "CoreProtect v" + plugin.getDescription().getVersion()));
-        }
-        catch (Exception e) {
+            Chat.console(Phrase.build(
+                    Phrase.DISABLE_SUCCESS,
+                    "CoreProtect v" + plugin.getDescription().getVersion()));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Locale;
-
 import net.coreprotect.config.Config;
 import net.coreprotect.config.ConfigHandler;
 import net.coreprotect.database.Database;
@@ -25,10 +24,12 @@ public class UserStatement {
 
             PreparedStatement preparedStmt = null;
             if (Database.hasReturningKeys()) {
-                preparedStmt = connection.prepareStatement("INSERT INTO " + ConfigHandler.prefix + "user (time, user) VALUES (?, ?) RETURNING rowid");
-            }
-            else {
-                preparedStmt = connection.prepareStatement("INSERT INTO " + ConfigHandler.prefix + "user (time, user) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+                preparedStmt = connection.prepareStatement(
+                        "INSERT INTO " + ConfigHandler.prefix + "user (time, user) VALUES (?, ?) RETURNING rowid");
+            } else {
+                preparedStmt = connection.prepareStatement(
+                        "INSERT INTO " + ConfigHandler.prefix + "user (time, user) VALUES (?, ?)",
+                        Statement.RETURN_GENERATED_KEYS);
             }
 
             preparedStmt.setInt(1, unixtimestamp);
@@ -39,8 +40,7 @@ public class UserStatement {
                 resultSet.next();
                 id = resultSet.getInt(1);
                 resultSet.close();
-            }
-            else {
+            } else {
                 preparedStmt.executeUpdate();
                 ResultSet keys = preparedStmt.getGeneratedKeys();
                 keys.next();
@@ -49,8 +49,7 @@ public class UserStatement {
             }
 
             preparedStmt.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return id;
@@ -79,7 +78,8 @@ public class UserStatement {
                 where = where + " OR uuid = ?";
             }
 
-            String query = "SELECT rowid as id, uuid FROM " + ConfigHandler.prefix + "user WHERE " + where + " ORDER BY rowid ASC LIMIT 0, 1";
+            String query = "SELECT rowid as id, uuid FROM " + ConfigHandler.prefix + "user WHERE " + where
+                    + " ORDER BY rowid ASC LIMIT 0, 1";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
             preparedStmt.setString(1, user);
 
@@ -105,8 +105,7 @@ public class UserStatement {
                 ConfigHandler.uuidCache.put(user.toLowerCase(Locale.ROOT), uuid);
                 ConfigHandler.uuidCacheReversed.put(uuid, user);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -120,7 +119,8 @@ public class UserStatement {
 
         try {
             Statement statement = connection.createStatement();
-            String query = "SELECT user, uuid FROM " + ConfigHandler.prefix + "user WHERE rowid='" + id + "' LIMIT 0, 1";
+            String query =
+                    "SELECT user, uuid FROM " + ConfigHandler.prefix + "user WHERE rowid='" + id + "' LIMIT 0, 1";
 
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
@@ -141,8 +141,7 @@ public class UserStatement {
 
             resultSet.close();
             statement.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

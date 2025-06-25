@@ -3,19 +3,17 @@ package net.coreprotect.patch.script;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
+import net.coreprotect.config.Config;
+import net.coreprotect.config.ConfigHandler;
+import net.coreprotect.database.Database;
+import net.coreprotect.patch.Patch;
+import net.coreprotect.utility.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.Rotatable;
-
-import net.coreprotect.config.Config;
-import net.coreprotect.config.ConfigHandler;
-import net.coreprotect.database.Database;
-import net.coreprotect.patch.Patch;
-import net.coreprotect.utility.Util;
 
 public class __2_18_0 {
 
@@ -28,8 +26,7 @@ public class __2_18_0 {
                 if (Config.getGlobal().MYSQL) {
                     statement.executeUpdate("ALTER TABLE " + ConfigHandler.prefix + "block ADD COLUMN blockdata BLOB");
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 String error = e.getMessage().toLowerCase();
                 if (!error.contains("duplicate") && !error.contains("error 1060")) {
                     e.printStackTrace();
@@ -41,22 +38,32 @@ public class __2_18_0 {
                 return false;
             }
 
-            String query = "SELECT rowid, id, material FROM " + ConfigHandler.prefix + "material_map WHERE material LIKE 'minecraft:legacy_%' LIMIT 0, 1";
-            String preparedBlockQuery = "SELECT rowid as id, data, blockdata FROM " + ConfigHandler.prefix + "block WHERE type = ? AND action < '3'";
-            String preparedContainerQuery = "SELECT rowid as id FROM " + ConfigHandler.prefix + "container WHERE type = ?";
-            String preparedBlockUpdateQuery = "UPDATE " + ConfigHandler.prefix + "block SET type = ?, blockdata = ? WHERE rowid = ?";
-            String preparedContainerUpdateQuery = "UPDATE " + ConfigHandler.prefix + "container SET type = ? WHERE rowid = ?";
+            String query = "SELECT rowid, id, material FROM " + ConfigHandler.prefix
+                    + "material_map WHERE material LIKE 'minecraft:legacy_%' LIMIT 0, 1";
+            String preparedBlockQuery = "SELECT rowid as id, data, blockdata FROM " + ConfigHandler.prefix
+                    + "block WHERE type = ? AND action < '3'";
+            String preparedContainerQuery =
+                    "SELECT rowid as id FROM " + ConfigHandler.prefix + "container WHERE type = ?";
+            String preparedBlockUpdateQuery =
+                    "UPDATE " + ConfigHandler.prefix + "block SET type = ?, blockdata = ? WHERE rowid = ?";
+            String preparedContainerUpdateQuery =
+                    "UPDATE " + ConfigHandler.prefix + "container SET type = ? WHERE rowid = ?";
             String preparedMaterialDeleteQuery = "DELETE FROM " + ConfigHandler.prefix + "material_map WHERE rowid = ?";
 
             boolean hasLegacy = true;
             while (hasLegacy) {
                 hasLegacy = false;
 
-                PreparedStatement preparedBlockStatement = statement.getConnection().prepareStatement(preparedBlockQuery);
-                PreparedStatement preparedBlockUpdateStatement = statement.getConnection().prepareStatement(preparedBlockUpdateQuery);
-                PreparedStatement preparedContainerStatement = statement.getConnection().prepareStatement(preparedContainerQuery);
-                PreparedStatement preparedContainerUpdateStatement = statement.getConnection().prepareStatement(preparedContainerUpdateQuery);
-                PreparedStatement preparedMaterialDeleteStatement = statement.getConnection().prepareStatement(preparedMaterialDeleteQuery);
+                PreparedStatement preparedBlockStatement =
+                        statement.getConnection().prepareStatement(preparedBlockQuery);
+                PreparedStatement preparedBlockUpdateStatement =
+                        statement.getConnection().prepareStatement(preparedBlockUpdateQuery);
+                PreparedStatement preparedContainerStatement =
+                        statement.getConnection().prepareStatement(preparedContainerQuery);
+                PreparedStatement preparedContainerUpdateStatement =
+                        statement.getConnection().prepareStatement(preparedContainerUpdateQuery);
+                PreparedStatement preparedMaterialDeleteStatement =
+                        statement.getConnection().prepareStatement(preparedMaterialDeleteQuery);
                 Database.beginTransaction(statement, Config.getGlobal().MYSQL);
                 try {
                     ResultSet resultSet = statement.executeQuery(query);
@@ -108,17 +115,18 @@ public class __2_18_0 {
                                 BlockData newBlockData = null;
                                 try {
                                     newBlockData = Bukkit.getUnsafe().fromLegacy(validatedMaterial, (byte) blockData);
-                                }
-                                catch (Exception e) {
+                                } catch (Exception e) {
                                     // unable to generate block data
                                 }
                                 if (newBlockData != null) {
-                                    if (validatedMaterial == Material.OAK_WALL_SIGN && newBlockData instanceof Directional) {
+                                    if (validatedMaterial == Material.OAK_WALL_SIGN
+                                            && newBlockData instanceof Directional) {
                                         Directional directional = (Directional) newBlockData;
                                         BlockFace newDirection = getLegacyDirection(blockData);
                                         directional.setFacing(newDirection);
                                     }
-                                    if (validatedMaterial == Material.SKELETON_SKULL && newBlockData instanceof Rotatable) {
+                                    if (validatedMaterial == Material.SKELETON_SKULL
+                                            && newBlockData instanceof Rotatable) {
                                         Rotatable rotatable = (Rotatable) newBlockData;
                                         BlockFace newRotation = getLegacyRotation(blockData);
                                         rotatable.setRotation(newRotation);
@@ -159,8 +167,7 @@ public class __2_18_0 {
                         hasLegacy = true;
                     }
                     resultSet.close();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 Database.commitTransaction(statement, Config.getGlobal().MYSQL);
@@ -184,22 +191,24 @@ public class __2_18_0 {
                         statement.executeUpdate("ALTER TABLE " + ConfigHandler.prefix + "material_map ADD INDEX(id)");
                         statement.executeUpdate("ALTER TABLE " + ConfigHandler.prefix + "world ADD INDEX(id)");
                         statement.executeUpdate("ALTER TABLE " + ConfigHandler.prefix + "blockdata_map ADD INDEX(id)");
+                    } else {
+                        statement.executeUpdate("CREATE INDEX IF NOT EXISTS art_map_id_index ON " + ConfigHandler.prefix
+                                + "art_map(id);");
+                        statement.executeUpdate("CREATE INDEX IF NOT EXISTS blockdata_map_id_index ON "
+                                + ConfigHandler.prefix + "blockdata_map(id);");
+                        statement.executeUpdate("CREATE INDEX IF NOT EXISTS entity_map_id_index ON "
+                                + ConfigHandler.prefix + "entity_map(id);");
+                        statement.executeUpdate("CREATE INDEX IF NOT EXISTS material_map_id_index ON "
+                                + ConfigHandler.prefix + "material_map(id);");
+                        statement.executeUpdate(
+                                "CREATE INDEX IF NOT EXISTS world_id_index ON " + ConfigHandler.prefix + "world(id);");
                     }
-                    else {
-                        statement.executeUpdate("CREATE INDEX IF NOT EXISTS art_map_id_index ON " + ConfigHandler.prefix + "art_map(id);");
-                        statement.executeUpdate("CREATE INDEX IF NOT EXISTS blockdata_map_id_index ON " + ConfigHandler.prefix + "blockdata_map(id);");
-                        statement.executeUpdate("CREATE INDEX IF NOT EXISTS entity_map_id_index ON " + ConfigHandler.prefix + "entity_map(id);");
-                        statement.executeUpdate("CREATE INDEX IF NOT EXISTS material_map_id_index ON " + ConfigHandler.prefix + "material_map(id);");
-                        statement.executeUpdate("CREATE INDEX IF NOT EXISTS world_id_index ON " + ConfigHandler.prefix + "world(id);");
-                    }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -296,5 +305,4 @@ public class __2_18_0 {
                 return BlockFace.SOUTH;
         }
     }
-
 }

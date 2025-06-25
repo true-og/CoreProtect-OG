@@ -1,5 +1,10 @@
 package net.coreprotect.listener.entity;
 
+import net.coreprotect.bukkit.BukkitAdapter;
+import net.coreprotect.config.Config;
+import net.coreprotect.config.ConfigHandler;
+import net.coreprotect.consumer.Queue;
+import net.coreprotect.utility.Util;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -10,12 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.hanging.HangingPlaceEvent;
-
-import net.coreprotect.bukkit.BukkitAdapter;
-import net.coreprotect.config.Config;
-import net.coreprotect.config.ConfigHandler;
-import net.coreprotect.consumer.Queue;
-import net.coreprotect.utility.Util;
 
 public final class HangingPlaceListener extends Queue implements Listener {
 
@@ -35,8 +34,7 @@ public final class HangingPlaceListener extends Queue implements Listener {
                 ItemFrame itemFrame = (ItemFrame) entity;
                 blockData = "FACING=" + itemFrame.getFacing().name();
                 artId = 0;
-            }
-            else {
+            } else {
                 material = Material.PAINTING;
                 Painting painting = (Painting) entity;
                 blockData = "FACING=" + painting.getFacing().name();
@@ -52,7 +50,15 @@ public final class HangingPlaceListener extends Queue implements Listener {
             }
 
             if (!event.isCancelled() && Config.getConfig(blockEvent.getWorld()).BLOCK_PLACE && inspect == 0) {
-                Queue.queueBlockPlace(player.getName(), blockEvent.getState(), blockEvent.getType(), null, material, artId, 1, blockData);
+                Queue.queueBlockPlace(
+                        player.getName(),
+                        blockEvent.getState(),
+                        blockEvent.getType(),
+                        null,
+                        material,
+                        artId,
+                        1,
+                        blockData);
             }
         }
     }

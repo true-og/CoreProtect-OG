@@ -5,7 +5,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import net.coreprotect.bukkit.BukkitAdapter;
+import net.coreprotect.config.Config;
+import net.coreprotect.consumer.Queue;
+import net.coreprotect.database.Database;
+import net.coreprotect.model.BlockGroup;
+import net.coreprotect.paper.PaperAdapter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -19,13 +24,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockExplodeEvent;
-
-import net.coreprotect.bukkit.BukkitAdapter;
-import net.coreprotect.config.Config;
-import net.coreprotect.consumer.Queue;
-import net.coreprotect.database.Database;
-import net.coreprotect.model.BlockGroup;
-import net.coreprotect.paper.PaperAdapter;
 
 public final class BlockExplodeListener extends Queue implements Listener {
 
@@ -57,7 +55,11 @@ public final class BlockExplodeListener extends Queue implements Listener {
                     if (blockMap.get(location) == null) {
                         Block scanBlock = world.getBlockAt(location);
                         Material scanType = scanBlock.getType();
-                        if (BlockGroup.TRACK_ANY.contains(scanType) || BlockGroup.TRACK_TOP.contains(scanType) || BlockGroup.TRACK_TOP_BOTTOM.contains(scanType) || BlockGroup.TRACK_BOTTOM.contains(scanType) || BlockGroup.TRACK_SIDE.contains(scanType)) {
+                        if (BlockGroup.TRACK_ANY.contains(scanType)
+                                || BlockGroup.TRACK_TOP.contains(scanType)
+                                || BlockGroup.TRACK_TOP_BOTTOM.contains(scanType)
+                                || BlockGroup.TRACK_BOTTOM.contains(scanType)
+                                || BlockGroup.TRACK_SIDE.contains(scanType)) {
                             blockMap.put(location, scanBlock);
 
                             // Properly log double blocks, such as doors
@@ -67,19 +69,19 @@ public final class BlockExplodeListener extends Queue implements Listener {
                                 Location bisectLocation = location.clone();
                                 if (bisected.getHalf() == Half.TOP) {
                                     bisectLocation.setY(bisectLocation.getY() - 1);
-                                }
-                                else {
+                                } else {
                                     bisectLocation.setY(bisectLocation.getY() + 1);
                                 }
 
                                 int worldMaxHeight = world.getMaxHeight();
                                 int worldMinHeight = BukkitAdapter.ADAPTER.getMinHeight(world);
-                                if (bisectLocation.getBlockY() >= worldMinHeight && bisectLocation.getBlockY() < worldMaxHeight && blockMap.get(bisectLocation) == null) {
+                                if (bisectLocation.getBlockY() >= worldMinHeight
+                                        && bisectLocation.getBlockY() < worldMaxHeight
+                                        && blockMap.get(bisectLocation) == null) {
                                     blockMap.put(bisectLocation, world.getBlockAt(bisectLocation));
                                 }
                             }
-                        }
-                        else if (scanType.hasGravity() && Config.getConfig(world).BLOCK_MOVEMENT) {
+                        } else if (scanType.hasGravity() && Config.getConfig(world).BLOCK_MOVEMENT) {
                             // log the top-most sand/gravel block as being removed
                             int scanY = location.getBlockY() + 1;
                             boolean topFound = false;
@@ -87,11 +89,14 @@ public final class BlockExplodeListener extends Queue implements Listener {
                                 Block topBlock = world.getBlockAt(location.getBlockX(), scanY, location.getBlockZ());
                                 Material topMaterial = topBlock.getType();
                                 if (!topMaterial.hasGravity()) {
-                                    location = new Location(world, location.getBlockX(), (scanY - 1), location.getBlockZ());
+                                    location = new Location(
+                                            world, location.getBlockX(), (scanY - 1), location.getBlockZ());
                                     topFound = true;
 
                                     // log block attached to top as being removed
-                                    if (BlockGroup.TRACK_ANY.contains(topMaterial) || BlockGroup.TRACK_TOP.contains(topMaterial) || BlockGroup.TRACK_TOP_BOTTOM.contains(topMaterial)) {
+                                    if (BlockGroup.TRACK_ANY.contains(topMaterial)
+                                            || BlockGroup.TRACK_TOP.contains(topMaterial)
+                                            || BlockGroup.TRACK_TOP_BOTTOM.contains(topMaterial)) {
                                         blockMap.put(topBlock.getLocation(), topBlock);
                                     }
                                 }
@@ -132,15 +137,33 @@ public final class BlockExplodeListener extends Queue implements Listener {
                     boolean backGlowing = BukkitAdapter.ADAPTER.isGlowing(sign, !isFront);
                     boolean isWaxed = BukkitAdapter.ADAPTER.isWaxed(sign);
 
-                    Queue.queueSignText(user, location, 0, color, colorSecondary, frontGlowing, backGlowing, isWaxed, isFront, line1, line2, line3, line4, line5, line6, line7, line8, 5);
-                }
-                catch (Exception e) {
+                    Queue.queueSignText(
+                            user,
+                            location,
+                            0,
+                            color,
+                            colorSecondary,
+                            frontGlowing,
+                            backGlowing,
+                            isWaxed,
+                            isFront,
+                            line1,
+                            line2,
+                            line3,
+                            line4,
+                            line5,
+                            line6,
+                            line7,
+                            line8,
+                            5);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
             Database.containerBreakCheck(user, blockType, block, null, block.getLocation());
-            Queue.queueBlockBreak(user, blockState, blockType, blockState.getBlockData().getAsString(), 0);
+            Queue.queueBlockBreak(
+                    user, blockState, blockType, blockState.getBlockData().getAsString(), 0);
         }
     }
 
@@ -154,8 +177,7 @@ public final class BlockExplodeListener extends Queue implements Listener {
         }
         if (user.contains("tnt")) {
             user = "#tnt";
-        }
-        else if (user.contains("end_crystal")) {
+        } else if (user.contains("end_crystal")) {
             user = "#end_crystal";
         }
         if (!user.startsWith("#")) {
@@ -171,5 +193,4 @@ public final class BlockExplodeListener extends Queue implements Listener {
             processBlockExplode(user, world, event.blockList());
         }
     }
-
 }

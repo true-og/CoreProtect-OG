@@ -2,13 +2,11 @@ package net.coreprotect.consumer.process;
 
 import java.sql.Statement;
 import java.util.List;
-
-import org.bukkit.block.BlockState;
-import org.bukkit.entity.EntityType;
-
 import net.coreprotect.config.ConfigHandler;
 import net.coreprotect.database.statement.EntityStatement;
 import net.coreprotect.utility.entity.EntityUtil;
+import org.bukkit.block.BlockState;
+import org.bukkit.entity.EntityType;
 
 class EntitySpawnProcess {
 

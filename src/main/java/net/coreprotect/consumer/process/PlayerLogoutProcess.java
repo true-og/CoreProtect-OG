@@ -1,10 +1,8 @@
 package net.coreprotect.consumer.process;
 
 import java.sql.PreparedStatement;
-
-import org.bukkit.Location;
-
 import net.coreprotect.database.logger.PlayerSessionLogger;
+import org.bukkit.Location;
 
 class PlayerLogoutProcess {
 

@@ -3,17 +3,22 @@ package net.coreprotect.consumer.process;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Map;
-
-import org.bukkit.block.BlockState;
-import org.bukkit.entity.EntityType;
-
 import net.coreprotect.consumer.Consumer;
 import net.coreprotect.database.logger.EntityKillLogger;
 import net.coreprotect.utility.Util;
+import org.bukkit.block.BlockState;
+import org.bukkit.entity.EntityType;
 
 class EntityKillProcess {
 
-    static void process(PreparedStatement preparedStmt, PreparedStatement preparedStmtEntities, int batchCount, int processId, int id, Object object, String user) {
+    static void process(
+            PreparedStatement preparedStmt,
+            PreparedStatement preparedStmtEntities,
+            int batchCount,
+            int processId,
+            int id,
+            Object object,
+            String user) {
         if (object instanceof Object[]) {
             BlockState block = (BlockState) ((Object[]) object)[0];
             EntityType type = (EntityType) ((Object[]) object)[1];

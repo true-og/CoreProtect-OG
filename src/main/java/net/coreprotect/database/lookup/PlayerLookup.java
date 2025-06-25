@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Locale;
-
 import net.coreprotect.config.Config;
 import net.coreprotect.config.ConfigHandler;
 
@@ -24,7 +23,8 @@ public class PlayerLookup {
                 collate = " COLLATE NOCASE";
             }
 
-            String query = "SELECT rowid as id, uuid FROM " + ConfigHandler.prefix + "user WHERE user = ?" + collate + " LIMIT 0, 1";
+            String query = "SELECT rowid as id, uuid FROM " + ConfigHandler.prefix + "user WHERE user = ?" + collate
+                    + " LIMIT 0, 1";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
             preparedStmt.setString(1, user);
 
@@ -47,12 +47,10 @@ public class PlayerLookup {
                 ConfigHandler.playerIdCacheReversed.put(id, user);
                 return true;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return false;
     }
-
 }

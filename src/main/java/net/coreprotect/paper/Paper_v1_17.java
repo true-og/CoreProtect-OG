@@ -1,8 +1,7 @@
 package net.coreprotect.paper;
 
-import org.bukkit.block.Sign;
-
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.block.Sign;
 
 public class Paper_v1_17 extends PaperHandler implements PaperInterface {
 
@@ -15,5 +14,4 @@ public class Paper_v1_17 extends PaperHandler implements PaperInterface {
         // https://docs.adventure.kyori.net/serializer/
         return LegacyComponentSerializer.legacySection().serialize(sign.line(line));
     }
-
 }

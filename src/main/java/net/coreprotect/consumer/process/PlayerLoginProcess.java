@@ -3,16 +3,24 @@ package net.coreprotect.consumer.process;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Map;
-
-import org.bukkit.Location;
-
 import net.coreprotect.consumer.Consumer;
 import net.coreprotect.database.logger.PlayerSessionLogger;
 import net.coreprotect.database.logger.UsernameLogger;
+import org.bukkit.Location;
 
 class PlayerLoginProcess {
 
-    static void process(Connection connection, PreparedStatement preparedStmt, int batchCount, int processId, int id, Object object, int configSessions, int configUsernames, int time, String user) {
+    static void process(
+            Connection connection,
+            PreparedStatement preparedStmt,
+            int batchCount,
+            int processId,
+            int id,
+            Object object,
+            int configSessions,
+            int configUsernames,
+            int time,
+            String user) {
         if (object instanceof Location) {
             Map<Integer, String> strings = Consumer.consumerStrings.get(processId);
             if (strings.get(id) != null) {

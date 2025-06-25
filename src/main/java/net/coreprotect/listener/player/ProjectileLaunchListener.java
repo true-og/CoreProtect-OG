@@ -9,7 +9,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
+import net.coreprotect.config.Config;
+import net.coreprotect.config.ConfigHandler;
+import net.coreprotect.consumer.Queue;
+import net.coreprotect.database.logger.ItemLogger;
+import net.coreprotect.utility.Util;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.AbstractArrow;
@@ -20,22 +24,18 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CrossbowMeta;
 
-import net.coreprotect.config.Config;
-import net.coreprotect.config.ConfigHandler;
-import net.coreprotect.consumer.Queue;
-import net.coreprotect.database.logger.ItemLogger;
-import net.coreprotect.utility.Util;
-
 public final class ProjectileLaunchListener extends Queue implements Listener {
 
     public static Set<Material> BOWS = new HashSet<>(Arrays.asList(Material.BOW, Material.CROSSBOW));
 
-    public static void playerLaunchProjectile(Location location, String user, ItemStack itemStack, int amount, int delay, int offset, int action) {
+    public static void playerLaunchProjectile(
+            Location location, String user, ItemStack itemStack, int amount, int delay, int offset, int action) {
         if (!Config.getConfig(location.getWorld()).ITEM_DROPS || itemStack == null) {
             return;
         }
 
-        String loggingItemId = user.toLowerCase(Locale.ROOT) + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
+        String loggingItemId = user.toLowerCase(Locale.ROOT) + "." + location.getBlockX() + "." + location.getBlockY()
+                + "." + location.getBlockZ();
         int itemId = getItemId(loggingItemId);
 
         itemStack = itemStack.clone();
@@ -47,8 +47,7 @@ public final class ProjectileLaunchListener extends Queue implements Listener {
             List<ItemStack> list = ConfigHandler.itemsShot.getOrDefault(loggingItemId, new ArrayList<>());
             list.add(itemStack);
             ConfigHandler.itemsShot.put(loggingItemId, list);
-        }
-        else {
+        } else {
             List<ItemStack> list = ConfigHandler.itemsThrown.getOrDefault(loggingItemId, new ArrayList<>());
             list.add(itemStack);
             ConfigHandler.itemsThrown.put(loggingItemId, list);
@@ -61,8 +60,10 @@ public final class ProjectileLaunchListener extends Queue implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     protected void onProjectileLaunch(ProjectileLaunchEvent event) {
         Location location = event.getEntity().getLocation();
-        String key = location.getWorld().getName() + "-" + location.getBlockX() + "-" + location.getBlockY() + "-" + location.getBlockZ();
-        Iterator<Entry<String, Object[]>> it = ConfigHandler.entityBlockMapper.entrySet().iterator();
+        String key = location.getWorld().getName() + "-" + location.getBlockX() + "-" + location.getBlockY() + "-"
+                + location.getBlockZ();
+        Iterator<Entry<String, Object[]>> it =
+                ConfigHandler.entityBlockMapper.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, Object[]> pair = it.next();
             String name = pair.getKey();
@@ -70,7 +71,11 @@ public final class ProjectileLaunchListener extends Queue implements Listener {
             ItemStack itemStack = (ItemStack) data[3];
             Material entityMaterial = Util.getEntityMaterial(event.getEntityType());
             boolean isBow = BOWS.contains(itemStack.getType());
-            if ((data[1].equals(key) || data[2].equals(key)) && (entityMaterial == itemStack.getType() || (itemStack.getType() == Material.LINGERING_POTION && entityMaterial == Material.SPLASH_POTION) || isBow)) {
+            if ((data[1].equals(key) || data[2].equals(key))
+                    && (entityMaterial == itemStack.getType()
+                            || (itemStack.getType() == Material.LINGERING_POTION
+                                    && entityMaterial == Material.SPLASH_POTION)
+                            || isBow)) {
                 boolean thrownItem = (itemStack.getType() != Material.FIREWORK_ROCKET && !isBow);
                 if (isBow) {
                     if (itemStack.getType() == Material.CROSSBOW) {
@@ -79,8 +84,7 @@ public final class ProjectileLaunchListener extends Queue implements Listener {
                             itemStack = item;
                             break;
                         }
-                    }
-                    else if (event.getEntity() instanceof AbstractArrow) {
+                    } else if (event.getEntity() instanceof AbstractArrow) {
                         itemStack = PlayerPickupArrowListener.getArrowType((AbstractArrow) event.getEntity());
                     }
 
@@ -89,7 +93,14 @@ public final class ProjectileLaunchListener extends Queue implements Listener {
                     }
                 }
 
-                playerLaunchProjectile(location, name, itemStack, 1, 1, 0, (thrownItem ? ItemLogger.ITEM_THROW : ItemLogger.ITEM_SHOOT));
+                playerLaunchProjectile(
+                        location,
+                        name,
+                        itemStack,
+                        1,
+                        1,
+                        0,
+                        (thrownItem ? ItemLogger.ITEM_THROW : ItemLogger.ITEM_SHOOT));
                 it.remove();
             }
         }

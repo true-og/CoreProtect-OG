@@ -2,7 +2,6 @@ package net.coreprotect.bukkit;
 
 import java.util.List;
 import java.util.Map;
-
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -37,7 +36,8 @@ public interface BukkitInterface {
 
     public boolean setEntityMeta(Entity entity, Object value, int count);
 
-    public boolean getItemMeta(ItemMeta itemMeta, List<Map<String, Object>> list, List<List<Map<String, Object>>> metadata, int slot);
+    public boolean getItemMeta(
+            ItemMeta itemMeta, List<Map<String, Object>> list, List<List<Map<String, Object>>> metadata, int slot);
 
     public boolean setItemMeta(Material rowType, ItemStack itemstack, List<Map<String, Object>> map);
 
@@ -90,5 +90,4 @@ public interface BukkitInterface {
     public Object getRegistryKey(Object value);
 
     public Object getRegistryValue(String key, Object tClass);
-
 }

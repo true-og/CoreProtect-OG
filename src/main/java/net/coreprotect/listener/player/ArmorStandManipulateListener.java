@@ -3,7 +3,16 @@ package net.coreprotect.listener.player;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.List;
-
+import net.coreprotect.config.Config;
+import net.coreprotect.config.ConfigHandler;
+import net.coreprotect.consumer.Queue;
+import net.coreprotect.database.Database;
+import net.coreprotect.database.lookup.ChestTransactionLookup;
+import net.coreprotect.language.Phrase;
+import net.coreprotect.model.BlockGroup;
+import net.coreprotect.utility.Chat;
+import net.coreprotect.utility.Color;
+import net.coreprotect.utility.Util;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -15,17 +24,6 @@ import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
-import net.coreprotect.config.Config;
-import net.coreprotect.config.ConfigHandler;
-import net.coreprotect.consumer.Queue;
-import net.coreprotect.database.Database;
-import net.coreprotect.database.lookup.ChestTransactionLookup;
-import net.coreprotect.language.Phrase;
-import net.coreprotect.model.BlockGroup;
-import net.coreprotect.utility.Chat;
-import net.coreprotect.utility.Color;
-import net.coreprotect.utility.Util;
-
 public final class ArmorStandManipulateListener extends Queue implements Listener {
 
     public static void inspectHangingTransactions(final Location location, final Player finalPlayer) {
@@ -33,45 +31,61 @@ public final class ArmorStandManipulateListener extends Queue implements Listene
             @Override
             public void run() {
                 if (!finalPlayer.hasPermission("coreprotect.inspect")) {
-                    Chat.sendMessage(finalPlayer, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+                    Chat.sendMessage(
+                            finalPlayer,
+                            Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                     ConfigHandler.inspecting.put(finalPlayer.getName(), false);
                     return;
                 }
                 if (ConfigHandler.converterRunning) {
-                    Chat.sendMessage(finalPlayer, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.UPGRADE_IN_PROGRESS));
+                    Chat.sendMessage(
+                            finalPlayer,
+                            Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                    + Phrase.build(Phrase.UPGRADE_IN_PROGRESS));
                     return;
                 }
                 if (ConfigHandler.purgeRunning) {
-                    Chat.sendMessage(finalPlayer, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.PURGE_IN_PROGRESS));
+                    Chat.sendMessage(
+                            finalPlayer,
+                            Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                    + Phrase.build(Phrase.PURGE_IN_PROGRESS));
                     return;
                 }
                 if (ConfigHandler.lookupThrottle.get(finalPlayer.getName()) != null) {
                     Object[] lookupThrottle = ConfigHandler.lookupThrottle.get(finalPlayer.getName());
-                    if ((boolean) lookupThrottle[0] || ((System.currentTimeMillis() - (long) lookupThrottle[1])) < 100) {
-                        Chat.sendMessage(finalPlayer, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.DATABASE_BUSY));
+                    if ((boolean) lookupThrottle[0]
+                            || ((System.currentTimeMillis() - (long) lookupThrottle[1])) < 100) {
+                        Chat.sendMessage(
+                                finalPlayer,
+                                Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                        + Phrase.build(Phrase.DATABASE_BUSY));
                         return;
                     }
                 }
-                ConfigHandler.lookupThrottle.put(finalPlayer.getName(), new Object[] { true, System.currentTimeMillis() });
+                ConfigHandler.lookupThrottle.put(
+                        finalPlayer.getName(), new Object[] {true, System.currentTimeMillis()});
 
                 try (Connection connection = Database.getConnection(true)) {
                     if (connection != null) {
                         Statement statement = connection.createStatement();
-                        List<String> blockData = ChestTransactionLookup.performLookup(null, statement, location, finalPlayer, 1, 7, true);
+                        List<String> blockData = ChestTransactionLookup.performLookup(
+                                null, statement, location, finalPlayer, 1, 7, true);
                         for (String data : blockData) {
                             Chat.sendComponent(finalPlayer, data);
                         }
                         statement.close();
+                    } else {
+                        Chat.sendMessage(
+                                finalPlayer,
+                                Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                        + Phrase.build(Phrase.DATABASE_BUSY));
                     }
-                    else {
-                        Chat.sendMessage(finalPlayer, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.DATABASE_BUSY));
-                    }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                ConfigHandler.lookupThrottle.put(finalPlayer.getName(), new Object[] { false, System.currentTimeMillis() });
+                ConfigHandler.lookupThrottle.put(
+                        finalPlayer.getName(), new Object[] {false, System.currentTimeMillis()});
             }
         }
         Runnable runnable = new BasicThread();
@@ -132,21 +146,33 @@ public final class ArmorStandManipulateListener extends Queue implements Listene
 
         if (item.getType() == playerItem.getType()) {
             return;
-        }
-        else if (item.getType() != Material.AIR && playerItem.getType() == Material.AIR) {
+        } else if (item.getType() != Material.AIR && playerItem.getType() == Material.AIR) {
             oldContents[slot] = item.clone();
             newContents[slot] = new ItemStack(Material.AIR);
-            PlayerInteractEntityListener.queueContainerSpecifiedItems(player.getName(), Material.ARMOR_STAND, new Object[] { oldContents, newContents }, armorStand.getLocation(), false);
-        }
-        else if (item.getType() == Material.AIR && playerItem.getType() != Material.AIR) {
+            PlayerInteractEntityListener.queueContainerSpecifiedItems(
+                    player.getName(),
+                    Material.ARMOR_STAND,
+                    new Object[] {oldContents, newContents},
+                    armorStand.getLocation(),
+                    false);
+        } else if (item.getType() == Material.AIR && playerItem.getType() != Material.AIR) {
             oldContents[slot] = new ItemStack(Material.AIR);
             newContents[slot] = playerItem.clone();
-            PlayerInteractEntityListener.queueContainerSpecifiedItems(player.getName(), Material.ARMOR_STAND, new Object[] { oldContents, newContents }, armorStand.getLocation(), false);
-        }
-        else if (item.getType() != Material.AIR && playerItem.getType() != Material.AIR) {
+            PlayerInteractEntityListener.queueContainerSpecifiedItems(
+                    player.getName(),
+                    Material.ARMOR_STAND,
+                    new Object[] {oldContents, newContents},
+                    armorStand.getLocation(),
+                    false);
+        } else if (item.getType() != Material.AIR && playerItem.getType() != Material.AIR) {
             oldContents[slot] = item.clone();
             newContents[slot] = playerItem.clone();
-            PlayerInteractEntityListener.queueContainerSpecifiedItems(player.getName(), Material.ARMOR_STAND, new Object[] { oldContents, newContents }, armorStand.getLocation(), false);
+            PlayerInteractEntityListener.queueContainerSpecifiedItems(
+                    player.getName(),
+                    Material.ARMOR_STAND,
+                    new Object[] {oldContents, newContents},
+                    armorStand.getLocation(),
+                    false);
         }
     }
 }

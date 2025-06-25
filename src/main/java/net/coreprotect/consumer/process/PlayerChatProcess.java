@@ -2,15 +2,14 @@ package net.coreprotect.consumer.process;
 
 import java.sql.PreparedStatement;
 import java.util.Map;
-
-import org.bukkit.Location;
-
 import net.coreprotect.consumer.Consumer;
 import net.coreprotect.database.logger.ChatLogger;
+import org.bukkit.Location;
 
 class PlayerChatProcess {
 
-    static void process(PreparedStatement preparedStmt, int batchCount, int processId, int id, Object object, String user) {
+    static void process(
+            PreparedStatement preparedStmt, int batchCount, int processId, int id, Object object, String user) {
         if (!(object instanceof Object[])) {
             return;
         }

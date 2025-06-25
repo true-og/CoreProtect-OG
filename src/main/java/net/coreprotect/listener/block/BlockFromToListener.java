@@ -1,5 +1,10 @@
 package net.coreprotect.listener.block;
 
+import net.coreprotect.config.Config;
+import net.coreprotect.consumer.Queue;
+import net.coreprotect.database.Lookup;
+import net.coreprotect.thread.CacheHandler;
+import net.coreprotect.utility.Util;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -12,12 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
-
-import net.coreprotect.config.Config;
-import net.coreprotect.consumer.Queue;
-import net.coreprotect.database.Lookup;
-import net.coreprotect.thread.CacheHandler;
-import net.coreprotect.utility.Util;
 
 public final class BlockFromToListener extends Queue implements Listener {
 
@@ -36,7 +35,8 @@ public final class BlockFromToListener extends Queue implements Listener {
             }
 
             World world = event.getBlock().getWorld();
-            if ((Config.getConfig(world).WATER_FLOW && type.equals(Material.WATER)) || (Config.getConfig(world).LAVA_FLOW && type.equals(Material.LAVA))) {
+            if ((Config.getConfig(world).WATER_FLOW && type.equals(Material.WATER))
+                    || (Config.getConfig(world).LAVA_FLOW && type.equals(Material.LAVA))) {
                 Block toBlock = event.getToBlock();
                 BlockState toBlockState = toBlock.getState();
 
@@ -57,8 +57,7 @@ public final class BlockFromToListener extends Queue implements Listener {
                 String f = "#flow";
                 if (type.equals(Material.WATER)) {
                     f = "#water";
-                }
-                else if (type.equals(Material.LAVA)) {
+                } else if (type.equals(Material.LAVA)) {
                     f = "#lava";
                 }
 
@@ -75,19 +74,21 @@ public final class BlockFromToListener extends Queue implements Listener {
                 }
 
                 if (f.startsWith("#")) {
-                    String cacheId = toBlock.getX() + "." + toBlock.getY() + "." + toBlock.getZ() + "." + Util.getWorldId(toBlock.getWorld().getName());
+                    String cacheId = toBlock.getX() + "." + toBlock.getY() + "." + toBlock.getZ() + "."
+                            + Util.getWorldId(toBlock.getWorld().getName());
                     int timestamp = (int) (System.currentTimeMillis() / 1000L);
                     Object[] cacheData = CacheHandler.spreadCache.get(cacheId);
-                    CacheHandler.spreadCache.put(cacheId, new Object[] { timestamp, type });
+                    CacheHandler.spreadCache.put(cacheId, new Object[] {timestamp, type});
                     if (toBlockState == null && cacheData != null && ((Material) cacheData[1]) == type) {
                         return;
                     }
                 }
 
-                CacheHandler.lookupCache.put("" + x + "." + y + "." + z + "." + wid + "", new Object[] { unixtimestamp, f, type });
-                Queue.queueBlockPlace(f, toBlock.getState(), block.getType(), toBlockState, type, -1, 0, blockData.getAsString());
-            }
-            else if (type.equals(Material.DRAGON_EGG)) {
+                CacheHandler.lookupCache.put(
+                        "" + x + "." + y + "." + z + "." + wid + "", new Object[] {unixtimestamp, f, type});
+                Queue.queueBlockPlace(
+                        f, toBlock.getState(), block.getType(), toBlockState, type, -1, 0, blockData.getAsString());
+            } else if (type.equals(Material.DRAGON_EGG)) {
                 Location location = block.getLocation();
                 int worldId = Util.getWorldId(location.getWorld().getName());
                 int x = location.getBlockX();
@@ -108,19 +109,25 @@ public final class BlockFromToListener extends Queue implements Listener {
                 }
 
                 if (Config.getConfig(block.getWorld()).BLOCK_BREAK) {
-                    Queue.queueBlockBreak(user, block.getState(), block.getType(), block.getBlockData().getAsString(), 0);
+                    Queue.queueBlockBreak(
+                            user,
+                            block.getState(),
+                            block.getType(),
+                            block.getBlockData().getAsString(),
+                            0);
                 }
                 if (Config.getConfig(block.getWorld()).BLOCK_PLACE) {
                     Block toBlock = event.getToBlock();
                     BlockState toBlockState = toBlock.getState();
                     if (Config.getConfig(world).BLOCK_MOVEMENT) {
-                        toBlockState = BlockUtil.gravityScan(toBlock.getLocation(), type, user).getState();
+                        toBlockState = BlockUtil.gravityScan(toBlock.getLocation(), type, user)
+                                .getState();
                     }
 
-                    Queue.queueBlockPlace(user, toBlockState, block.getType(), toBlockState, type, -1, 0, blockData.getAsString());
+                    Queue.queueBlockPlace(
+                            user, toBlockState, block.getType(), toBlockState, type, -1, 0, blockData.getAsString());
                 }
             }
         }
     }
-
 }

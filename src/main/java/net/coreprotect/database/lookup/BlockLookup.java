@@ -3,11 +3,6 @@ package net.coreprotect.database.lookup;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Locale;
-
-import org.bukkit.Material;
-import org.bukkit.block.BlockState;
-import org.bukkit.command.CommandSender;
-
 import net.coreprotect.config.ConfigHandler;
 import net.coreprotect.database.statement.UserStatement;
 import net.coreprotect.language.Phrase;
@@ -15,10 +10,20 @@ import net.coreprotect.language.Selector;
 import net.coreprotect.listener.channel.PluginChannelListener;
 import net.coreprotect.utility.Color;
 import net.coreprotect.utility.Util;
+import org.bukkit.Material;
+import org.bukkit.block.BlockState;
+import org.bukkit.command.CommandSender;
 
 public class BlockLookup {
 
-    public static String performLookup(String command, Statement statement, BlockState block, CommandSender commandSender, int offset, int page, int limit) {
+    public static String performLookup(
+            String command,
+            Statement statement,
+            BlockState block,
+            CommandSender commandSender,
+            int offset,
+            int page,
+            int limit) {
         String resultText = "";
 
         try {
@@ -29,14 +34,11 @@ public class BlockLookup {
             if (command == null) {
                 if (commandSender.hasPermission("coreprotect.co")) {
                     command = "co";
-                }
-                else if (commandSender.hasPermission("coreprotect.core")) {
+                } else if (commandSender.hasPermission("coreprotect.core")) {
                     command = "core";
-                }
-                else if (commandSender.hasPermission("coreprotect.coreprotect")) {
+                } else if (commandSender.hasPermission("coreprotect.coreprotect")) {
                     command = "coreprotect";
-                }
-                else {
+                } else {
                     command = "co";
                 }
             }
@@ -57,7 +59,9 @@ public class BlockLookup {
 
             String blockName = block.getType().name().toLowerCase(Locale.ROOT);
 
-            String query = "SELECT COUNT(*) as count from " + ConfigHandler.prefix + "block " + Util.getWidIndex("block") + "WHERE wid = '" + worldId + "' AND x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "' AND action IN(0,1) AND time >= '" + checkTime + "' LIMIT 0, 1";
+            String query = "SELECT COUNT(*) as count from " + ConfigHandler.prefix + "block "
+                    + Util.getWidIndex("block") + "WHERE wid = '" + worldId + "' AND x = '" + x + "' AND z = '" + z
+                    + "' AND y = '" + y + "' AND action IN(0,1) AND time >= '" + checkTime + "' LIMIT 0, 1";
             ResultSet results = statement.executeQuery(query);
             while (results.next()) {
                 count = results.getInt("count");
@@ -65,7 +69,10 @@ public class BlockLookup {
             results.close();
             int totalPages = (int) Math.ceil(count / (limit + 0.0));
 
-            query = "SELECT time,user,action,type,data,rolled_back FROM " + ConfigHandler.prefix + "block " + Util.getWidIndex("block") + "WHERE wid = '" + worldId + "' AND x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "' AND action IN(0,1) AND time >= '" + checkTime + "' ORDER BY rowid DESC LIMIT " + page_start + ", " + limit + "";
+            query = "SELECT time,user,action,type,data,rolled_back FROM " + ConfigHandler.prefix + "block "
+                    + Util.getWidIndex("block") + "WHERE wid = '" + worldId + "' AND x = '" + x + "' AND z = '" + z
+                    + "' AND y = '" + y + "' AND action IN(0,1) AND time >= '" + checkTime
+                    + "' ORDER BY rowid DESC LIMIT " + page_start + ", " + limit + "";
             results = statement.executeQuery(query);
 
             StringBuilder resultTextBuilder = new StringBuilder();
@@ -86,7 +93,9 @@ public class BlockLookup {
                 String timeAgo = Util.getTimeSince(resultTime, time, true);
 
                 if (!found) {
-                    resultTextBuilder = new StringBuilder(Color.WHITE + "----- " + Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "----- " + Util.getCoordinates(command, worldId, x, y, z, false, false) + "\n");
+                    resultTextBuilder =
+                            new StringBuilder(Color.WHITE + "----- " + Color.DARK_AQUA + "CoreProtect " + Color.WHITE
+                                    + "----- " + Util.getCoordinates(command, worldId, x, y, z, false, false) + "\n");
                 }
                 found = true;
 
@@ -97,8 +106,7 @@ public class BlockLookup {
                     phrase = Phrase.LOOKUP_INTERACTION; // {clicked|killed}
                     selector = (resultAction != 3 ? Selector.FIRST : Selector.SECOND);
                     tag = (resultAction != 3 ? Color.WHITE + "-" : Color.RED + "-");
-                }
-                else {
+                } else {
                     phrase = Phrase.LOOKUP_BLOCK; // {placed|broke}
                     selector = (resultAction != 0 ? Selector.FIRST : Selector.SECOND);
                     tag = (resultAction != 0 ? Color.GREEN + "+" : Color.RED + "-");
@@ -112,8 +120,7 @@ public class BlockLookup {
                 String target;
                 if (resultAction == 3) {
                     target = Util.getEntityType(resultType).name();
-                }
-                else {
+                } else {
                     Material resultMaterial = Util.getType(resultType);
                     if (resultMaterial == null) {
                         resultMaterial = Material.AIR;
@@ -130,8 +137,30 @@ public class BlockLookup {
                     target = target.split(":")[1];
                 }
 
-                resultTextBuilder.append(timeAgo + " " + tag + " ").append(Phrase.build(phrase, Color.DARK_AQUA + rbFormat + resultUser + Color.WHITE + rbFormat, Color.DARK_AQUA + rbFormat + target + Color.WHITE, selector)).append("\n");
-                PluginChannelListener.getInstance().sendData(commandSender, resultTime, phrase, selector, resultUser, target, -1, x, y, z, worldId, rbFormat, false, tag.contains("+"));
+                resultTextBuilder
+                        .append(timeAgo + " " + tag + " ")
+                        .append(Phrase.build(
+                                phrase,
+                                Color.DARK_AQUA + rbFormat + resultUser + Color.WHITE + rbFormat,
+                                Color.DARK_AQUA + rbFormat + target + Color.WHITE,
+                                selector))
+                        .append("\n");
+                PluginChannelListener.getInstance()
+                        .sendData(
+                                commandSender,
+                                resultTime,
+                                phrase,
+                                selector,
+                                resultUser,
+                                target,
+                                -1,
+                                x,
+                                y,
+                                z,
+                                worldId,
+                                rbFormat,
+                                false,
+                                tag.contains("+"));
             }
 
             resultText = resultTextBuilder.toString();
@@ -143,28 +172,32 @@ public class BlockLookup {
                     pageInfo = pageInfo + Util.getPageNavigation(command, page, totalPages) + "\n";
                     resultText = resultText + pageInfo;
                 }
-            }
-            else {
+            } else {
                 if (rowMax > count && count > 0) {
-                    resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_RESULTS_PAGE, Selector.SECOND);
-                }
-                else {
-                    // resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Color.WHITE + "No block data found at " + Color.ITALIC + "x" + x + "/y" + y + "/z" + z + ".";
-                    resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_DATA_LOCATION, Selector.FIRST);
+                    resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                            + Phrase.build(Phrase.NO_RESULTS_PAGE, Selector.SECOND);
+                } else {
+                    // resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Color.WHITE + "No block data
+                    // found at " + Color.ITALIC + "x" + x + "/y" + y + "/z" + z + ".";
+                    resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                            + Phrase.build(Phrase.NO_DATA_LOCATION, Selector.FIRST);
                     if (!blockName.equals("air") && !blockName.equals("cave_air")) {
-                        resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_DATA, Color.ITALIC + block.getType().name().toLowerCase(Locale.ROOT)) + "\n";
+                        resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                + Phrase.build(
+                                        Phrase.NO_DATA,
+                                        Color.ITALIC + block.getType().name().toLowerCase(Locale.ROOT))
+                                + "\n";
                     }
                 }
             }
 
             ConfigHandler.lookupPage.put(commandSender.getName(), page);
             ConfigHandler.lookupType.put(commandSender.getName(), 2);
-            ConfigHandler.lookupCommand.put(commandSender.getName(), x + "." + y + "." + z + "." + worldId + ".0." + limit);
-        }
-        catch (Exception e) {
+            ConfigHandler.lookupCommand.put(
+                    commandSender.getName(), x + "." + y + "." + z + "." + worldId + ".0." + limit);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return resultText;
     }
-
 }

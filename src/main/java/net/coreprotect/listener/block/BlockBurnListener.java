@@ -1,13 +1,12 @@
 package net.coreprotect.listener.block;
 
+import net.coreprotect.config.Config;
+import net.coreprotect.consumer.Queue;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBurnEvent;
-
-import net.coreprotect.config.Config;
-import net.coreprotect.consumer.Queue;
 
 public final class BlockBurnListener extends Queue implements Listener {
 
@@ -18,5 +17,4 @@ public final class BlockBurnListener extends Queue implements Listener {
             BlockBreakListener.processBlockBreak(null, "#fire", event.getBlock(), true, BlockUtil.NONE);
         }
     }
-
 }

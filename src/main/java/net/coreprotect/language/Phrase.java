@@ -5,13 +5,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import net.coreprotect.utility.ChatMessage;
 import net.coreprotect.utility.Color;
 import net.coreprotect.utility.Util;
 
 public enum Phrase {
-
     ACTION_NOT_SUPPORTED,
     AMOUNT_BLOCK,
     AMOUNT_CHUNK,
@@ -220,10 +218,16 @@ public enum Phrase {
     VERSION_REQUIRED,
     WORLD_NOT_FOUND;
 
-    final private static Set<Phrase> HEADERS = new HashSet<>(Arrays.asList(Phrase.CONTAINER_HEADER, Phrase.HELP_HEADER, Phrase.INTERACTIONS_HEADER, Phrase.LOOKUP_HEADER, Phrase.SIGN_HEADER, Phrase.UPDATE_HEADER));
-    final private static Set<String> COLORS = new HashSet<>(Arrays.asList(Color.WHITE, Color.DARK_AQUA));
-    final private static String SPLIT = ":";
-    final private static String FULL_WIDTH_SPLIT = "：";
+    private static final Set<Phrase> HEADERS = new HashSet<>(Arrays.asList(
+            Phrase.CONTAINER_HEADER,
+            Phrase.HELP_HEADER,
+            Phrase.INTERACTIONS_HEADER,
+            Phrase.LOOKUP_HEADER,
+            Phrase.SIGN_HEADER,
+            Phrase.UPDATE_HEADER));
+    private static final Set<String> COLORS = new HashSet<>(Arrays.asList(Color.WHITE, Color.DARK_AQUA));
+    private static final String SPLIT = ":";
+    private static final String FULL_WIDTH_SPLIT = "：";
 
     public String getPhrase() {
         return Language.getPhrase(this);

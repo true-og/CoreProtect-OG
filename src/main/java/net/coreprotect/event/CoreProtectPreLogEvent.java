@@ -45,5 +45,4 @@ public class CoreProtectPreLogEvent extends Event implements Cancellable {
     public static HandlerList getHandlerList() {
         return handlers;
     }
-
 }

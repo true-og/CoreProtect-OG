@@ -3,7 +3,9 @@ package net.coreprotect.listener.entity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
+import net.coreprotect.config.Config;
+import net.coreprotect.config.ConfigHandler;
+import net.coreprotect.consumer.Queue;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -14,10 +16,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
-import net.coreprotect.config.Config;
-import net.coreprotect.config.ConfigHandler;
-import net.coreprotect.consumer.Queue;
-
 public final class EntityPickupItemListener extends Queue implements Listener {
 
     public static void onItemPickup(Player player, Location location, ItemStack itemStack) {
@@ -25,7 +23,8 @@ public final class EntityPickupItemListener extends Queue implements Listener {
             return;
         }
 
-        String loggingItemId = player.getName().toLowerCase(Locale.ROOT) + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
+        String loggingItemId = player.getName().toLowerCase(Locale.ROOT) + "." + location.getBlockX() + "."
+                + location.getBlockY() + "." + location.getBlockZ();
         int itemId = getItemId(loggingItemId);
 
         List<ItemStack> list = ConfigHandler.itemsPickup.getOrDefault(loggingItemId, new ArrayList<>());
@@ -46,5 +45,4 @@ public final class EntityPickupItemListener extends Queue implements Listener {
         Item item = event.getItem();
         onItemPickup(player, item.getLocation(), item.getItemStack());
     }
-
 }

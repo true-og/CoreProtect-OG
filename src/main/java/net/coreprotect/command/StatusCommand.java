@@ -1,11 +1,6 @@
 package net.coreprotect.command;
 
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginDescriptionFile;
-
 import net.coreprotect.CoreProtect;
 import net.coreprotect.config.Config;
 import net.coreprotect.config.ConfigHandler;
@@ -18,13 +13,17 @@ import net.coreprotect.thread.NetworkHandler;
 import net.coreprotect.utility.Chat;
 import net.coreprotect.utility.Color;
 import net.coreprotect.utility.Util;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
 
 public class StatusCommand {
     private static ConcurrentHashMap<String, Boolean> alert = new ConcurrentHashMap<>();
 
     protected static void runCommand(CommandSender player, boolean permission, String[] args) {
         if (!permission) {
-            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+            Chat.sendMessage(
+                    player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
             return;
         }
 
@@ -43,21 +42,45 @@ public class StatusCommand {
                         }
                     }
 
-                    Chat.sendMessage(player, Color.WHITE + "----- " + Color.DARK_AQUA + "CoreProtect" + (Util.isCommunityEdition() ? " " + ConfigHandler.COMMUNITY_EDITION : "") + Color.WHITE + " -----");
-                    Chat.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.STATUS_VERSION, Color.WHITE, ConfigHandler.EDITION_NAME + " v" + pdfFile.getVersion() + ".") + versionCheck);
+                    Chat.sendMessage(
+                            player,
+                            Color.WHITE + "----- " + Color.DARK_AQUA + "CoreProtect"
+                                    + (Util.isCommunityEdition() ? " " + ConfigHandler.COMMUNITY_EDITION : "")
+                                    + Color.WHITE + " -----");
+                    Chat.sendMessage(
+                            player,
+                            Color.DARK_AQUA
+                                    + Phrase.build(
+                                            Phrase.STATUS_VERSION,
+                                            Color.WHITE,
+                                            ConfigHandler.EDITION_NAME + " v" + pdfFile.getVersion() + ".")
+                                    + versionCheck);
 
                     String donationKey = NetworkHandler.donationKey();
                     if (donationKey != null) {
-                        Chat.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.STATUS_LICENSE, Color.WHITE, Phrase.build(Phrase.VALID_DONATION_KEY)) + " (" + donationKey + ")");
-                    }
-                    else {
-                        Chat.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.STATUS_LICENSE, Color.WHITE, Phrase.build(Phrase.INVALID_DONATION_KEY)) + Color.GREY + Color.ITALIC + " (" + Phrase.build(Phrase.CHECK_CONFIG) + ")");
+                        Chat.sendMessage(
+                                player,
+                                Color.DARK_AQUA
+                                        + Phrase.build(
+                                                Phrase.STATUS_LICENSE,
+                                                Color.WHITE,
+                                                Phrase.build(Phrase.VALID_DONATION_KEY))
+                                        + " (" + donationKey + ")");
+                    } else {
+                        Chat.sendMessage(
+                                player,
+                                Color.DARK_AQUA
+                                        + Phrase.build(
+                                                Phrase.STATUS_LICENSE,
+                                                Color.WHITE,
+                                                Phrase.build(Phrase.INVALID_DONATION_KEY))
+                                        + Color.GREY + Color.ITALIC + " (" + Phrase.build(Phrase.CHECK_CONFIG) + ")");
                     }
 
                     /*
-                        Items processed (since server start)
-                        Items processed (last 60 minutes)
-                     */
+                       Items processed (since server start)
+                       Items processed (last 60 minutes)
+                    */
 
                     // Using MySQL/SQLite (Database Size: 587MB)
 
@@ -66,17 +89,31 @@ public class StatusCommand {
                         firstVersion = " (" + Phrase.build(Phrase.FIRST_VERSION, firstVersion) + ")";
                     }
                     if (Config.getGlobal().MYSQL) {
-                        Chat.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.STATUS_DATABASE, Color.WHITE, "MySQL") + firstVersion);
-                    }
-                    else {
-                        Chat.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.STATUS_DATABASE, Color.WHITE, "SQLite") + firstVersion);
+                        Chat.sendMessage(
+                                player,
+                                Color.DARK_AQUA
+                                        + Phrase.build(Phrase.STATUS_DATABASE, Color.WHITE, "MySQL")
+                                        + firstVersion);
+                    } else {
+                        Chat.sendMessage(
+                                player,
+                                Color.DARK_AQUA
+                                        + Phrase.build(Phrase.STATUS_DATABASE, Color.WHITE, "SQLite")
+                                        + firstVersion);
                     }
 
                     if (ConfigHandler.worldeditEnabled) {
-                        Chat.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.STATUS_INTEGRATION, Color.WHITE, "WorldEdit", Selector.FIRST));
-                    }
-                    else if (instance.getServer().getPluginManager().getPlugin("WorldEdit") != null) {
-                        Chat.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.STATUS_INTEGRATION, Color.WHITE, "WorldEdit", Selector.SECOND));
+                        Chat.sendMessage(
+                                player,
+                                Color.DARK_AQUA
+                                        + Phrase.build(
+                                                Phrase.STATUS_INTEGRATION, Color.WHITE, "WorldEdit", Selector.FIRST));
+                    } else if (instance.getServer().getPluginManager().getPlugin("WorldEdit") != null) {
+                        Chat.sendMessage(
+                                player,
+                                Color.DARK_AQUA
+                                        + Phrase.build(
+                                                Phrase.STATUS_INTEGRATION, Color.WHITE, "WorldEdit", Selector.SECOND));
                     }
 
                     try {
@@ -84,8 +121,7 @@ public class StatusCommand {
                         int currentConsumerSize = Process.getCurrentConsumerSize();
                         if (currentConsumerSize == 0) {
                             consumerCount = Consumer.getConsumerSize(0) + Consumer.getConsumerSize(1);
-                        }
-                        else {
+                        } else {
                             int consumerId = (Consumer.currentConsumer == 1) ? 1 : 0;
                             consumerCount = Consumer.getConsumerSize(consumerId) + currentConsumerSize;
                         }
@@ -96,53 +132,71 @@ public class StatusCommand {
                             }
                         }
 
-                        Chat.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.STATUS_CONSUMER, Color.WHITE, String.format("%,d", consumerCount), (consumerCount == 1 ? Selector.FIRST : Selector.SECOND)));
-                    }
-                    catch (Exception e) {
+                        Chat.sendMessage(
+                                player,
+                                Color.DARK_AQUA
+                                        + Phrase.build(
+                                                Phrase.STATUS_CONSUMER,
+                                                Color.WHITE,
+                                                String.format("%,d", consumerCount),
+                                                (consumerCount == 1 ? Selector.FIRST : Selector.SECOND)));
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
                     try {
                         String cpuInfo = "";
                         if (ConfigHandler.processorInfo != null) {
-                            String modelName = ConfigHandler.processorInfo.getProcessorIdentifier().getName();
+                            String modelName = ConfigHandler.processorInfo
+                                    .getProcessorIdentifier()
+                                    .getName();
                             if (modelName.contains(" CPU")) {
                                 String[] split = modelName.split(" CPU")[0].split(" ");
                                 modelName = split[split.length - 1];
-                            }
-                            else if (modelName.contains(" Processor")) {
+                            } else if (modelName.contains(" Processor")) {
                                 String[] split = modelName.split(" Processor")[0].split(" ");
                                 modelName = split[split.length - 1];
                             }
 
                             String cpuSpeed = String.valueOf(ConfigHandler.processorInfo.getMaxFreq());
                             cpuSpeed = String.format("%.2f", Long.valueOf(cpuSpeed) / 1000000000.0);
-                            cpuInfo = "x" + Runtime.getRuntime().availableProcessors() + " " + cpuSpeed + "GHz " + modelName + ".";
-                        }
-                        else {
-                            cpuInfo = "x" + Runtime.getRuntime().availableProcessors() + " " + Phrase.build(Phrase.CPU_CORES);
+                            cpuInfo = "x" + Runtime.getRuntime().availableProcessors() + " " + cpuSpeed + "GHz "
+                                    + modelName + ".";
+                        } else {
+                            cpuInfo = "x" + Runtime.getRuntime().availableProcessors() + " "
+                                    + Phrase.build(Phrase.CPU_CORES);
                         }
 
                         int mb = 1024 * 1024;
                         Runtime runtime = Runtime.getRuntime();
-                        String usedRAM = String.format("%.2f", Double.valueOf((runtime.totalMemory() - runtime.freeMemory()) / mb) / 1000.0);
+                        String usedRAM = String.format(
+                                "%.2f", Double.valueOf((runtime.totalMemory() - runtime.freeMemory()) / mb) / 1000.0);
                         String totalRAM = String.format("%.2f", Double.valueOf(runtime.maxMemory() / mb) / 1000.0);
                         String systemInformation = Phrase.build(Phrase.RAM_STATS, usedRAM, totalRAM);
                         if (cpuInfo.length() > 0) {
                             systemInformation = cpuInfo + " (" + systemInformation + ")";
                         }
 
-                        Chat.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.STATUS_SYSTEM, Color.WHITE, systemInformation));
-                    }
-                    catch (Exception e) {
+                        Chat.sendMessage(
+                                player,
+                                Color.DARK_AQUA + Phrase.build(Phrase.STATUS_SYSTEM, Color.WHITE, systemInformation));
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    // Functions.sendMessage(player, Color.DARK_AQUA + "Website: " + Color.WHITE + "www.coreprotect.net/updates/");
+                    // Functions.sendMessage(player, Color.DARK_AQUA + "Website: " + Color.WHITE +
+                    // "www.coreprotect.net/updates/");
 
-                    // Functions.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.LINK_DISCORD, Color.WHITE + "www.coreprotect.net/discord/").replaceFirst(":", ":" + Color.WHITE));
-                    Chat.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.LINK_DISCORD, Color.WHITE, "www.coreprotect.net/discord/"));
-                    Chat.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.LINK_PATREON, Color.WHITE, "www.patreon.com/coreprotect/"));
+                    // Functions.sendMessage(player, Color.DARK_AQUA + Phrase.build(Phrase.LINK_DISCORD, Color.WHITE +
+                    // "www.coreprotect.net/discord/").replaceFirst(":", ":" + Color.WHITE));
+                    Chat.sendMessage(
+                            player,
+                            Color.DARK_AQUA
+                                    + Phrase.build(Phrase.LINK_DISCORD, Color.WHITE, "www.coreprotect.net/discord/"));
+                    Chat.sendMessage(
+                            player,
+                            Color.DARK_AQUA
+                                    + Phrase.build(Phrase.LINK_PATREON, Color.WHITE, "www.patreon.com/coreprotect/"));
 
                     if (player.isOp() && alert.get(player.getName()) == null) {
                         alert.put(player.getName(), true);
@@ -156,8 +210,7 @@ public class StatusCommand {
                             */
                         }
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

@@ -3,7 +3,9 @@ package net.coreprotect.listener.player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
+import net.coreprotect.config.Config;
+import net.coreprotect.config.ConfigHandler;
+import net.coreprotect.consumer.Queue;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
@@ -12,10 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 
-import net.coreprotect.config.Config;
-import net.coreprotect.config.ConfigHandler;
-import net.coreprotect.consumer.Queue;
-
 public final class PlayerDropItemListener extends Queue implements Listener {
 
     public static void playerDropItem(Location location, String user, ItemStack itemStack) {
@@ -23,7 +21,8 @@ public final class PlayerDropItemListener extends Queue implements Listener {
             return;
         }
 
-        String loggingItemId = user.toLowerCase(Locale.ROOT) + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
+        String loggingItemId = user.toLowerCase(Locale.ROOT) + "." + location.getBlockX() + "." + location.getBlockY()
+                + "." + location.getBlockZ();
         int itemId = getItemId(loggingItemId);
 
         List<ItemStack> list = ConfigHandler.itemsDrop.getOrDefault(loggingItemId, new ArrayList<>());
@@ -40,5 +39,4 @@ public final class PlayerDropItemListener extends Queue implements Listener {
         ItemStack itemStack = item.getItemStack();
         playerDropItem(item.getLocation(), event.getPlayer().getName(), itemStack);
     }
-
 }

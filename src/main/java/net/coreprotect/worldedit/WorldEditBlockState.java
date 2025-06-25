@@ -2,7 +2,6 @@ package net.coreprotect.worldedit;
 
 import java.util.Collection;
 import java.util.List;
-
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -215,5 +214,4 @@ public final class WorldEditBlockState implements BlockState {
         // TODO Auto-generated method stub
         return null;
     }
-
 }

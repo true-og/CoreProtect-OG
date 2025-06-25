@@ -1,7 +1,9 @@
 package net.coreprotect.utility.entity;
 
 import java.util.Locale;
-
+import net.coreprotect.bukkit.BukkitAdapter;
+import net.coreprotect.model.BlockGroup;
+import net.coreprotect.utility.Util;
 import org.bukkit.Art;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,18 +16,15 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
 import org.bukkit.inventory.ItemStack;
 
-import net.coreprotect.bukkit.BukkitAdapter;
-import net.coreprotect.model.BlockGroup;
-import net.coreprotect.utility.Util;
-
 public class HangingUtil {
 
     private HangingUtil() {
         throw new IllegalStateException("Utility class");
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static void spawnHanging(final BlockState blockstate, final Material rowType, final String hangingData, final int rowData) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static void spawnHanging(
+            final BlockState blockstate, final Material rowType, final String hangingData, final int rowData) {
         try {
             Block block = blockstate.getBlock();
             int x = block.getX();
@@ -36,14 +35,14 @@ public class HangingUtil {
             if (hangingData != null && !hangingData.contains(":") && hangingData.contains("=")) {
                 try {
                     hangingFace = BlockFace.valueOf(hangingData.split("=")[1].toUpperCase(Locale.ROOT));
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
             for (Entity e : block.getChunk().getEntities()) {
-                if ((BukkitAdapter.ADAPTER.isItemFrame(rowType) && e instanceof ItemFrame) || (rowType.equals(Material.PAINTING) && e instanceof Painting)) {
+                if ((BukkitAdapter.ADAPTER.isItemFrame(rowType) && e instanceof ItemFrame)
+                        || (rowType.equals(Material.PAINTING) && e instanceof Painting)) {
                     Location el = e.getLocation();
                     if (el.getBlockX() == x && el.getBlockY() == y && el.getBlockZ() == z) {
                         if (hangingFace == null || ((Hanging) e).getFacing() == hangingFace) {
@@ -65,34 +64,27 @@ public class HangingUtil {
                 if (!BlockGroup.NON_ATTACHABLE.contains(c1.getType())) {
                     faceSet = BlockFace.WEST;
                     block = c1;
-                }
-                else if (!BlockGroup.NON_ATTACHABLE.contains(c2.getType())) {
+                } else if (!BlockGroup.NON_ATTACHABLE.contains(c2.getType())) {
                     faceSet = BlockFace.EAST;
                     block = c2;
-                }
-                else if (!BlockGroup.NON_ATTACHABLE.contains(c3.getType())) {
+                } else if (!BlockGroup.NON_ATTACHABLE.contains(c3.getType())) {
                     faceSet = BlockFace.NORTH;
                     block = c3;
-                }
-                else if (!BlockGroup.NON_ATTACHABLE.contains(c4.getType())) {
+                } else if (!BlockGroup.NON_ATTACHABLE.contains(c4.getType())) {
                     faceSet = BlockFace.SOUTH;
                     block = c4;
                 }
 
                 if (!Util.solidBlock(Util.getType(block.getRelative(BlockFace.EAST)))) {
                     face = BlockFace.EAST;
-                }
-                else if (!Util.solidBlock(Util.getType(block.getRelative(BlockFace.NORTH)))) {
+                } else if (!Util.solidBlock(Util.getType(block.getRelative(BlockFace.NORTH)))) {
                     face = BlockFace.NORTH;
-                }
-                else if (!Util.solidBlock(Util.getType(block.getRelative(BlockFace.WEST)))) {
+                } else if (!Util.solidBlock(Util.getType(block.getRelative(BlockFace.WEST)))) {
                     face = BlockFace.WEST;
-                }
-                else if (!Util.solidBlock(Util.getType(block.getRelative(BlockFace.SOUTH)))) {
+                } else if (!Util.solidBlock(Util.getType(block.getRelative(BlockFace.SOUTH)))) {
                     face = BlockFace.SOUTH;
                 }
-            }
-            else {
+            } else {
                 faceSet = hangingFace;
                 face = hangingFace;
             }
@@ -115,8 +107,7 @@ public class HangingUtil {
                         if (width > 1) {
                             if (faceSet.equals(BlockFace.WEST)) {
                                 paintingZ--;
-                            }
-                            else if (faceSet.equals(BlockFace.SOUTH)) {
+                            } else if (faceSet.equals(BlockFace.SOUTH)) {
                                 paintingX--;
                             }
                         }
@@ -128,16 +119,16 @@ public class HangingUtil {
                     Painting hanging = null;
                     try {
                         hanging = block.getWorld().spawn(spawnBlock.getLocation(), Painting.class);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                     }
                     if (hanging != null) {
-                        hanging.teleport(block.getWorld().getBlockAt(paintingX, paintingY, paintingZ).getLocation());
+                        hanging.teleport(block.getWorld()
+                                .getBlockAt(paintingX, paintingY, paintingZ)
+                                .getLocation());
                         hanging.setFacingDirection(faceSet, true);
                         hanging.setArt(painting, true);
                     }
-                }
-                else if (BukkitAdapter.ADAPTER.isItemFrame(rowType)) {
+                } else if (BukkitAdapter.ADAPTER.isItemFrame(rowType)) {
                     try {
                         Block spawnBlock = hangingFace != null ? block : block.getRelative(face);
                         if (hangingFace == null) {
@@ -147,7 +138,8 @@ public class HangingUtil {
                         Entity entity = block.getWorld().spawn(spawnBlock.getLocation(), itemFrame);
                         if (entity instanceof ItemFrame) {
                             ItemFrame hanging = (ItemFrame) entity;
-                            hanging.teleport(block.getWorld().getBlockAt(x, y, z).getLocation());
+                            hanging.teleport(
+                                    block.getWorld().getBlockAt(x, y, z).getLocation());
                             hanging.setFacingDirection(faceSet, true);
 
                             Material type = Util.getType(rowData);
@@ -156,13 +148,11 @@ public class HangingUtil {
                                 hanging.setItem(istack);
                             }
                         }
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                     }
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -173,8 +163,7 @@ public class HangingUtil {
             if (hangingData != null && !hangingData.contains(":") && hangingData.contains("=")) {
                 try {
                     hangingFace = BlockFace.valueOf(hangingData.split("=")[1].toUpperCase(Locale.ROOT));
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -182,17 +171,17 @@ public class HangingUtil {
             for (Entity e : block.getChunk().getEntities()) {
                 if (e instanceof ItemFrame || e instanceof Painting) {
                     Location el = e.getLocation();
-                    if (el.getBlockX() == block.getX() && el.getBlockY() == block.getY() && el.getBlockZ() == block.getZ()) {
+                    if (el.getBlockX() == block.getX()
+                            && el.getBlockY() == block.getY()
+                            && el.getBlockZ() == block.getZ()) {
                         if (hangingFace == null || ((Hanging) e).getFacing() == hangingFace) {
                             e.remove();
                         }
                     }
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

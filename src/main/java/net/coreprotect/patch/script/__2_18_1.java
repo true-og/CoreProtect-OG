@@ -1,7 +1,6 @@
 package net.coreprotect.patch.script;
 
 import java.sql.Statement;
-
 import net.coreprotect.patch.Patch;
 
 public class __2_18_1 {
@@ -13,12 +12,10 @@ public class __2_18_1 {
             if (last_version[0] == 2 && last_version[1] == 18 && last_version[2] == 0) {
                 return __2_18_0.patch(statement);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return true;
     }
-
 }

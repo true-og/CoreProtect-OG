@@ -1,16 +1,14 @@
 package net.coreprotect.command;
 
 import java.util.List;
-
-import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-
 import net.coreprotect.config.ConfigHandler;
 import net.coreprotect.language.Phrase;
 import net.coreprotect.language.Selector;
 import net.coreprotect.utility.Chat;
 import net.coreprotect.utility.Color;
+import org.bukkit.Location;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 
 public class ApplyCommand {
     protected static void runCommand(CommandSender user, Command command, boolean permission, String[] args) {
@@ -29,18 +27,21 @@ public class ApplyCommand {
                     }
                 }
                 if (!valid) {
-                    Chat.sendMessage(user, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_ROLLBACK, Selector.FIRST));
-                }
-                else {
+                    Chat.sendMessage(
+                            user,
+                            Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                    + Phrase.build(Phrase.NO_ROLLBACK, Selector.FIRST));
+                } else {
                     ConfigHandler.lastRollback.remove(user.getName());
                     RollbackRestoreCommand.runCommand(user, command, permission, args, location, startTime, endTime);
                 }
+            } else {
+                Chat.sendMessage(
+                        user,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                + Phrase.build(Phrase.NO_ROLLBACK, Selector.FIRST));
             }
-            else {
-                Chat.sendMessage(user, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_ROLLBACK, Selector.FIRST));
-            }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

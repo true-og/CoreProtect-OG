@@ -22,7 +22,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
 import net.coreprotect.CoreProtect;
 import net.coreprotect.language.Language;
 import net.coreprotect.language.Phrase;
@@ -63,7 +62,9 @@ public class ConfigFile extends Config {
         for (final Entry<String, String> entry : this.lang.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            if (DEFAULT_VALUES.containsKey(key) && value.length() > 0 && (!isCache || DEFAULT_VALUES.get(key).equals(USER_VALUES.get(key)))) {
+            if (DEFAULT_VALUES.containsKey(key)
+                    && value.length() > 0
+                    && (!isCache || DEFAULT_VALUES.get(key).equals(USER_VALUES.get(key)))) {
                 Phrase phrase = Phrase.valueOf(key);
                 if (!isCache) {
                     Language.setUserPhrase(phrase, value);
@@ -75,7 +76,8 @@ public class ConfigFile extends Config {
     }
 
     // this function will close in
-    public static void load(final InputStream in, final Map<String, String> config, boolean forceCase) throws IOException {
+    public static void load(final InputStream in, final Map<String, String> config, boolean forceCase)
+            throws IOException {
         try (final InputStream in0 = in) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
@@ -98,8 +100,7 @@ public class ConfigFile extends Config {
                     value = value.replace("''", "'");
                     value = value.replace("\\'", "'");
                     value = value.replace("\\\\", "\\");
-                }
-                else if (value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")) {
+                } else if (value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")) {
                     value = value.replaceAll("^\"|\"$", "");
                     value = value.replace("\\\"", "\"");
                     value = value.replace("\\\\", "\\");
@@ -133,8 +134,7 @@ public class ConfigFile extends Config {
             final ConfigFile temp = new ConfigFile();
             temp.load(new ByteArrayInputStream(data), fileName, isCache);
             temp.addMissingOptions(globalFile);
-        }
-        else {
+        } else {
             final ConfigFile temp = new ConfigFile();
             temp.addMissingOptions(globalFile);
         }
@@ -184,8 +184,7 @@ public class ConfigFile extends Config {
                 if (lines.get(i).equalsIgnoreCase(oldLine)) {
                     if (newLine != null && newLine.length() > 0) {
                         lines.set(i, newLine);
-                    }
-                    else {
+                    } else {
                         lines.remove(i);
                     }
 
@@ -194,13 +193,13 @@ public class ConfigFile extends Config {
             }
 
             if (lines.size() > 0) {
-                String lastLine = lines.get(lines.size() - 1); // append the final line to prevent a line separator from being added
+                String lastLine = lines.get(
+                        lines.size() - 1); // append the final line to prevent a line separator from being added
                 Files.write(path, (lines.remove(lines.size() - 1).isEmpty() ? lines : lines), StandardCharsets.UTF_8);
                 Files.write(path, lastLine.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
                 lines.clear();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -215,13 +214,13 @@ public class ConfigFile extends Config {
             lines.addAll(sort);
 
             if (lines.size() > 0) {
-                String lastLine = lines.get(lines.size() - 1); // append the final line to prevent a line separator from being added
+                String lastLine = lines.get(
+                        lines.size() - 1); // append the final line to prevent a line separator from being added
                 Files.write(path, (lines.remove(lines.size() - 1).isEmpty() ? lines : lines), StandardCharsets.UTF_8);
                 Files.write(path, lastLine.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
                 lines.clear();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

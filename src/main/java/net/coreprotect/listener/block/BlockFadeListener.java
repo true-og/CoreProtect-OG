@@ -1,14 +1,13 @@
 package net.coreprotect.listener.block;
 
+import net.coreprotect.config.Config;
+import net.coreprotect.consumer.Queue;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFadeEvent;
-
-import net.coreprotect.config.Config;
-import net.coreprotect.consumer.Queue;
 
 public final class BlockFadeListener extends Queue implements Listener {
 
@@ -26,8 +25,12 @@ public final class BlockFadeListener extends Queue implements Listener {
                 return;
             }
 
-            Queue.queueBlockBreak("#turtle", block.getState(), block.getType(), block.getBlockData().getAsString(), 0);
+            Queue.queueBlockBreak(
+                    "#turtle",
+                    block.getState(),
+                    block.getType(),
+                    block.getBlockData().getAsString(),
+                    0);
         }
     }
-
 }

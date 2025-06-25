@@ -1,5 +1,8 @@
 package net.coreprotect.listener.player;
 
+import net.coreprotect.config.Config;
+import net.coreprotect.config.ConfigHandler;
+import net.coreprotect.consumer.Queue;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -9,10 +12,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerBucketFillEvent;
-
-import net.coreprotect.config.Config;
-import net.coreprotect.config.ConfigHandler;
-import net.coreprotect.consumer.Queue;
 
 public final class PlayerBucketFillListener extends Queue implements Listener {
 
@@ -40,7 +39,8 @@ public final class PlayerBucketFillListener extends Queue implements Listener {
                 }
             }
 
-            Queue.queueBlockBreak(player, block.getState(), type, block.getBlockData().getAsString(), 0);
+            Queue.queueBlockBreak(
+                    player, block.getState(), type, block.getBlockData().getAsString(), 0);
         }
     }
 }

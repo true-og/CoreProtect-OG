@@ -3,11 +3,6 @@ package net.coreprotect.database.logger;
 import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Locale;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-
 import net.coreprotect.CoreProtect;
 import net.coreprotect.bukkit.BukkitAdapter;
 import net.coreprotect.config.Config;
@@ -17,6 +12,9 @@ import net.coreprotect.database.statement.UserStatement;
 import net.coreprotect.event.CoreProtectPreLogEvent;
 import net.coreprotect.thread.CacheHandler;
 import net.coreprotect.utility.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 
 public class BlockBreakLogger {
 
@@ -24,7 +22,16 @@ public class BlockBreakLogger {
         throw new IllegalStateException("Database class");
     }
 
-    public static void log(PreparedStatement preparedStmt, int batchCount, String user, Location location, int type, int data, List<Object> meta, String blockData, String overrideData) {
+    public static void log(
+            PreparedStatement preparedStmt,
+            int batchCount,
+            String user,
+            Location location,
+            int type,
+            int data,
+            List<Object> meta,
+            String blockData,
+            String overrideData) {
         try {
             if (ConfigHandler.blacklist.get(user.toLowerCase(Locale.ROOT)) != null || location == null) {
                 return;
@@ -33,8 +40,7 @@ public class BlockBreakLogger {
             Material checkType = Util.getType(type);
             if (checkType == null) {
                 return;
-            }
-            else if (checkType.equals(Material.AIR) || checkType.equals(Material.CAVE_AIR)) {
+            } else if (checkType.equals(Material.AIR) || checkType.equals(Material.CAVE_AIR)) {
                 return;
             }
 
@@ -43,14 +49,14 @@ public class BlockBreakLogger {
             }
 
             if (!user.startsWith("#")) {
-                String cacheId = location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ() + "." + Util.getWorldId(location.getWorld().getName());
+                String cacheId = location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ() + "."
+                        + Util.getWorldId(location.getWorld().getName());
                 CacheHandler.spreadCache.remove(cacheId);
             }
 
             if (checkType == Material.LECTERN) {
                 blockData = blockData.replaceFirst("has_book=true", "has_book=false");
-            }
-            else if (checkType == Material.PAINTING || BukkitAdapter.ADAPTER.isItemFrame(checkType)) {
+            } else if (checkType == Material.PAINTING || BukkitAdapter.ADAPTER.isItemFrame(checkType)) {
                 blockData = overrideData;
             }
 
@@ -65,17 +71,17 @@ public class BlockBreakLogger {
             int x = location.getBlockX();
             int y = location.getBlockY();
             int z = location.getBlockZ();
-            CacheHandler.breakCache.put("" + x + "." + y + "." + z + "." + wid + "", new Object[] { time, event.getUser(), type });
+            CacheHandler.breakCache.put(
+                    "" + x + "." + y + "." + z + "." + wid + "", new Object[] {time, event.getUser(), type});
 
             if (event.isCancelled()) {
                 return;
             }
 
-            BlockStatement.insert(preparedStmt, batchCount, time, userId, wid, x, y, z, type, data, meta, blockData, 0, 0);
-        }
-        catch (Exception e) {
+            BlockStatement.insert(
+                    preparedStmt, batchCount, time, userId, wid, x, y, z, type, data, meta, blockData, 0, 0);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

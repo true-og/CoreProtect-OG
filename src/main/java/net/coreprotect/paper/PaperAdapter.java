@@ -1,7 +1,8 @@
 package net.coreprotect.paper;
 
 import java.util.UUID;
-
+import net.coreprotect.bukkit.BukkitAdapter;
+import net.coreprotect.config.ConfigHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -10,9 +11,6 @@ import org.bukkit.block.Skull;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-
-import net.coreprotect.bukkit.BukkitAdapter;
-import net.coreprotect.config.ConfigHandler;
 
 public class PaperAdapter implements PaperInterface {
 
@@ -96,5 +94,4 @@ public class PaperAdapter implements PaperInterface {
     public void setSkullSkin(Skull skull, String skin) {
         return;
     }
-
 }

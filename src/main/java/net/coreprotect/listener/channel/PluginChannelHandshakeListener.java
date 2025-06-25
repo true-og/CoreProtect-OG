@@ -8,19 +8,17 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
+import net.coreprotect.CoreProtect;
+import net.coreprotect.config.Config;
+import net.coreprotect.language.Phrase;
+import net.coreprotect.language.Selector;
+import net.coreprotect.utility.Chat;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-
-import net.coreprotect.CoreProtect;
-import net.coreprotect.config.Config;
-import net.coreprotect.language.Phrase;
-import net.coreprotect.language.Selector;
-import net.coreprotect.utility.Chat;
 
 public class PluginChannelHandshakeListener implements PluginMessageListener, Listener {
 
@@ -84,7 +82,8 @@ public class PluginChannelHandshakeListener implements PluginMessageListener, Li
             }
 
             if (protocolVersion != networkingProtocolVersion) {
-                Chat.console(Phrase.build(Phrase.NETWORK_CONNECTION, player.getName(), modId, modVersion, Selector.SECOND));
+                Chat.console(
+                        Phrase.build(Phrase.NETWORK_CONNECTION, player.getName(), modId, modVersion, Selector.SECOND));
                 return;
             }
 
@@ -92,8 +91,7 @@ public class PluginChannelHandshakeListener implements PluginMessageListener, Li
             Chat.console(Phrase.build(Phrase.NETWORK_CONNECTION, player.getName(), modId, modVersion, Selector.FIRST));
 
             player.sendPluginMessage(CoreProtect.getInstance(), pluginChannel, sendRegistered());
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             Chat.console(exception.toString());
             exception.printStackTrace();
         }

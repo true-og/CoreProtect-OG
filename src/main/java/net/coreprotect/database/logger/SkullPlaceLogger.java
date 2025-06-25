@@ -3,15 +3,13 @@ package net.coreprotect.database.logger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Locale;
-
-import org.bukkit.Material;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Skull;
-
 import net.coreprotect.config.ConfigHandler;
 import net.coreprotect.database.Database;
 import net.coreprotect.database.statement.SkullStatement;
 import net.coreprotect.paper.PaperAdapter;
+import org.bukkit.Material;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 
 public class SkullPlaceLogger {
 
@@ -19,7 +17,14 @@ public class SkullPlaceLogger {
         throw new IllegalStateException("Database class");
     }
 
-    public static void log(PreparedStatement preparedStmt, PreparedStatement preparedStmt2, int batchCount, String user, BlockState block, int replaceType, int replaceData) {
+    public static void log(
+            PreparedStatement preparedStmt,
+            PreparedStatement preparedStmt2,
+            int batchCount,
+            String user,
+            BlockState block,
+            int replaceType,
+            int replaceData) {
         try {
             if (ConfigHandler.blacklist.get(user.toLowerCase(Locale.ROOT)) != null || block == null) {
                 return;
@@ -40,8 +45,7 @@ public class SkullPlaceLogger {
                         resultSet.next();
                         skullKey = resultSet.getInt(1);
                         resultSet.close();
-                    }
-                    else {
+                    } else {
                         ResultSet keys = preparedStmt2.getGeneratedKeys();
                         keys.next();
                         skullKey = keys.getInt(1);
@@ -50,11 +54,21 @@ public class SkullPlaceLogger {
                 }
             }
 
-            BlockPlaceLogger.log(preparedStmt, batchCount, user, block, replaceType, replaceData, type, skullKey, true, null, null, null);
-        }
-        catch (Exception e) {
+            BlockPlaceLogger.log(
+                    preparedStmt,
+                    batchCount,
+                    user,
+                    block,
+                    replaceType,
+                    replaceData,
+                    type,
+                    skullKey,
+                    true,
+                    null,
+                    null,
+                    null);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

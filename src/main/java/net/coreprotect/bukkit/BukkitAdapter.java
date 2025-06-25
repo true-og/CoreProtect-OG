@@ -2,7 +2,8 @@ package net.coreprotect.bukkit;
 
 import java.util.List;
 import java.util.Map;
-
+import net.coreprotect.config.ConfigHandler;
+import net.coreprotect.utility.Util;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -28,9 +29,6 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
-
-import net.coreprotect.config.ConfigHandler;
-import net.coreprotect.utility.Util;
 
 public class BukkitAdapter implements BukkitInterface {
 
@@ -61,9 +59,6 @@ public class BukkitAdapter implements BukkitInterface {
             case BUKKIT_V1_19:
                 BukkitAdapter.ADAPTER = new Bukkit_v1_19();
                 break;
-            case BUKKIT_V1_20:
-                BukkitAdapter.ADAPTER = new Bukkit_v1_20();
-                break;
             default:
                 BukkitAdapter.ADAPTER = new Bukkit_v1_19();
                 break;
@@ -91,7 +86,8 @@ public class BukkitAdapter implements BukkitInterface {
     }
 
     @Override
-    public boolean getItemMeta(ItemMeta itemMeta, List<Map<String, Object>> list, List<List<Map<String, Object>>> metadata, int slot) {
+    public boolean getItemMeta(
+            ItemMeta itemMeta, List<Map<String, Object>> list, List<List<Map<String, Object>>> metadata, int slot) {
         return false;
     }
 
@@ -109,7 +105,11 @@ public class BukkitAdapter implements BukkitInterface {
             boolean scanButton = false;
             switch (faceAttachable.getAttachedFace()) {
                 case WALL:
-                    scanButton = (scanMin < 5 && scanBlock.getRelative(directional.getFacing().getOppositeFace()).getLocation().equals(block.getLocation()));
+                    scanButton = (scanMin < 5
+                            && scanBlock
+                                    .getRelative(directional.getFacing().getOppositeFace())
+                                    .getLocation()
+                                    .equals(block.getLocation()));
                     break;
                 case FLOOR:
                     scanButton = (scanMin == 5);
@@ -260,8 +260,7 @@ public class BukkitAdapter implements BukkitInterface {
     public String getLine(Sign sign, int line) {
         if (line < 4) {
             return sign.getLine(line);
-        }
-        else {
+        } else {
             return "";
         }
     }
@@ -317,5 +316,4 @@ public class BukkitAdapter implements BukkitInterface {
     public Object getRegistryValue(String key, Object tClass) {
         return null;
     }
-
 }

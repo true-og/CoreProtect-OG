@@ -7,13 +7,11 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
+import net.coreprotect.config.ConfigHandler;
+import net.coreprotect.database.Database;
 import org.bukkit.block.BlockState;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
-
-import net.coreprotect.config.ConfigHandler;
-import net.coreprotect.database.Database;
 
 public class EntityStatement {
 
@@ -35,12 +33,10 @@ public class EntityStatement {
             preparedStmt.setObject(2, byte_data);
             if (Database.hasReturningKeys()) {
                 return preparedStmt.executeQuery();
-            }
-            else {
+            } else {
                 preparedStmt.executeUpdate();
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -64,8 +60,7 @@ public class EntityStatement {
             }
 
             resultSet.close();
-        }
-        catch (Exception e) { // only display exception on development branch
+        } catch (Exception e) { // only display exception on development branch
             if (!ConfigHandler.EDITION_BRANCH.contains("-dev")) {
                 e.printStackTrace();
             }

@@ -1,5 +1,7 @@
 package net.coreprotect.listener.world;
 
+import net.coreprotect.config.Config;
+import net.coreprotect.consumer.Queue;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -7,9 +9,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.LeavesDecayEvent;
-
-import net.coreprotect.config.Config;
-import net.coreprotect.consumer.Queue;
 
 public final class LeavesDecayListener extends Queue implements Listener {
 
@@ -21,7 +20,12 @@ public final class LeavesDecayListener extends Queue implements Listener {
             Block block = event.getBlock();
             Material type = event.getBlock().getType();
 
-            Queue.queueBlockBreak(player, block.getState(), type, event.getBlock().getBlockData().getAsString(), 0);
+            Queue.queueBlockBreak(
+                    player,
+                    block.getState(),
+                    type,
+                    event.getBlock().getBlockData().getAsString(),
+                    0);
         }
     }
 }

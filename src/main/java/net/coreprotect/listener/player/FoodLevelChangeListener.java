@@ -1,5 +1,10 @@
 package net.coreprotect.listener.player;
 
+import net.coreprotect.CoreProtect;
+import net.coreprotect.consumer.Queue;
+import net.coreprotect.thread.CacheHandler;
+import net.coreprotect.thread.Scheduler;
+import net.coreprotect.utility.Util;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -10,12 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-
-import net.coreprotect.CoreProtect;
-import net.coreprotect.consumer.Queue;
-import net.coreprotect.thread.CacheHandler;
-import net.coreprotect.thread.Scheduler;
-import net.coreprotect.utility.Util;
 
 public final class FoodLevelChangeListener extends Queue implements Listener {
 
@@ -50,23 +49,38 @@ public final class FoodLevelChangeListener extends Queue implements Listener {
                     }
                     final Material oldBlockType = oldType;
 
-                    Scheduler.runTask(CoreProtect.getInstance(), () -> {
-                        try {
-                            Block newBlock = oldBlockState.getBlock();
-                            BlockState newBlockState = newBlock.getState();
+                    Scheduler.runTask(
+                            CoreProtect.getInstance(),
+                            () -> {
+                                try {
+                                    Block newBlock = oldBlockState.getBlock();
+                                    BlockState newBlockState = newBlock.getState();
 
-                            if (!oldBlockState.getBlockData().matches(newBlockState.getBlockData())) {
-                                Queue.queueBlockBreak(player.getName(), oldBlockState, oldBlockState.getType(), oldBlockState.getBlockData().getAsString(), 0);
+                                    if (!oldBlockState.getBlockData().matches(newBlockState.getBlockData())) {
+                                        Queue.queueBlockBreak(
+                                                player.getName(),
+                                                oldBlockState,
+                                                oldBlockState.getType(),
+                                                oldBlockState.getBlockData().getAsString(),
+                                                0);
 
-                                if (oldBlockType == newBlockState.getType()) {
-                                    Queue.queueBlockPlace(player.getName(), newBlockState, newBlock.getType(), null, newBlockState.getType(), -1, 0, newBlockState.getBlockData().getAsString());
+                                        if (oldBlockType == newBlockState.getType()) {
+                                            Queue.queueBlockPlace(
+                                                    player.getName(),
+                                                    newBlockState,
+                                                    newBlock.getType(),
+                                                    null,
+                                                    newBlockState.getType(),
+                                                    -1,
+                                                    0,
+                                                    newBlockState.getBlockData().getAsString());
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            }
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }, oldBlockState.getLocation());
+                            },
+                            oldBlockState.getLocation());
                 }
 
                 CacheHandler.interactCache.remove(coordinates);

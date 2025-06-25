@@ -1,5 +1,13 @@
 package net.coreprotect.listener.block;
 
+import net.coreprotect.bukkit.BukkitAdapter;
+import net.coreprotect.config.Config;
+import net.coreprotect.consumer.Queue;
+import net.coreprotect.database.logger.ItemLogger;
+import net.coreprotect.listener.player.ProjectileLaunchListener;
+import net.coreprotect.model.BlockGroup;
+import net.coreprotect.thread.CacheHandler;
+import net.coreprotect.utility.Util;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -15,15 +23,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
 import org.bukkit.inventory.ItemStack;
-
-import net.coreprotect.bukkit.BukkitAdapter;
-import net.coreprotect.config.Config;
-import net.coreprotect.consumer.Queue;
-import net.coreprotect.database.logger.ItemLogger;
-import net.coreprotect.listener.player.ProjectileLaunchListener;
-import net.coreprotect.model.BlockGroup;
-import net.coreprotect.thread.CacheHandler;
-import net.coreprotect.utility.Util;
 
 public final class BlockIgniteListener extends Queue implements Listener {
 
@@ -52,8 +51,7 @@ public final class BlockIgniteListener extends Queue implements Listener {
                             break;
                         }
                     }
-                }
-                else if (event.getCause() == IgniteCause.ENDER_CRYSTAL && blockBelow == Material.AIR) {
+                } else if (event.getCause() == IgniteCause.ENDER_CRYSTAL && blockBelow == Material.AIR) {
                     return;
                 }
             }
@@ -72,16 +70,21 @@ public final class BlockIgniteListener extends Queue implements Listener {
 
             if (event.getPlayer() == null) {
                 // IgniteCause cause = event.getCause(); // FLINT_AND_STEEL
-                // boolean isDispenser = (event.getIgnitingBlock() != null && event.getIgnitingBlock().getType()==Material.DISPENSER);
+                // boolean isDispenser = (event.getIgnitingBlock() != null &&
+                // event.getIgnitingBlock().getType()==Material.DISPENSER);
 
-                if (event.getCause() == IgniteCause.FIREBALL && (blockType == Material.AIR || blockType == Material.CAVE_AIR)) {
-                    // Fix bug where fire is recorded as being placed above a campfire (when lit via a fireball from a dispenser)
+                if (event.getCause() == IgniteCause.FIREBALL
+                        && (blockType == Material.AIR || blockType == Material.CAVE_AIR)) {
+                    // Fix bug where fire is recorded as being placed above a campfire (when lit via a fireball from a
+                    // dispenser)
                     if (BlockGroup.LIGHTABLES.contains(blockBelow)) {
                         return;
                     }
                 }
 
-                if (blockIgnited == Material.FIRE && event.getCause() == IgniteCause.LAVA && event.getIgnitingBlock() != null) {
+                if (blockIgnited == Material.FIRE
+                        && event.getCause() == IgniteCause.LAVA
+                        && event.getIgnitingBlock() != null) {
                     boolean burnableBlock = false;
                     for (BlockFace face : BlockFace.values()) {
                         Location blockLocation = block.getLocation();
@@ -112,7 +115,8 @@ public final class BlockIgniteListener extends Queue implements Listener {
                                 continue;
                         }
 
-                        if (scanLocation.getY() < BukkitAdapter.ADAPTER.getMinHeight(world) || scanLocation.getY() >= world.getMaxHeight()) {
+                        if (scanLocation.getY() < BukkitAdapter.ADAPTER.getMinHeight(world)
+                                || scanLocation.getY() >= world.getMaxHeight()) {
                             continue;
                         }
 
@@ -127,20 +131,43 @@ public final class BlockIgniteListener extends Queue implements Listener {
                     }
                 }
 
-                Queue.queueBlockPlace("#fire", block.getState(), block.getType(), replacedBlock, blockIgnited, -1, 0, forceBlockData.getAsString());
-            }
-            else {
+                Queue.queueBlockPlace(
+                        "#fire",
+                        block.getState(),
+                        block.getType(),
+                        replacedBlock,
+                        blockIgnited,
+                        -1,
+                        0,
+                        forceBlockData.getAsString());
+            } else {
                 if (event.getCause() == IgniteCause.FIREBALL) {
-                    ProjectileLaunchListener.playerLaunchProjectile(event.getPlayer().getLocation(), event.getPlayer().getName(), new ItemStack(Material.FIRE_CHARGE), 1, -1, 1, ItemLogger.ITEM_THROW);
+                    ProjectileLaunchListener.playerLaunchProjectile(
+                            event.getPlayer().getLocation(),
+                            event.getPlayer().getName(),
+                            new ItemStack(Material.FIRE_CHARGE),
+                            1,
+                            -1,
+                            1,
+                            ItemLogger.ITEM_THROW);
                 }
 
                 Player player = event.getPlayer();
-                Queue.queueBlockPlace(player.getName(), block.getState(), block.getType(), replacedBlock, blockIgnited, -1, 0, forceBlockData.getAsString());
+                Queue.queueBlockPlace(
+                        player.getName(),
+                        block.getState(),
+                        block.getType(),
+                        replacedBlock,
+                        blockIgnited,
+                        -1,
+                        0,
+                        forceBlockData.getAsString());
                 int unixtimestamp = (int) (System.currentTimeMillis() / 1000L);
                 int world_id = Util.getWorldId(block.getWorld().getName());
-                CacheHandler.lookupCache.put("" + block.getX() + "." + block.getY() + "." + block.getZ() + "." + world_id + "", new Object[] { unixtimestamp, player.getName(), block.getType() });
+                CacheHandler.lookupCache.put(
+                        "" + block.getX() + "." + block.getY() + "." + block.getZ() + "." + world_id + "",
+                        new Object[] {unixtimestamp, player.getName(), block.getType()});
             }
         }
     }
-
 }

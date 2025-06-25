@@ -1,31 +1,32 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.jvm.tasks.Jar
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    java
-    eclipse
-    id("com.gradleup.shadow") version "8.3.6"
-    id("com.palantir.git-version") version "0.13.0"
+    id("java") // Tell gradle this is a java project.
+    id("java-library") // Import helper for source-based libraries.
+    id("com.diffplug.spotless") version "7.0.4" // Import auto-formatter.
+    id("com.gradleup.shadow") version "8.3.6" // Import shadow API.
+    eclipse // Import eclipse plugin for IDE integration.
 }
 
 group = "net.coreprotect"
 
 val projectVersion = "22.4"
 val projectBranch = ""
+
 version = projectVersion
+
 description = "Provides block protection for your server."
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
+java { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
 
 logger.info("Building version $version")
 
 repositories {
-    maven("https://hub.spigotmc.org/nexus/content/groups/public")
+    mavenCentral()
+    gradlePluginPortal()
+    maven { url = uri("https://repo.purpurmc.org/snapshots") }
     maven("https://repo.papermc.io/repository/maven-public")
     maven("https://repo.codemc.org/repository/maven-public")
     maven("https://maven.enginehub.org/repo")
@@ -40,12 +41,11 @@ dependencies {
 }
 
 tasks.named<Jar>("jar") {
+    dependsOn(tasks.spotlessApply)
     archiveClassifier.set("original")
 }
 
-artifacts {
-    add("archives", tasks.named("shadowJar"))
-}
+artifacts { add("archives", tasks.named("shadowJar")) }
 
 tasks.named<ShadowJar>("shadowJar") {
     dependencies {
@@ -58,23 +58,24 @@ tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set(null as String?)
 }
 
-val resourceTokens = mapOf(
-    "project.version" to projectVersion,
-    "project.branch" to projectBranch
-)
+val resourceTokens = mapOf("project.version" to projectVersion, "project.branch" to projectBranch)
 
 tasks.named<org.gradle.api.tasks.Copy>("processResources") {
     include("plugin.yml")
-    filter(
-        mapOf(
-            "tokens" to resourceTokens,
-            "beginToken" to "\${",
-            "endToken" to "}"
-        ),
-        ReplaceTokens::class.java
-    )
+    filter(mapOf("tokens" to resourceTokens, "beginToken" to "\${", "endToken" to "}"), ReplaceTokens::class.java)
 }
 
 extra["author"] = "Intelli"
+
 extra["resourceTokens"] = resourceTokens
 
+spotless {
+    java {
+        removeUnusedImports()
+        palantirJavaFormat()
+    }
+    kotlinGradle {
+        ktfmt().kotlinlangStyle().configure { it.setMaxWidth(120) }
+        target("build.gradle.kts", "settings.gradle.kts")
+    }
+}

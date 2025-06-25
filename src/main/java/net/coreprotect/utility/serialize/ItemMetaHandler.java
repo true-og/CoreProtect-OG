@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import net.coreprotect.bukkit.BukkitAdapter;
+import net.coreprotect.utility.Color;
+import net.coreprotect.utility.Util;
 import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
@@ -25,10 +27,6 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SuspiciousStewMeta;
 import org.bukkit.potion.PotionEffect;
-
-import net.coreprotect.bukkit.BukkitAdapter;
-import net.coreprotect.utility.Color;
-import net.coreprotect.utility.Util;
 
 public class ItemMetaHandler {
 
@@ -124,7 +122,8 @@ public class ItemMetaHandler {
             ItemMeta itemMeta = item.getItemMeta().clone();
 
             if (itemMeta.hasAttributeModifiers()) {
-                for (Map.Entry<Attribute, AttributeModifier> entry : itemMeta.getAttributeModifiers().entries()) {
+                for (Map.Entry<Attribute, AttributeModifier> entry :
+                        itemMeta.getAttributeModifiers().entries()) {
                     Map<Object, Map<String, Object>> attributeList = new HashMap<>();
                     Attribute attribute = entry.getKey();
                     AttributeModifier modifier = entry.getValue();
@@ -146,8 +145,7 @@ public class ItemMetaHandler {
                 list = new ArrayList<>();
                 list.add(subMeta.getColor().serialize());
                 metadata.add(list);
-            }
-            else if (itemMeta instanceof PotionMeta) {
+            } else if (itemMeta instanceof PotionMeta) {
                 PotionMeta meta = (PotionMeta) itemMeta;
                 PotionMeta subMeta = meta.clone();
                 meta.setColor(null);
@@ -166,8 +164,7 @@ public class ItemMetaHandler {
                         metadata.add(list);
                     }
                 }
-            }
-            else if (itemMeta instanceof FireworkMeta) {
+            } else if (itemMeta instanceof FireworkMeta) {
                 FireworkMeta meta = (FireworkMeta) itemMeta;
                 FireworkMeta subMeta = meta.clone();
                 meta.clearEffects();
@@ -179,8 +176,7 @@ public class ItemMetaHandler {
                         deserializeFireworkEffect(effect, metadata);
                     }
                 }
-            }
-            else if (itemMeta instanceof FireworkEffectMeta) {
+            } else if (itemMeta instanceof FireworkEffectMeta) {
                 FireworkEffectMeta meta = (FireworkEffectMeta) itemMeta;
                 FireworkEffectMeta subMeta = meta.clone();
                 meta.setEffect(null);
@@ -191,8 +187,7 @@ public class ItemMetaHandler {
                     FireworkEffect effect = subMeta.getEffect();
                     deserializeFireworkEffect(effect, metadata);
                 }
-            }
-            else if (itemMeta instanceof BannerMeta) {
+            } else if (itemMeta instanceof BannerMeta) {
                 BannerMeta meta = (BannerMeta) itemMeta;
                 BannerMeta subMeta = (BannerMeta) meta.clone();
                 meta.setPatterns(new ArrayList<>());
@@ -204,8 +199,7 @@ public class ItemMetaHandler {
                     list.add(pattern.serialize());
                     metadata.add(list);
                 }
-            }
-            else if (itemMeta instanceof CrossbowMeta) {
+            } else if (itemMeta instanceof CrossbowMeta) {
                 CrossbowMeta meta = (CrossbowMeta) itemMeta;
                 CrossbowMeta subMeta = (CrossbowMeta) meta.clone();
                 meta.setChargedProjectiles(null);
@@ -224,8 +218,7 @@ public class ItemMetaHandler {
 
                     metadata.add(list);
                 }
-            }
-            else if (itemMeta instanceof MapMeta) {
+            } else if (itemMeta instanceof MapMeta) {
                 MapMeta meta = (MapMeta) itemMeta;
                 MapMeta subMeta = meta.clone();
                 meta.setColor(null);
@@ -237,8 +230,7 @@ public class ItemMetaHandler {
                     list.add(subMeta.getColor().serialize());
                     metadata.add(list);
                 }
-            }
-            else if (itemMeta instanceof SuspiciousStewMeta) {
+            } else if (itemMeta instanceof SuspiciousStewMeta) {
                 SuspiciousStewMeta meta = (SuspiciousStewMeta) itemMeta;
                 SuspiciousStewMeta subMeta = meta.clone();
                 meta.clearCustomEffects();
@@ -252,8 +244,7 @@ public class ItemMetaHandler {
                         metadata.add(list);
                     }
                 }
-            }
-            else if (!BukkitAdapter.ADAPTER.getItemMeta(itemMeta, list, metadata, slot)) {
+            } else if (!BukkitAdapter.ADAPTER.getItemMeta(itemMeta, list, metadata, slot)) {
                 list.add(itemMeta.serialize());
                 metadata.add(list);
             }
@@ -308,5 +299,4 @@ public class ItemMetaHandler {
         metadata.add(colorList);
         metadata.add(fadeList);
     }
-
 }

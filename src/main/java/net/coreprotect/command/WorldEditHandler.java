@@ -1,15 +1,13 @@
 package net.coreprotect.command;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.World;
-
 import net.coreprotect.worldedit.WorldEditLogger;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class WorldEditHandler {
 
@@ -22,7 +20,8 @@ public class WorldEditHandler {
                 World world = session.getSelectionWorld();
                 if (world != null) {
                     Region region = session.getSelection(world);
-                    if (region != null && world.getName().equals(((Player) user).getWorld().getName())) {
+                    if (region != null
+                            && world.getName().equals(((Player) user).getWorld().getName())) {
                         BlockVector3 block = region.getMinimumPoint();
                         int x = block.x();
                         int y = block.y();
@@ -43,12 +42,11 @@ public class WorldEditHandler {
                         int yMax = y + (height - 1);
                         int zMin = z;
                         int zMax = z + (length - 1);
-                        result = new Integer[] { max, xMin, xMax, yMin, yMax, zMin, zMax, 1 };
+                        result = new Integer[] {max, xMin, xMax, yMin, yMax, zMin, zMax, 1};
                     }
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return result;

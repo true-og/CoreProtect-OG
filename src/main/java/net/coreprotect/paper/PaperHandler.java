@@ -22,5 +22,4 @@ public class PaperHandler extends PaperAdapter implements PaperInterface {
     public InventoryHolder getHolder(Inventory holder, boolean useSnapshot) {
         return holder.getHolder(useSnapshot);
     }
-
 }

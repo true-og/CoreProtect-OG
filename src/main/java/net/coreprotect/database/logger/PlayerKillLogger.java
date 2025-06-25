@@ -2,10 +2,6 @@ package net.coreprotect.database.logger;
 
 import java.sql.PreparedStatement;
 import java.util.Locale;
-
-import org.bukkit.Bukkit;
-import org.bukkit.block.BlockState;
-
 import net.coreprotect.CoreProtect;
 import net.coreprotect.config.Config;
 import net.coreprotect.config.ConfigHandler;
@@ -13,6 +9,8 @@ import net.coreprotect.database.statement.BlockStatement;
 import net.coreprotect.database.statement.UserStatement;
 import net.coreprotect.event.CoreProtectPreLogEvent;
 import net.coreprotect.utility.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.block.BlockState;
 
 public class PlayerKillLogger {
 
@@ -20,7 +18,8 @@ public class PlayerKillLogger {
         throw new IllegalStateException("Database class");
     }
 
-    public static void log(PreparedStatement preparedStmt, int batchCount, String user, BlockState block, String player) {
+    public static void log(
+            PreparedStatement preparedStmt, int batchCount, String user, BlockState block, String player) {
         try {
             if (ConfigHandler.blacklist.get(user.toLowerCase(Locale.ROOT)) != null) {
                 return;
@@ -47,10 +46,8 @@ public class PlayerKillLogger {
             int y = block.getY();
             int z = block.getZ();
             BlockStatement.insert(preparedStmt, batchCount, time, userId, wid, x, y, z, 0, playerId, null, null, 3, 0);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

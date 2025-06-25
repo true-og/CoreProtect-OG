@@ -1,5 +1,6 @@
 package net.coreprotect.command;
 
+import com.google.common.base.Strings;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -8,20 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-
-import com.google.common.base.Strings;
-
 import net.coreprotect.config.Config;
 import net.coreprotect.config.ConfigHandler;
 import net.coreprotect.database.Database;
@@ -41,6 +28,16 @@ import net.coreprotect.utility.Chat;
 import net.coreprotect.utility.ChatMessage;
 import net.coreprotect.utility.Color;
 import net.coreprotect.utility.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 
 public class LookupCommand {
     protected static void runCommand(CommandSender player, Command command, boolean permission, String[] args) {
@@ -70,8 +67,12 @@ public class LookupCommand {
             return;
         }
 
-        if (args[0].toLowerCase(Locale.ROOT).equals("page") && (args.length != 2 || !args[1].equals(args[1].replaceAll("[^0-9]", "")))) {
-            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.MISSING_PARAMETERS, Color.WHITE, "/co page <page>"));
+        if (args[0].toLowerCase(Locale.ROOT).equals("page")
+                && (args.length != 2 || !args[1].equals(args[1].replaceAll("[^0-9]", "")))) {
+            Chat.sendMessage(
+                    player,
+                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                            + Phrase.build(Phrase.MISSING_PARAMETERS, Color.WHITE, "/co page <page>"));
             return;
         }
 
@@ -84,14 +85,15 @@ public class LookupCommand {
         for (Object arg : argBlocks) {
             if (arg instanceof Material) {
                 hasBlock = true;
-            }
-            else if (arg instanceof EntityType) {
+            } else if (arg instanceof EntityType) {
                 hasEntity = true;
                 if (argAction.size() == 0) {
                     argAction.add(3);
-                }
-                else if (!argAction.contains(3)) {
-                    Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_INCLUDE_COMBO));
+                } else if (!argAction.contains(3)) {
+                    Chat.sendMessage(
+                            player,
+                            Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                    + Phrase.build(Phrase.INVALID_INCLUDE_COMBO));
                     return;
                 }
             }
@@ -101,21 +103,24 @@ public class LookupCommand {
         for (Object arg : argExclude.keySet()) {
             if (arg instanceof Material) {
                 hasBlock = true;
-            }
-            else if (arg instanceof EntityType) {
+            } else if (arg instanceof EntityType) {
                 hasEntity = true;
                 if (argAction.size() == 0) {
                     argAction.add(3);
-                }
-                else if (!argAction.contains(3)) {
-                    Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_INCLUDE_COMBO));
+                } else if (!argAction.contains(3)) {
+                    Chat.sendMessage(
+                            player,
+                            Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                    + Phrase.build(Phrase.INVALID_INCLUDE_COMBO));
                     return;
                 }
             }
         }
 
         if (hasBlock && hasEntity) {
-            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_INCLUDE_COMBO));
+            Chat.sendMessage(
+                    player,
+                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_INCLUDE_COMBO));
             return;
         }
 
@@ -131,11 +136,9 @@ public class LookupCommand {
         }
         if (type == 0 && resultc > 1) {
             type = 4;
-        }
-        else if (resultc > 2) {
+        } else if (resultc > 2) {
             type = 4;
-        }
-        else if (resultc > 1) {
+        } else if (resultc > 1) {
             pageLookup = true;
             String dat = args[1];
             if (dat.contains(":")) {
@@ -149,8 +152,7 @@ public class LookupCommand {
                     type = 4;
                     pageLookup = false;
                 }
-            }
-            else {
+            } else {
                 String check1 = dat.replaceAll("[^a-zA-Z_]", "");
                 if (check1.length() > 0) {
                     type = 4;
@@ -158,7 +160,11 @@ public class LookupCommand {
                 }
             }
         }
-        if (argAction.contains(6) || argAction.contains(7) || argAction.contains(8) || argAction.contains(9) || argAction.contains(10)) {
+        if (argAction.contains(6)
+                || argAction.contains(7)
+                || argAction.contains(8)
+                || argAction.contains(9)
+                || argAction.contains(10)) {
             pageLookup = true;
         }
 
@@ -169,33 +175,49 @@ public class LookupCommand {
             }
         }
         if (ConfigHandler.converterRunning) {
-            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.UPGRADE_IN_PROGRESS));
+            Chat.sendMessage(
+                    player,
+                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.UPGRADE_IN_PROGRESS));
             return;
         }
         if (ConfigHandler.purgeRunning) {
-            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.PURGE_IN_PROGRESS));
+            Chat.sendMessage(
+                    player,
+                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.PURGE_IN_PROGRESS));
             return;
         }
         if (resultc < 2) {
-            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.MISSING_PARAMETERS, "/co l <params>"));
+            Chat.sendMessage(
+                    player,
+                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                            + Phrase.build(Phrase.MISSING_PARAMETERS, "/co l <params>"));
             return;
         }
         if (argAction.contains(-1)) {
-            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_ACTION));
+            Chat.sendMessage(
+                    player,
+                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_ACTION));
             return;
         }
         if (worldedit && argRadius == null) {
-            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_SELECTION, "WorldEdit"));
+            Chat.sendMessage(
+                    player,
+                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                            + Phrase.build(Phrase.INVALID_SELECTION, "WorldEdit"));
             return;
         }
         if (argRadius != null && argRadius[0] == -1) {
-            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_RADIUS));
+            Chat.sendMessage(
+                    player,
+                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_RADIUS));
             return;
         }
         if (ConfigHandler.lookupThrottle.get(player.getName()) != null) {
             Object[] lookupThrottle = ConfigHandler.lookupThrottle.get(player.getName());
             if ((boolean) lookupThrottle[0] || ((System.currentTimeMillis() - (long) lookupThrottle[1])) < 50) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.DATABASE_BUSY));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.DATABASE_BUSY));
                 return;
             }
         }
@@ -204,74 +226,122 @@ public class LookupCommand {
             allPermission = true;
         }
         if (!allPermission) {
-            if (!pageLookup && (argAction.size() == 0 || (argAction.size() == 1 && (argAction.contains(0) || argAction.contains(1)))) && !player.hasPermission("coreprotect.lookup.block")) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+            if (!pageLookup
+                    && (argAction.size() == 0
+                            || (argAction.size() == 1 && (argAction.contains(0) || argAction.contains(1))))
+                    && !player.hasPermission("coreprotect.lookup.block")) {
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                 return;
             }
             if (argAction.contains(2) && !player.hasPermission("coreprotect.lookup.click")) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                 return;
             }
             if (argAction.contains(3) && !player.hasPermission("coreprotect.lookup.kill")) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                 return;
             }
-            if (argAction.contains(4) && !argAction.contains(11) && !player.hasPermission("coreprotect.lookup.container")) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+            if (argAction.contains(4)
+                    && !argAction.contains(11)
+                    && !player.hasPermission("coreprotect.lookup.container")) {
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                 return;
             }
             if (argAction.contains(6) && !player.hasPermission("coreprotect.lookup.chat")) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                 return;
             }
             if (argAction.contains(7) && !player.hasPermission("coreprotect.lookup.command")) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                 return;
             }
             if (argAction.contains(8) && !player.hasPermission("coreprotect.lookup.session")) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                 return;
             }
             if (argAction.contains(9) && !player.hasPermission("coreprotect.lookup.username")) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                 return;
             }
             if (argAction.contains(10) && !player.hasPermission("coreprotect.lookup.sign")) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                 return;
             }
             if (argAction.contains(11) && !argAction.contains(4) && !player.hasPermission("coreprotect.lookup.item")) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                 return;
             }
-            if (argAction.contains(4) && argAction.contains(11) && !player.hasPermission("coreprotect.lookup.inventory")) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+            if (argAction.contains(4)
+                    && argAction.contains(11)
+                    && !player.hasPermission("coreprotect.lookup.inventory")) {
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
                 return;
             }
         }
-        if (argAction.contains(6) || argAction.contains(7) || argAction.contains(8) || argAction.contains(9) || argAction.contains(10)) {
+        if (argAction.contains(6)
+                || argAction.contains(7)
+                || argAction.contains(8)
+                || argAction.contains(9)
+                || argAction.contains(10)) {
             if (argAction.contains(9) && (argRadius != null || argWid > 0 || worldedit)) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INCOMPATIBLE_ACTION, "r:"));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                + Phrase.build(Phrase.INCOMPATIBLE_ACTION, "r:"));
                 return;
             }
             if (argBlocks.size() > 0) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INCOMPATIBLE_ACTION, "i:"));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                + Phrase.build(Phrase.INCOMPATIBLE_ACTION, "i:"));
                 return;
             }
             if (argExclude.size() > 0) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INCOMPATIBLE_ACTION, "e:"));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                + Phrase.build(Phrase.INCOMPATIBLE_ACTION, "e:"));
                 return;
             }
         }
 
         if (startTime <= 0 && !pageLookup && type == 4 && (argBlocks.size() > 0 || argUsers.size() > 0)) {
-            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.MISSING_LOOKUP_TIME, Selector.FIRST));
+            Chat.sendMessage(
+                    player,
+                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                            + Phrase.build(Phrase.MISSING_LOOKUP_TIME, Selector.FIRST));
             return;
         }
 
         if (argAction.contains(4) && argAction.contains(11)) { // a:inventory
             if (argUsers.size() == 0) {
-                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.MISSING_ACTION_USER));
+                Chat.sendMessage(
+                        player,
+                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                + Phrase.build(Phrase.MISSING_ACTION_USER));
                 return;
             }
 
@@ -354,31 +424,34 @@ public class LookupCommand {
                 @Override
                 public void run() {
                     try (Connection connection = Database.getConnection(true)) {
-                        ConfigHandler.lookupThrottle.put(player2.getName(), new Object[] { true, System.currentTimeMillis() });
+                        ConfigHandler.lookupThrottle.put(
+                                player2.getName(), new Object[] {true, System.currentTimeMillis()});
                         if (connection != null) {
                             Statement statement = connection.createStatement();
-                            List<String> blockData = ChestTransactionLookup.performLookup(command.getName(), statement, location, player2, p2, finalLimit, false);
+                            List<String> blockData = ChestTransactionLookup.performLookup(
+                                    command.getName(), statement, location, player2, p2, finalLimit, false);
                             for (String data : blockData) {
                                 Chat.sendComponent(player2, data);
                             }
                             statement.close();
+                        } else {
+                            Chat.sendMessage(
+                                    player2,
+                                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                            + Phrase.build(Phrase.DATABASE_BUSY));
                         }
-                        else {
-                            Chat.sendMessage(player2, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.DATABASE_BUSY));
-                        }
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    ConfigHandler.lookupThrottle.put(player2.getName(), new Object[] { false, System.currentTimeMillis() });
+                    ConfigHandler.lookupThrottle.put(
+                            player2.getName(), new Object[] {false, System.currentTimeMillis()});
                 }
             }
             Runnable runnable = new BasicThread();
             Thread thread = new Thread(runnable);
             thread.start();
-        }
-        else if (type == 2 || type == 3 || type == 7 || type == 8) {
+        } else if (type == 2 || type == 3 || type == 7 || type == 8) {
             boolean defaultRe = true;
             int page = 1;
             int re = 7;
@@ -435,7 +508,7 @@ public class LookupCommand {
             ConfigHandler.lookupCommand.put(player.getName(), bc);
 
             String world = Util.getWorldName(wid);
-            final Block fblock = Bukkit.getServer().getWorld(world).getBlockAt(x, y, z);// .getLocation();
+            final Block fblock = Bukkit.getServer().getWorld(world).getBlockAt(x, y, z); // .getLocation();
             final BlockState fblockstate = fblock.getState();
             final CommandSender player2 = player;
             final int p2 = page;
@@ -445,11 +518,18 @@ public class LookupCommand {
                 @Override
                 public void run() {
                     try (Connection connection = Database.getConnection(true)) {
-                        ConfigHandler.lookupThrottle.put(player2.getName(), new Object[] { true, System.currentTimeMillis() });
+                        ConfigHandler.lookupThrottle.put(
+                                player2.getName(), new Object[] {true, System.currentTimeMillis()});
                         if (connection != null) {
                             Statement statement = connection.createStatement();
                             if (t == 8) {
-                                List<String> signData = SignMessageLookup.performLookup(command.getName(), statement, fblockstate.getLocation(), player2, p2, finalLimit);
+                                List<String> signData = SignMessageLookup.performLookup(
+                                        command.getName(),
+                                        statement,
+                                        fblockstate.getLocation(),
+                                        player2,
+                                        p2,
+                                        finalLimit);
                                 for (String signMessage : signData) {
                                     String bypass = null;
 
@@ -463,46 +543,49 @@ public class LookupCommand {
                                         Chat.sendComponent(player2, signMessage, bypass);
                                     }
                                 }
-                            }
-                            else {
+                            } else {
                                 String blockdata = null;
                                 if (t == 7) {
-                                    blockdata = InteractionLookup.performLookup(command.getName(), statement, fblock, player2, 0, p2, finalLimit);
-                                }
-                                else {
-                                    blockdata = BlockLookup.performLookup(command.getName(), statement, fblockstate, player2, 0, p2, finalLimit);
+                                    blockdata = InteractionLookup.performLookup(
+                                            command.getName(), statement, fblock, player2, 0, p2, finalLimit);
+                                } else {
+                                    blockdata = BlockLookup.performLookup(
+                                            command.getName(), statement, fblockstate, player2, 0, p2, finalLimit);
                                 }
                                 if (blockdata.contains("\n")) {
                                     for (String b : blockdata.split("\n")) {
                                         Chat.sendComponent(player2, b);
                                     }
-                                }
-                                else if (blockdata.length() > 0) {
+                                } else if (blockdata.length() > 0) {
                                     Chat.sendComponent(player2, blockdata);
                                 }
                             }
                             statement.close();
+                        } else {
+                            Chat.sendMessage(
+                                    player2,
+                                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                            + Phrase.build(Phrase.DATABASE_BUSY));
                         }
-                        else {
-                            Chat.sendMessage(player2, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.DATABASE_BUSY));
-                        }
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    ConfigHandler.lookupThrottle.put(player2.getName(), new Object[] { false, System.currentTimeMillis() });
+                    ConfigHandler.lookupThrottle.put(
+                            player2.getName(), new Object[] {false, System.currentTimeMillis()});
                 }
             }
             Runnable runnable = new BasicThread();
             Thread thread = new Thread(runnable);
             thread.start();
-        }
-        else if (type == 4 || type == 5) {
+        } else if (type == 4 || type == 5) {
             boolean defaultRe = true;
             int pa = 1;
             int re = 4;
-            if (argAction.contains(6) || argAction.contains(7) || argAction.contains(9) || (argAction.contains(4) && argAction.contains(11))) {
+            if (argAction.contains(6)
+                    || argAction.contains(7)
+                    || argAction.contains(9)
+                    || (argAction.contains(4) && argAction.contains(11))) {
                 re = 7;
             }
             if (parseRows > 0) {
@@ -551,13 +634,23 @@ public class LookupCommand {
                 }
             }
 
-            if (g == 1 && (pageLookup || argBlocks.size() > 0 || argUsers.size() > 0 || (argUsers.size() == 0 && argRadius != null))) {
+            if (g == 1
+                    && (pageLookup
+                            || argBlocks.size() > 0
+                            || argUsers.size() > 0
+                            || (argUsers.size() == 0 && argRadius != null))) {
                 Integer MAX_RADIUS = Config.getGlobal().MAX_RADIUS;
                 if (argRadius != null) {
                     int radiusValue = argRadius[0];
                     if (radiusValue > MAX_RADIUS && MAX_RADIUS > 0) {
-                        Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.MAXIMUM_RADIUS, MAX_RADIUS.toString(), Selector.FIRST));
-                        Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.GLOBAL_LOOKUP));
+                        Chat.sendMessage(
+                                player,
+                                Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                        + Phrase.build(Phrase.MAXIMUM_RADIUS, MAX_RADIUS.toString(), Selector.FIRST));
+                        Chat.sendMessage(
+                                player,
+                                Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                        + Phrase.build(Phrase.GLOBAL_LOOKUP));
                         return;
                     }
                 }
@@ -578,7 +671,10 @@ public class LookupCommand {
 
                     if (argAction.contains(4) && argAction.contains(11)) {
                         if (ruser.startsWith("#")) {
-                            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_USERNAME, ruser));
+                            Chat.sendMessage(
+                                    player,
+                                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                            + Phrase.build(Phrase.INVALID_USERNAME, ruser));
                             return;
                         }
                     }
@@ -617,8 +713,7 @@ public class LookupCommand {
                     ts = ConfigHandler.lookupTime.get(player.getName());
                     startTime = 1;
                     endTime = 0;
-                }
-                else {
+                } else {
                     if (lo != null) {
                         x = lo.getBlockX();
                         z = lo.getBlockZ();
@@ -626,13 +721,24 @@ public class LookupCommand {
                     }
 
                     if (rollbackusers.size() == 1 && rollbackusers.contains("#global") && argAction.contains(9)) {
-                        Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.MISSING_PARAMETERS, "/co l a:username u:<user>"));
+                        Chat.sendMessage(
+                                player,
+                                Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                        + Phrase.build(Phrase.MISSING_PARAMETERS, "/co l a:username u:<user>"));
                         return;
                     }
 
                     if (rollbackusers.contains("#container")) {
-                        if (argAction.contains(6) || argAction.contains(7) || argAction.contains(8) || argAction.contains(9) || argAction.contains(10) || argAction.contains(11)) {
-                            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_USERNAME, "#container"));
+                        if (argAction.contains(6)
+                                || argAction.contains(7)
+                                || argAction.contains(8)
+                                || argAction.contains(9)
+                                || argAction.contains(10)
+                                || argAction.contains(11)) {
+                            Chat.sendMessage(
+                                    player,
+                                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                            + Phrase.build(Phrase.INVALID_USERNAME, "#container"));
                             return;
                         }
 
@@ -641,9 +747,10 @@ public class LookupCommand {
                             int lookupType = ConfigHandler.lookupType.get(player.getName());
                             if (lookupType == 1) {
                                 valid = true;
-                            }
-                            else if (lookupType == 5) {
-                                if (ConfigHandler.lookupUlist.get(player.getName()).contains("#container")) {
+                            } else if (lookupType == 5) {
+                                if (ConfigHandler.lookupUlist
+                                        .get(player.getName())
+                                        .contains("#container")) {
                                     valid = true;
                                 }
                             }
@@ -651,7 +758,10 @@ public class LookupCommand {
 
                         if (valid) {
                             if (!player.hasPermission("coreprotect.lookup.container") && !allPermission) {
-                                Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_PERMISSION));
+                                Chat.sendMessage(
+                                        player,
+                                        Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                                + Phrase.build(Phrase.NO_PERMISSION));
                                 return;
                             }
                             String lcommand = ConfigHandler.lookupCommand.get(player.getName());
@@ -663,9 +773,11 @@ public class LookupCommand {
                             argAction.add(5);
                             argRadius = null;
                             argWid = 0;
-                        }
-                        else {
-                            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.INVALID_CONTAINER));
+                        } else {
+                            Chat.sendMessage(
+                                    player,
+                                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                            + Phrase.build(Phrase.INVALID_CONTAINER));
                             return;
                         }
                     }
@@ -676,14 +788,12 @@ public class LookupCommand {
                 if (timeStart == -1) {
                     if (startTime <= 0) {
                         timeStart = 0;
-                    }
-                    else {
+                    } else {
                         timeStart = unixtimestamp - startTime;
                     }
                     if (endTime <= 0) {
                         timeEnd = 0;
-                    }
-                    else {
+                    } else {
                         timeEnd = unixtimestamp - endTime;
                     }
                 }
@@ -693,7 +803,10 @@ public class LookupCommand {
                 final Integer[] radius = argRadius;
 
                 try {
-                    Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Color.ITALIC + Phrase.build(Phrase.LOOKUP_SEARCHING));
+                    Chat.sendMessage(
+                            player,
+                            Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Color.ITALIC
+                                    + Phrase.build(Phrase.LOOKUP_SEARCHING));
                     final CommandSender player2 = player;
                     final int finalX = x;
                     final int finalY = y;
@@ -719,12 +832,15 @@ public class LookupCommand {
                         @Override
                         public void run() {
                             try (Connection connection = Database.getConnection(true)) {
-                                ConfigHandler.lookupThrottle.put(player2.getName(), new Object[] { true, System.currentTimeMillis() });
+                                ConfigHandler.lookupThrottle.put(
+                                        player2.getName(), new Object[] {true, System.currentTimeMillis()});
 
                                 List<String> uuidList = new ArrayList<>();
                                 Location location = finalLocation;
                                 boolean exists = false;
-                                String bc = finalX + "." + finalY + "." + finalZ + "." + finalWid + "." + finalTimeStart + "." + finalTimeEnd + "." + noisy + "." + excluded + "." + restricted + "." + finalArgWid + "." + displayResults;
+                                String bc = finalX + "." + finalY + "." + finalZ + "." + finalWid + "." + finalTimeStart
+                                        + "." + finalTimeEnd + "." + noisy + "." + excluded + "." + restricted + "."
+                                        + finalArgWid + "." + displayResults;
                                 ConfigHandler.lookupCommand.put(player2.getName(), bc);
                                 ConfigHandler.lookupPage.put(player2.getName(), page);
                                 ConfigHandler.lookupTime.put(player2.getName(), rtime);
@@ -740,20 +856,21 @@ public class LookupCommand {
                                     Statement statement = connection.createStatement();
                                     String baduser = "";
                                     for (String check : rollbackusers2) {
-                                        if ((!check.equals("#global") && !check.equals("#container")) || finalArgAction.contains(9)) {
+                                        if ((!check.equals("#global") && !check.equals("#container"))
+                                                || finalArgAction.contains(9)) {
                                             exists = PlayerLookup.playerExists(connection, check);
                                             if (!exists) {
                                                 baduser = check;
                                                 break;
-                                            }
-                                            else if (finalArgAction.contains(9)) {
-                                                if (ConfigHandler.uuidCache.get(check.toLowerCase(Locale.ROOT)) != null) {
-                                                    String uuid = ConfigHandler.uuidCache.get(check.toLowerCase(Locale.ROOT));
+                                            } else if (finalArgAction.contains(9)) {
+                                                if (ConfigHandler.uuidCache.get(check.toLowerCase(Locale.ROOT))
+                                                        != null) {
+                                                    String uuid =
+                                                            ConfigHandler.uuidCache.get(check.toLowerCase(Locale.ROOT));
                                                     uuidList.add(uuid);
                                                 }
                                             }
-                                        }
-                                        else {
+                                        } else {
                                             exists = true;
                                         }
                                     }
@@ -765,8 +882,7 @@ public class LookupCommand {
                                                     baduser = check;
                                                     break;
                                                 }
-                                            }
-                                            else if (check.equals("#global")) {
+                                            } else if (check.equals("#global")) {
                                                 baduser = "#global";
                                                 exists = false;
                                             }
@@ -789,13 +905,20 @@ public class LookupCommand {
                                         }
                                         if (finalArgWid > 0) {
                                             restrict_world = true;
-                                            location = new Location(Bukkit.getServer().getWorld(Util.getWorldName(finalArgWid)), finalX, finalY, finalZ);
-                                        }
-                                        else if (location != null) {
-                                            location = new Location(Bukkit.getServer().getWorld(Util.getWorldName(finalWid)), finalX, finalY, finalZ);
+                                            location = new Location(
+                                                    Bukkit.getServer().getWorld(Util.getWorldName(finalArgWid)),
+                                                    finalX,
+                                                    finalY,
+                                                    finalZ);
+                                        } else if (location != null) {
+                                            location = new Location(
+                                                    Bukkit.getServer().getWorld(Util.getWorldName(finalWid)),
+                                                    finalX,
+                                                    finalY,
+                                                    finalZ);
                                         }
 
-                                        Long[] rowData = new Long[] { 0L, 0L, 0L, 0L };
+                                        Long[] rowData = new Long[] {0L, 0L, 0L, 0L};
                                         long rowMax = (long) page * displayResults;
                                         long pageStart = rowMax - displayResults;
                                         long rows = 0L;
@@ -811,35 +934,96 @@ public class LookupCommand {
                                         }
 
                                         if (checkRows) {
-                                            rows = Lookup.countLookupRows(statement, player2, uuidList, userList, blist, elist, euserlist, finalArgAction, location, radius, rowData, finalTimeStart, finalTimeEnd, restrict_world, true);
+                                            rows = Lookup.countLookupRows(
+                                                    statement,
+                                                    player2,
+                                                    uuidList,
+                                                    userList,
+                                                    blist,
+                                                    elist,
+                                                    euserlist,
+                                                    finalArgAction,
+                                                    location,
+                                                    radius,
+                                                    rowData,
+                                                    finalTimeStart,
+                                                    finalTimeEnd,
+                                                    restrict_world,
+                                                    true);
                                             rowData[3] = rows;
                                             ConfigHandler.lookupRows.put(player2.getName(), rowData);
                                         }
                                         if (finalCount) {
-                                            String row_format = NumberFormat.getInstance().format(rows);
-                                            Chat.sendMessage(player2, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.LOOKUP_ROWS_FOUND, row_format, (rows == 1 ? Selector.FIRST : Selector.SECOND)));
-                                        }
-                                        else if (pageStart < rows) {
-                                            List<String[]> lookupList = Lookup.performPartialLookup(statement, player2, uuidList, userList, blist, elist, euserlist, finalArgAction, location, radius, rowData, finalTimeStart, finalTimeEnd, (int) pageStart, displayResults, restrict_world, true);
+                                            String row_format =
+                                                    NumberFormat.getInstance().format(rows);
+                                            Chat.sendMessage(
+                                                    player2,
+                                                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                                            + Phrase.build(
+                                                                    Phrase.LOOKUP_ROWS_FOUND,
+                                                                    row_format,
+                                                                    (rows == 1 ? Selector.FIRST : Selector.SECOND)));
+                                        } else if (pageStart < rows) {
+                                            List<String[]> lookupList = Lookup.performPartialLookup(
+                                                    statement,
+                                                    player2,
+                                                    uuidList,
+                                                    userList,
+                                                    blist,
+                                                    elist,
+                                                    euserlist,
+                                                    finalArgAction,
+                                                    location,
+                                                    radius,
+                                                    rowData,
+                                                    finalTimeStart,
+                                                    finalTimeEnd,
+                                                    (int) pageStart,
+                                                    displayResults,
+                                                    restrict_world,
+                                                    true);
 
-                                            Chat.sendMessage(player2, Color.WHITE + "----- " + Color.DARK_AQUA + Phrase.build(Phrase.LOOKUP_HEADER, "CoreProtect" + Color.WHITE + " | " + Color.DARK_AQUA) + Color.WHITE + " -----");
-                                            if (finalArgAction.contains(6) || finalArgAction.contains(7)) { // Chat/command
+                                            Chat.sendMessage(
+                                                    player2,
+                                                    Color.WHITE + "----- " + Color.DARK_AQUA
+                                                            + Phrase.build(
+                                                                    Phrase.LOOKUP_HEADER,
+                                                                    "CoreProtect" + Color.WHITE + " | "
+                                                                            + Color.DARK_AQUA)
+                                                            + Color.WHITE + " -----");
+                                            if (finalArgAction.contains(6)
+                                                    || finalArgAction.contains(7)) { // Chat/command
                                                 for (String[] data : lookupList) {
                                                     String time = data[0];
                                                     String dplayer = data[1];
                                                     String message = data[2];
-                                                    String timeago = Util.getTimeSince(Integer.parseInt(time), unixtimestamp, true);
-                                                    Chat.sendComponent(player2, timeago + " " + Color.WHITE + "- " + Color.DARK_AQUA + dplayer + ": " + Color.WHITE, message);
-                                                    if (PluginChannelHandshakeListener.getInstance().isPluginChannelPlayer(player2)) {
+                                                    String timeago = Util.getTimeSince(
+                                                            Integer.parseInt(time), unixtimestamp, true);
+                                                    Chat.sendComponent(
+                                                            player2,
+                                                            timeago + " " + Color.WHITE + "- " + Color.DARK_AQUA
+                                                                    + dplayer + ": " + Color.WHITE,
+                                                            message);
+                                                    if (PluginChannelHandshakeListener.getInstance()
+                                                            .isPluginChannelPlayer(player2)) {
                                                         int wid = Integer.parseInt(data[3]);
                                                         int x = Integer.parseInt(data[4]);
                                                         int y = Integer.parseInt(data[5]);
                                                         int z = Integer.parseInt(data[6]);
-                                                        PluginChannelListener.getInstance().sendMessageData(player2, Integer.parseInt(time), dplayer, message, false, x, y, z, wid);
+                                                        PluginChannelListener.getInstance()
+                                                                .sendMessageData(
+                                                                        player2,
+                                                                        Integer.parseInt(time),
+                                                                        dplayer,
+                                                                        message,
+                                                                        false,
+                                                                        x,
+                                                                        y,
+                                                                        z,
+                                                                        wid);
                                                     }
                                                 }
-                                            }
-                                            else if (finalArgAction.contains(8)) { // login/logouts
+                                            } else if (finalArgAction.contains(8)) { // login/logouts
                                                 for (String[] data : lookupList) {
                                                     String time = data[0];
                                                     String dplayer = data[1];
@@ -848,33 +1032,73 @@ public class LookupCommand {
                                                     int y = Integer.parseInt(data[4]);
                                                     int z = Integer.parseInt(data[5]);
                                                     int action = Integer.parseInt(data[6]);
-                                                    String timeago = Util.getTimeSince(Integer.parseInt(time), unixtimestamp, true);
-                                                    int timeLength = 50 + (Util.getTimeSince(Integer.parseInt(time), unixtimestamp, false).replaceAll("[^0-9]", "").length() * 6);
+                                                    String timeago = Util.getTimeSince(
+                                                            Integer.parseInt(time), unixtimestamp, true);
+                                                    int timeLength = 50
+                                                            + (Util.getTimeSince(
+                                                                                    Integer.parseInt(time),
+                                                                                    unixtimestamp,
+                                                                                    false)
+                                                                            .replaceAll("[^0-9]", "")
+                                                                            .length()
+                                                                    * 6);
                                                     String leftPadding = Color.BOLD + Strings.padStart("", 10, ' ');
                                                     if (timeLength % 4 == 0) {
                                                         leftPadding = Strings.padStart("", timeLength / 4, ' ');
-                                                    }
-                                                    else {
-                                                        leftPadding = leftPadding + Color.WHITE + Strings.padStart("", (timeLength - 50) / 4, ' ');
+                                                    } else {
+                                                        leftPadding = leftPadding
+                                                                + Color.WHITE
+                                                                + Strings.padStart("", (timeLength - 50) / 4, ' ');
                                                     }
 
                                                     String tag = (action != 0 ? Color.GREEN + "+" : Color.RED + "-");
-                                                    Chat.sendComponent(player2, timeago + " " + tag + " " + Color.DARK_AQUA + Phrase.build(Phrase.LOOKUP_LOGIN, Color.DARK_AQUA + dplayer + Color.WHITE, (action != 0 ? Selector.FIRST : Selector.SECOND)));
-                                                    Chat.sendComponent(player2, Color.WHITE + leftPadding + Color.GREY + "^ " + Util.getCoordinates(command.getName(), wid, x, y, z, true, true) + "");
-                                                    PluginChannelListener.getInstance().sendInfoData(player2, Integer.parseInt(time), Phrase.LOOKUP_LOGIN, (action != 0 ? Selector.FIRST : Selector.SECOND), dplayer, -1, x, y, z, wid);
+                                                    Chat.sendComponent(
+                                                            player2,
+                                                            timeago + " " + tag + " " + Color.DARK_AQUA
+                                                                    + Phrase.build(
+                                                                            Phrase.LOOKUP_LOGIN,
+                                                                            Color.DARK_AQUA + dplayer + Color.WHITE,
+                                                                            (action != 0
+                                                                                    ? Selector.FIRST
+                                                                                    : Selector.SECOND)));
+                                                    Chat.sendComponent(
+                                                            player2,
+                                                            Color.WHITE + leftPadding + Color.GREY + "^ "
+                                                                    + Util.getCoordinates(
+                                                                            command.getName(), wid, x, y, z, true, true)
+                                                                    + "");
+                                                    PluginChannelListener.getInstance()
+                                                            .sendInfoData(
+                                                                    player2,
+                                                                    Integer.parseInt(time),
+                                                                    Phrase.LOOKUP_LOGIN,
+                                                                    (action != 0 ? Selector.FIRST : Selector.SECOND),
+                                                                    dplayer,
+                                                                    -1,
+                                                                    x,
+                                                                    y,
+                                                                    z,
+                                                                    wid);
                                                 }
-                                            }
-                                            else if (finalArgAction.contains(9)) { // username-changes
+                                            } else if (finalArgAction.contains(9)) { // username-changes
                                                 for (String[] data : lookupList) {
                                                     String time = data[0];
                                                     String user = ConfigHandler.uuidCacheReversed.get(data[1]);
                                                     String username = data[2];
-                                                    String timeago = Util.getTimeSince(Integer.parseInt(time), unixtimestamp, true);
-                                                    Chat.sendComponent(player2, timeago + " " + Color.WHITE + "- " + Phrase.build(Phrase.LOOKUP_USERNAME, Color.DARK_AQUA + user + Color.WHITE, Color.DARK_AQUA + username + Color.WHITE));
-                                                    PluginChannelListener.getInstance().sendUsernameData(player2, Integer.parseInt(time), user, username);
+                                                    String timeago = Util.getTimeSince(
+                                                            Integer.parseInt(time), unixtimestamp, true);
+                                                    Chat.sendComponent(
+                                                            player2,
+                                                            timeago + " " + Color.WHITE + "- "
+                                                                    + Phrase.build(
+                                                                            Phrase.LOOKUP_USERNAME,
+                                                                            Color.DARK_AQUA + user + Color.WHITE,
+                                                                            Color.DARK_AQUA + username + Color.WHITE));
+                                                    PluginChannelListener.getInstance()
+                                                            .sendUsernameData(
+                                                                    player2, Integer.parseInt(time), user, username);
                                                 }
-                                            }
-                                            else if (finalArgAction.contains(10)) { // sign messages
+                                            } else if (finalArgAction.contains(10)) { // sign messages
                                                 for (String[] data : lookupList) {
                                                     String time = data[0];
                                                     String dplayer = data[1];
@@ -883,22 +1107,50 @@ public class LookupCommand {
                                                     int y = Integer.parseInt(data[4]);
                                                     int z = Integer.parseInt(data[5]);
                                                     String message = data[6];
-                                                    String timeago = Util.getTimeSince(Integer.parseInt(time), unixtimestamp, true);
-                                                    int timeLength = 50 + (Util.getTimeSince(Integer.parseInt(time), unixtimestamp, false).replaceAll("[^0-9]", "").length() * 6);
+                                                    String timeago = Util.getTimeSince(
+                                                            Integer.parseInt(time), unixtimestamp, true);
+                                                    int timeLength = 50
+                                                            + (Util.getTimeSince(
+                                                                                    Integer.parseInt(time),
+                                                                                    unixtimestamp,
+                                                                                    false)
+                                                                            .replaceAll("[^0-9]", "")
+                                                                            .length()
+                                                                    * 6);
                                                     String leftPadding = Color.BOLD + Strings.padStart("", 10, ' ');
                                                     if (timeLength % 4 == 0) {
                                                         leftPadding = Strings.padStart("", timeLength / 4, ' ');
-                                                    }
-                                                    else {
-                                                        leftPadding = leftPadding + Color.WHITE + Strings.padStart("", (timeLength - 50) / 4, ' ');
+                                                    } else {
+                                                        leftPadding = leftPadding
+                                                                + Color.WHITE
+                                                                + Strings.padStart("", (timeLength - 50) / 4, ' ');
                                                     }
 
-                                                    Chat.sendComponent(player2, timeago + " " + Color.WHITE + "- " + Color.DARK_AQUA + dplayer + ": " + Color.WHITE, message);
-                                                    Chat.sendComponent(player2, Color.WHITE + leftPadding + Color.GREY + "^ " + Util.getCoordinates(command.getName(), wid, x, y, z, true, true) + "");
-                                                    PluginChannelListener.getInstance().sendMessageData(player2, Integer.parseInt(time), dplayer, message, true, x, y, z, wid);
+                                                    Chat.sendComponent(
+                                                            player2,
+                                                            timeago + " " + Color.WHITE + "- " + Color.DARK_AQUA
+                                                                    + dplayer + ": " + Color.WHITE,
+                                                            message);
+                                                    Chat.sendComponent(
+                                                            player2,
+                                                            Color.WHITE + leftPadding + Color.GREY + "^ "
+                                                                    + Util.getCoordinates(
+                                                                            command.getName(), wid, x, y, z, true, true)
+                                                                    + "");
+                                                    PluginChannelListener.getInstance()
+                                                            .sendMessageData(
+                                                                    player2,
+                                                                    Integer.parseInt(time),
+                                                                    dplayer,
+                                                                    message,
+                                                                    true,
+                                                                    x,
+                                                                    y,
+                                                                    z,
+                                                                    wid);
                                                 }
-                                            }
-                                            else if (finalArgAction.contains(4) && finalArgAction.contains(11)) { // inventory transactions
+                                            } else if (finalArgAction.contains(4)
+                                                    && finalArgAction.contains(11)) { // inventory transactions
                                                 for (String[] data : lookupList) {
                                                     String time = data[0];
                                                     String dplayer = data[1];
@@ -910,11 +1162,19 @@ public class LookupCommand {
                                                     int x = Integer.parseInt(data[2]);
                                                     int y = Integer.parseInt(data[3]);
                                                     int z = Integer.parseInt(data[4]);
-                                                    String rbd = ((Integer.parseInt(data[8]) == 2 || Integer.parseInt(data[8]) == 3) ? Color.STRIKETHROUGH : "");
-                                                    String timeago = Util.getTimeSince(Integer.parseInt(time), unixtimestamp, true);
-                                                    Material blockType = Util.itemFilter(Util.getType(dtype), (Integer.parseInt(data[13]) == 0));
-                                                    String dname = Util.nameFilter(blockType.name().toLowerCase(Locale.ROOT), ddata);
-                                                    byte[] metadata = data[11] == null ? null : data[11].getBytes(StandardCharsets.ISO_8859_1);
+                                                    String rbd = ((Integer.parseInt(data[8]) == 2
+                                                                    || Integer.parseInt(data[8]) == 3)
+                                                            ? Color.STRIKETHROUGH
+                                                            : "");
+                                                    String timeago = Util.getTimeSince(
+                                                            Integer.parseInt(time), unixtimestamp, true);
+                                                    Material blockType = Util.itemFilter(
+                                                            Util.getType(dtype), (Integer.parseInt(data[13]) == 0));
+                                                    String dname = Util.nameFilter(
+                                                            blockType.name().toLowerCase(Locale.ROOT), ddata);
+                                                    byte[] metadata = data[11] == null
+                                                            ? null
+                                                            : data[11].getBytes(StandardCharsets.ISO_8859_1);
                                                     String tooltip = Util.getEnchantments(metadata, dtype, amount);
 
                                                     String selector = Selector.FIRST;
@@ -922,33 +1182,70 @@ public class LookupCommand {
                                                     if (daction == 2 || daction == 3) { // LOOKUP_ITEM
                                                         selector = (daction != 2 ? Selector.FIRST : Selector.SECOND);
                                                         tag = (daction != 2 ? Color.GREEN + "+" : Color.RED + "-");
-                                                    }
-                                                    else if (daction == 4 || daction == 5) { // LOOKUP_STORAGE
+                                                    } else if (daction == 4 || daction == 5) { // LOOKUP_STORAGE
                                                         selector = (daction == 4 ? Selector.FIRST : Selector.SECOND);
                                                         tag = (daction == 4 ? Color.GREEN + "+" : Color.RED + "-");
-                                                    }
-                                                    else if (daction == 6 || daction == 7) { // LOOKUP_PROJECTILE
+                                                    } else if (daction == 6 || daction == 7) { // LOOKUP_PROJECTILE
                                                         selector = Selector.SECOND;
                                                         tag = Color.RED + "-";
-                                                    }
-                                                    else if (daction == ItemLogger.ITEM_BREAK || daction == ItemLogger.ITEM_DESTROY || daction == ItemLogger.ITEM_CREATE) {
-                                                        selector = (daction == ItemLogger.ITEM_CREATE ? Selector.FIRST : Selector.SECOND);
-                                                        tag = (daction == ItemLogger.ITEM_CREATE ? Color.GREEN + "+" : Color.RED + "-");
-                                                    }
-                                                    else if (daction == ItemLogger.ITEM_SELL || daction == ItemLogger.ITEM_BUY) { // LOOKUP_TRADE
-                                                        selector = (daction == ItemLogger.ITEM_BUY ? Selector.FIRST : Selector.SECOND);
-                                                        tag = (daction == ItemLogger.ITEM_BUY ? Color.GREEN + "+" : Color.RED + "-");
-                                                    }
-                                                    else { // LOOKUP_CONTAINER
+                                                    } else if (daction == ItemLogger.ITEM_BREAK
+                                                            || daction == ItemLogger.ITEM_DESTROY
+                                                            || daction == ItemLogger.ITEM_CREATE) {
+                                                        selector = (daction == ItemLogger.ITEM_CREATE
+                                                                ? Selector.FIRST
+                                                                : Selector.SECOND);
+                                                        tag = (daction == ItemLogger.ITEM_CREATE
+                                                                ? Color.GREEN + "+"
+                                                                : Color.RED + "-");
+                                                    } else if (daction == ItemLogger.ITEM_SELL
+                                                            || daction == ItemLogger.ITEM_BUY) { // LOOKUP_TRADE
+                                                        selector = (daction == ItemLogger.ITEM_BUY
+                                                                ? Selector.FIRST
+                                                                : Selector.SECOND);
+                                                        tag = (daction == ItemLogger.ITEM_BUY
+                                                                ? Color.GREEN + "+"
+                                                                : Color.RED + "-");
+                                                    } else { // LOOKUP_CONTAINER
                                                         selector = (daction == 0 ? Selector.FIRST : Selector.SECOND);
                                                         tag = (daction == 0 ? Color.GREEN + "+" : Color.RED + "-");
                                                     }
 
-                                                    Chat.sendComponent(player2, timeago + " " + tag + " " + Phrase.build(Phrase.LOOKUP_CONTAINER, Color.DARK_AQUA + rbd + dplayer + Color.WHITE + rbd, "x" + amount, Util.createTooltip(Color.DARK_AQUA + rbd + dname, tooltip) + Color.WHITE, selector));
-                                                    PluginChannelListener.getInstance().sendData(player2, Integer.parseInt(time), Phrase.LOOKUP_CONTAINER, selector, dplayer, dname, amount, x, y, z, wid, rbd, true, tag.contains("+"));
+                                                    Chat.sendComponent(
+                                                            player2,
+                                                            timeago + " " + tag + " "
+                                                                    + Phrase.build(
+                                                                            Phrase.LOOKUP_CONTAINER,
+                                                                            Color.DARK_AQUA
+                                                                                    + rbd
+                                                                                    + dplayer
+                                                                                    + Color.WHITE
+                                                                                    + rbd,
+                                                                            "x" + amount,
+                                                                            Util.createTooltip(
+                                                                                            Color.DARK_AQUA
+                                                                                                    + rbd
+                                                                                                    + dname,
+                                                                                            tooltip)
+                                                                                    + Color.WHITE,
+                                                                            selector));
+                                                    PluginChannelListener.getInstance()
+                                                            .sendData(
+                                                                    player2,
+                                                                    Integer.parseInt(time),
+                                                                    Phrase.LOOKUP_CONTAINER,
+                                                                    selector,
+                                                                    dplayer,
+                                                                    dname,
+                                                                    amount,
+                                                                    x,
+                                                                    y,
+                                                                    z,
+                                                                    wid,
+                                                                    rbd,
+                                                                    true,
+                                                                    tag.contains("+"));
                                                 }
-                                            }
-                                            else {
+                                            } else {
                                                 for (String[] data : lookupList) {
                                                     int drb = Integer.parseInt(data[8]);
                                                     String rbd = "";
@@ -968,32 +1265,43 @@ public class LookupCommand {
                                                     int amount = Integer.parseInt(data[10]);
                                                     String tag = Color.WHITE + "-";
 
-                                                    String timeago = Util.getTimeSince(Integer.parseInt(time), unixtimestamp, true);
-                                                    int timeLength = 50 + (Util.getTimeSince(Integer.parseInt(time), unixtimestamp, false).replaceAll("[^0-9]", "").length() * 6);
+                                                    String timeago = Util.getTimeSince(
+                                                            Integer.parseInt(time), unixtimestamp, true);
+                                                    int timeLength = 50
+                                                            + (Util.getTimeSince(
+                                                                                    Integer.parseInt(time),
+                                                                                    unixtimestamp,
+                                                                                    false)
+                                                                            .replaceAll("[^0-9]", "")
+                                                                            .length()
+                                                                    * 6);
                                                     String leftPadding = Color.BOLD + Strings.padStart("", 10, ' ');
                                                     if (timeLength % 4 == 0) {
                                                         leftPadding = Strings.padStart("", timeLength / 4, ' ');
-                                                    }
-                                                    else {
-                                                        leftPadding = leftPadding + Color.WHITE + Strings.padStart("", (timeLength - 50) / 4, ' ');
+                                                    } else {
+                                                        leftPadding = leftPadding
+                                                                + Color.WHITE
+                                                                + Strings.padStart("", (timeLength - 50) / 4, ' ');
                                                     }
 
                                                     String dname = "";
                                                     boolean isPlayer = false;
                                                     if (daction == 3 && !finalArgAction.contains(11) && amount == -1) {
                                                         if (dtype == 0) {
-                                                            if (ConfigHandler.playerIdCacheReversed.get(ddata) == null) {
+                                                            if (ConfigHandler.playerIdCacheReversed.get(ddata)
+                                                                    == null) {
                                                                 UserStatement.loadName(connection, ddata);
                                                             }
                                                             dname = ConfigHandler.playerIdCacheReversed.get(ddata);
                                                             isPlayer = true;
+                                                        } else {
+                                                            dname = Util.getEntityType(dtype)
+                                                                    .name();
                                                         }
-                                                        else {
-                                                            dname = Util.getEntityType(dtype).name();
-                                                        }
-                                                    }
-                                                    else {
-                                                        dname = Util.getType(dtype).name().toLowerCase(Locale.ROOT);
+                                                    } else {
+                                                        dname = Util.getType(dtype)
+                                                                .name()
+                                                                .toLowerCase(Locale.ROOT);
                                                         dname = Util.nameFilter(dname, ddata);
                                                     }
                                                     if (dname.length() > 0 && !isPlayer) {
@@ -1006,120 +1314,217 @@ public class LookupCommand {
                                                         dname = blockNameSplit[1];
                                                     }
 
-                                                    // Functions.sendMessage(player2, timeago+" " + ChatColors.WHITE + "- " + ChatColors.DARK_AQUA+rbd+""+dplayer+" " + ChatColors.WHITE+rbd+""+a+" " + ChatColors.DARK_AQUA+rbd+"#"+dtype+ChatColors.WHITE + ". " + ChatColors.GREY + "(x"+x+"/y"+y+"/z"+z+")");
+                                                    // Functions.sendMessage(player2, timeago+" " + ChatColors.WHITE +
+                                                    // "- " + ChatColors.DARK_AQUA+rbd+""+dplayer+" " +
+                                                    // ChatColors.WHITE+rbd+""+a+" " +
+                                                    // ChatColors.DARK_AQUA+rbd+"#"+dtype+ChatColors.WHITE + ". " +
+                                                    // ChatColors.GREY + "(x"+x+"/y"+y+"/z"+z+")");
 
                                                     Phrase phrase = Phrase.LOOKUP_BLOCK;
                                                     String selector = Selector.FIRST;
                                                     String action = "a:block";
-                                                    if (finalArgAction.contains(4) || finalArgAction.contains(5) || finalArgAction.contains(11) || amount > -1) {
-                                                        byte[] metadata = data[11] == null ? null : data[11].getBytes(StandardCharsets.ISO_8859_1);
+                                                    if (finalArgAction.contains(4)
+                                                            || finalArgAction.contains(5)
+                                                            || finalArgAction.contains(11)
+                                                            || amount > -1) {
+                                                        byte[] metadata = data[11] == null
+                                                                ? null
+                                                                : data[11].getBytes(StandardCharsets.ISO_8859_1);
                                                         String tooltip = Util.getEnchantments(metadata, dtype, amount);
 
                                                         if (daction == 2 || daction == 3) {
                                                             phrase = Phrase.LOOKUP_ITEM; // {picked up|dropped}
-                                                            selector = (daction != 2 ? Selector.FIRST : Selector.SECOND);
+                                                            selector =
+                                                                    (daction != 2 ? Selector.FIRST : Selector.SECOND);
                                                             tag = (daction != 2 ? Color.GREEN + "+" : Color.RED + "-");
                                                             action = "a:item";
-                                                        }
-                                                        else if (daction == 4 || daction == 5) {
+                                                        } else if (daction == 4 || daction == 5) {
                                                             phrase = Phrase.LOOKUP_STORAGE; // {deposited|withdrew}
-                                                            selector = (daction != 4 ? Selector.FIRST : Selector.SECOND);
+                                                            selector =
+                                                                    (daction != 4 ? Selector.FIRST : Selector.SECOND);
                                                             tag = (daction != 4 ? Color.RED + "-" : Color.GREEN + "+");
                                                             action = "a:item";
-                                                        }
-                                                        else if (daction == 6 || daction == 7) {
+                                                        } else if (daction == 6 || daction == 7) {
                                                             phrase = Phrase.LOOKUP_PROJECTILE; // {threw|shot}
-                                                            selector = (daction != 7 ? Selector.FIRST : Selector.SECOND);
+                                                            selector =
+                                                                    (daction != 7 ? Selector.FIRST : Selector.SECOND);
                                                             tag = Color.RED + "-";
                                                             action = "a:item";
-                                                        }
-                                                        else {
+                                                        } else {
                                                             phrase = Phrase.LOOKUP_CONTAINER; // {added|removed}
-                                                            selector = (daction != 0 ? Selector.FIRST : Selector.SECOND);
+                                                            selector =
+                                                                    (daction != 0 ? Selector.FIRST : Selector.SECOND);
                                                             tag = (daction != 0 ? Color.GREEN + "+" : Color.RED + "-");
                                                             action = "a:container";
                                                         }
 
-                                                        Chat.sendComponent(player2, timeago + " " + tag + " " + Phrase.build(phrase, Color.DARK_AQUA + rbd + dplayer + Color.WHITE + rbd, "x" + amount, Util.createTooltip(Color.DARK_AQUA + rbd + dname, tooltip) + Color.WHITE, selector));
-                                                        PluginChannelListener.getInstance().sendData(player2, Integer.parseInt(time), phrase, selector, dplayer, dname, (tag.contains("+") ? 1 : -1), x, y, z, wid, rbd, action.contains("container"), tag.contains("+"));
-                                                    }
-                                                    else {
+                                                        Chat.sendComponent(
+                                                                player2,
+                                                                timeago + " " + tag + " "
+                                                                        + Phrase.build(
+                                                                                phrase,
+                                                                                Color.DARK_AQUA
+                                                                                        + rbd
+                                                                                        + dplayer
+                                                                                        + Color.WHITE
+                                                                                        + rbd,
+                                                                                "x" + amount,
+                                                                                Util.createTooltip(
+                                                                                                Color.DARK_AQUA
+                                                                                                        + rbd
+                                                                                                        + dname,
+                                                                                                tooltip)
+                                                                                        + Color.WHITE,
+                                                                                selector));
+                                                        PluginChannelListener.getInstance()
+                                                                .sendData(
+                                                                        player2,
+                                                                        Integer.parseInt(time),
+                                                                        phrase,
+                                                                        selector,
+                                                                        dplayer,
+                                                                        dname,
+                                                                        (tag.contains("+") ? 1 : -1),
+                                                                        x,
+                                                                        y,
+                                                                        z,
+                                                                        wid,
+                                                                        rbd,
+                                                                        action.contains("container"),
+                                                                        tag.contains("+"));
+                                                    } else {
                                                         if (daction == 2 || daction == 3) {
                                                             phrase = Phrase.LOOKUP_INTERACTION; // {clicked|killed}
-                                                            selector = (daction != 3 ? Selector.FIRST : Selector.SECOND);
+                                                            selector =
+                                                                    (daction != 3 ? Selector.FIRST : Selector.SECOND);
                                                             tag = (daction != 3 ? Color.WHITE + "-" : Color.RED + "-");
                                                             action = (daction == 2 ? "a:click" : "a:kill");
-                                                        }
-                                                        else {
+                                                        } else {
                                                             phrase = Phrase.LOOKUP_BLOCK; // {placed|broke}
-                                                            selector = (daction != 0 ? Selector.FIRST : Selector.SECOND);
+                                                            selector =
+                                                                    (daction != 0 ? Selector.FIRST : Selector.SECOND);
                                                             tag = (daction != 0 ? Color.GREEN + "+" : Color.RED + "-");
                                                         }
 
-                                                        Chat.sendComponent(player2, timeago + " " + tag + " " + Phrase.build(phrase, Color.DARK_AQUA + rbd + dplayer + Color.WHITE + rbd, Color.DARK_AQUA + rbd + dname + Color.WHITE, selector));
-                                                        PluginChannelListener.getInstance().sendData(player2, Integer.parseInt(time), phrase, selector, dplayer, dname, (tag.contains("+") ? 1 : -1), x, y, z, wid, rbd, false, tag.contains("+"));
+                                                        Chat.sendComponent(
+                                                                player2,
+                                                                timeago + " " + tag + " "
+                                                                        + Phrase.build(
+                                                                                phrase,
+                                                                                Color.DARK_AQUA
+                                                                                        + rbd
+                                                                                        + dplayer
+                                                                                        + Color.WHITE
+                                                                                        + rbd,
+                                                                                Color.DARK_AQUA
+                                                                                        + rbd
+                                                                                        + dname
+                                                                                        + Color.WHITE,
+                                                                                selector));
+                                                        PluginChannelListener.getInstance()
+                                                                .sendData(
+                                                                        player2,
+                                                                        Integer.parseInt(time),
+                                                                        phrase,
+                                                                        selector,
+                                                                        dplayer,
+                                                                        dname,
+                                                                        (tag.contains("+") ? 1 : -1),
+                                                                        x,
+                                                                        y,
+                                                                        z,
+                                                                        wid,
+                                                                        rbd,
+                                                                        false,
+                                                                        tag.contains("+"));
                                                     }
 
                                                     action = (finalArgAction.size() == 0 ? " (" + action + ")" : "");
-                                                    Chat.sendComponent(player2, Color.WHITE + leftPadding + Color.GREY + "^ " + Util.getCoordinates(command.getName(), wid, x, y, z, true, true) + Color.GREY + Color.ITALIC + action);
+                                                    Chat.sendComponent(
+                                                            player2,
+                                                            Color.WHITE + leftPadding + Color.GREY + "^ "
+                                                                    + Util.getCoordinates(
+                                                                            command.getName(), wid, x, y, z, true, true)
+                                                                    + Color.GREY + Color.ITALIC + action);
                                                 }
                                             }
                                             if (rows > displayResults) {
                                                 int total_pages = (int) Math.ceil(rows / (displayResults + 0.0));
-                                                if (finalArgAction.contains(6) || finalArgAction.contains(7) || finalArgAction.contains(9) || (finalArgAction.contains(4) && finalArgAction.contains(11))) {
+                                                if (finalArgAction.contains(6)
+                                                        || finalArgAction.contains(7)
+                                                        || finalArgAction.contains(9)
+                                                        || (finalArgAction.contains(4)
+                                                                && finalArgAction.contains(11))) {
                                                     Chat.sendMessage(player2, "-----");
                                                 }
-                                                Chat.sendComponent(player2, Util.getPageNavigation(command.getName(), page, total_pages));
+                                                Chat.sendComponent(
+                                                        player2,
+                                                        Util.getPageNavigation(command.getName(), page, total_pages));
                                             }
+                                        } else if (rows > 0) {
+                                            Chat.sendMessage(
+                                                    player2,
+                                                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                                            + Phrase.build(Phrase.NO_RESULTS_PAGE, Selector.FIRST));
+                                        } else {
+                                            Chat.sendMessage(
+                                                    player2,
+                                                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                                            + Phrase.build(Phrase.NO_RESULTS));
                                         }
-                                        else if (rows > 0) {
-                                            Chat.sendMessage(player2, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_RESULTS_PAGE, Selector.FIRST));
-                                        }
-                                        else {
-                                            Chat.sendMessage(player2, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_RESULTS));
-                                        }
-                                    }
-                                    else {
-                                        Chat.sendMessage(player2, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.USER_NOT_FOUND, baduser));
+                                    } else {
+                                        Chat.sendMessage(
+                                                player2,
+                                                Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                                        + Phrase.build(Phrase.USER_NOT_FOUND, baduser));
                                     }
                                     statement.close();
+                                } else {
+                                    Chat.sendMessage(
+                                            player2,
+                                            Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                                    + Phrase.build(Phrase.DATABASE_BUSY));
                                 }
-                                else {
-                                    Chat.sendMessage(player2, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.DATABASE_BUSY));
-                                }
-                            }
-                            catch (Exception e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
 
-                            ConfigHandler.lookupThrottle.put(player2.getName(), new Object[] { false, System.currentTimeMillis() });
+                            ConfigHandler.lookupThrottle.put(
+                                    player2.getName(), new Object[] {false, System.currentTimeMillis()});
                         }
                     }
                     Runnable runnable = new BasicThread2();
                     Thread thread = new Thread(runnable);
                     thread.start();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-            else {
+            } else {
                 // Functions.sendMessage(player, ChatColors.RED + "You did not specify a lookup radius.");
                 if (argUsers.size() == 0 && argBlocks.size() == 0 && (argWid > 0 || forceglobal)) {
-                    Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.MISSING_LOOKUP_USER, Selector.FIRST));
+                    Chat.sendMessage(
+                            player,
+                            Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                    + Phrase.build(Phrase.MISSING_LOOKUP_USER, Selector.FIRST));
                     return;
-                }
-                else if (argUsers.size() == 0 && argBlocks.size() == 0 && argRadius == null) {
-                    Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.MISSING_LOOKUP_USER, Selector.SECOND));
+                } else if (argUsers.size() == 0 && argBlocks.size() == 0 && argRadius == null) {
+                    Chat.sendMessage(
+                            player,
+                            Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                    + Phrase.build(Phrase.MISSING_LOOKUP_USER, Selector.SECOND));
                     return;
-                }
-                else {
-                    Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.MISSING_PARAMETERS, "/co l <params>"));
+                } else {
+                    Chat.sendMessage(
+                            player,
+                            Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                                    + Phrase.build(Phrase.MISSING_PARAMETERS, "/co l <params>"));
                 }
             }
-        }
-        else {
-            Chat.sendMessage(player, Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.MISSING_PARAMETERS, "/co l <params>"));
+        } else {
+            Chat.sendMessage(
+                    player,
+                    Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                            + Phrase.build(Phrase.MISSING_PARAMETERS, "/co l <params>"));
         }
     }
 }

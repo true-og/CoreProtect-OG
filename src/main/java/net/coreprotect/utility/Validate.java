@@ -25,5 +25,4 @@ public class Validate {
     public static boolean isContainer(InventoryHolder inventoryHolder) {
         return (inventoryHolder instanceof BlockInventoryHolder || inventoryHolder instanceof DoubleChest);
     }
-
 }

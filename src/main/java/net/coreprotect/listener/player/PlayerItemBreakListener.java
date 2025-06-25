@@ -3,17 +3,15 @@ package net.coreprotect.listener.player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
+import net.coreprotect.config.Config;
+import net.coreprotect.config.ConfigHandler;
+import net.coreprotect.consumer.Queue;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.inventory.ItemStack;
-
-import net.coreprotect.config.Config;
-import net.coreprotect.config.ConfigHandler;
-import net.coreprotect.consumer.Queue;
 
 public final class PlayerItemBreakListener extends Queue implements Listener {
 
@@ -22,7 +20,8 @@ public final class PlayerItemBreakListener extends Queue implements Listener {
             return;
         }
 
-        String loggingItemId = user.toLowerCase(Locale.ROOT) + "." + location.getBlockX() + "." + location.getBlockY() + "." + location.getBlockZ();
+        String loggingItemId = user.toLowerCase(Locale.ROOT) + "." + location.getBlockX() + "." + location.getBlockY()
+                + "." + location.getBlockZ();
         int itemId = getItemId(loggingItemId);
 
         List<ItemStack> list = ConfigHandler.itemsBreak.getOrDefault(loggingItemId, new ArrayList<>());
@@ -38,5 +37,4 @@ public final class PlayerItemBreakListener extends Queue implements Listener {
         ItemStack itemStack = event.getBrokenItem();
         playerBreakItem(event.getPlayer().getLocation(), event.getPlayer().getName(), itemStack);
     }
-
 }

@@ -1,5 +1,10 @@
 package net.coreprotect.listener.block;
 
+import net.coreprotect.config.Config;
+import net.coreprotect.consumer.Queue;
+import net.coreprotect.database.Lookup;
+import net.coreprotect.thread.CacheHandler;
+import net.coreprotect.utility.Util;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -8,12 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFormEvent;
-
-import net.coreprotect.config.Config;
-import net.coreprotect.consumer.Queue;
-import net.coreprotect.database.Lookup;
-import net.coreprotect.thread.CacheHandler;
-import net.coreprotect.utility.Util;
 
 public final class BlockFormListener extends Queue implements Listener {
 
@@ -24,7 +23,10 @@ public final class BlockFormListener extends Queue implements Listener {
         World world = block.getWorld();
         BlockState newState = event.getNewState();
         boolean log = false;
-        if (Config.getConfig(world).LIQUID_TRACKING && (newState.getType().equals(Material.OBSIDIAN) || newState.getType().equals(Material.COBBLESTONE) || block.getType().name().endsWith("_CONCRETE_POWDER"))) {
+        if (Config.getConfig(world).LIQUID_TRACKING
+                && (newState.getType().equals(Material.OBSIDIAN)
+                        || newState.getType().equals(Material.COBBLESTONE)
+                        || block.getType().name().endsWith("_CONCRETE_POWDER"))) {
             String player = Lookup.whoPlacedCache(block);
             int wid = Util.getWorldId(world.getName());
             if (!(player.length() > 0)) {
@@ -75,13 +77,30 @@ public final class BlockFormListener extends Queue implements Listener {
                 }
                 */
                 if (log) {
-                    Queue.queueBlockPlace(player, block.getLocation().getBlock().getState(), block.getType(), block.getState(), newState.getType(), -1, 0, newState.getBlockData().getAsString());
+                    Queue.queueBlockPlace(
+                            player,
+                            block.getLocation().getBlock().getState(),
+                            block.getType(),
+                            block.getState(),
+                            newState.getType(),
+                            -1,
+                            0,
+                            newState.getBlockData().getAsString());
                 }
             }
         }
-        if (!log && Config.getConfig(world).UNKNOWN_LOGGING && Lookup.whoPlacedCache(block).length() == 0) {
-            Queue.queueBlockPlace("#unknown", block.getLocation().getBlock().getState(), block.getType(), block.getState(), newState.getType(), -1, 0, newState.getBlockData().getAsString());
+        if (!log
+                && Config.getConfig(world).UNKNOWN_LOGGING
+                && Lookup.whoPlacedCache(block).length() == 0) {
+            Queue.queueBlockPlace(
+                    "#unknown",
+                    block.getLocation().getBlock().getState(),
+                    block.getType(),
+                    block.getState(),
+                    newState.getType(),
+                    -1,
+                    0,
+                    newState.getBlockData().getAsString());
         }
     }
-
 }

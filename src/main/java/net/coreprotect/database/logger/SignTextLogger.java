@@ -2,10 +2,6 @@ package net.coreprotect.database.logger;
 
 import java.sql.PreparedStatement;
 import java.util.Locale;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-
 import net.coreprotect.CoreProtect;
 import net.coreprotect.config.Config;
 import net.coreprotect.config.ConfigHandler;
@@ -13,6 +9,8 @@ import net.coreprotect.database.statement.SignStatement;
 import net.coreprotect.database.statement.UserStatement;
 import net.coreprotect.event.CoreProtectPreLogEvent;
 import net.coreprotect.utility.Util;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 public class SignTextLogger {
 
@@ -20,7 +18,26 @@ public class SignTextLogger {
         throw new IllegalStateException("Database class");
     }
 
-    public static void log(PreparedStatement preparedStmt, int batchCount, String user, Location location, int action, int color, int colorSecondary, int data, boolean isWaxed, boolean isFront, String line1, String line2, String line3, String line4, String line5, String line6, String line7, String line8, int timeOffset) {
+    public static void log(
+            PreparedStatement preparedStmt,
+            int batchCount,
+            String user,
+            Location location,
+            int action,
+            int color,
+            int colorSecondary,
+            int data,
+            boolean isWaxed,
+            boolean isFront,
+            String line1,
+            String line2,
+            String line3,
+            String line4,
+            String line5,
+            String line6,
+            String line7,
+            String line8,
+            int timeOffset) {
         try {
             if (ConfigHandler.blacklist.get(user.toLowerCase(Locale.ROOT)) != null) {
                 return;
@@ -55,11 +72,31 @@ public class SignTextLogger {
                 line8 = null;
             }
 
-            SignStatement.insert(preparedStmt, batchCount, time, userId, wid, x, y, z, action, color, colorSecondary, data, isWaxed ? 1 : 0, isFront ? 0 : 1, line1, line2, line3, line4, line5, line6, line7, line8);
-        }
-        catch (Exception e) {
+            SignStatement.insert(
+                    preparedStmt,
+                    batchCount,
+                    time,
+                    userId,
+                    wid,
+                    x,
+                    y,
+                    z,
+                    action,
+                    color,
+                    colorSecondary,
+                    data,
+                    isWaxed ? 1 : 0,
+                    isFront ? 0 : 1,
+                    line1,
+                    line2,
+                    line3,
+                    line4,
+                    line5,
+                    line6,
+                    line7,
+                    line8);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

@@ -120,5 +120,4 @@ public final class Color {
     private Color() {
         throw new IllegalStateException("Utility class");
     }
-
 }

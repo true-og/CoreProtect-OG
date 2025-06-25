@@ -6,10 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-
 import net.coreprotect.config.ConfigHandler;
 import net.coreprotect.database.statement.UserStatement;
 import net.coreprotect.language.Phrase;
@@ -17,12 +13,15 @@ import net.coreprotect.language.Selector;
 import net.coreprotect.listener.channel.PluginChannelListener;
 import net.coreprotect.utility.Color;
 import net.coreprotect.utility.Util;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 
 public class SignMessageLookup {
 
     static Pattern pattern = Pattern.compile("§x(§[a-fA-F0-9]){6}");
 
-    public static List<String> performLookup(String command, Statement statement, Location l, CommandSender commandSender, int page, int limit) {
+    public static List<String> performLookup(
+            String command, Statement statement, Location l, CommandSender commandSender, int page, int limit) {
         List<String> result = new ArrayList<>();
 
         try {
@@ -33,14 +32,11 @@ public class SignMessageLookup {
             if (command == null) {
                 if (commandSender.hasPermission("coreprotect.co")) {
                     command = "co";
-                }
-                else if (commandSender.hasPermission("coreprotect.core")) {
+                } else if (commandSender.hasPermission("coreprotect.core")) {
                     command = "core";
-                }
-                else if (commandSender.hasPermission("coreprotect.coreprotect")) {
+                } else if (commandSender.hasPermission("coreprotect.coreprotect")) {
                     command = "coreprotect";
-                }
-                else {
+                } else {
                     command = "co";
                 }
             }
@@ -55,7 +51,9 @@ public class SignMessageLookup {
             int rowMax = page * limit;
             int pageStart = rowMax - limit;
 
-            String query = "SELECT COUNT(*) as count from " + ConfigHandler.prefix + "sign " + Util.getWidIndex("sign") + "WHERE wid = '" + worldId + "' AND x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "' AND action = '1' AND (LENGTH(line_1) > 0 OR LENGTH(line_2) > 0 OR LENGTH(line_3) > 0 OR LENGTH(line_4) > 0 OR LENGTH(line_5) > 0 OR LENGTH(line_6) > 0 OR LENGTH(line_7) > 0 OR LENGTH(line_8) > 0) LIMIT 0, 1";
+            String query = "SELECT COUNT(*) as count from " + ConfigHandler.prefix + "sign " + Util.getWidIndex("sign")
+                    + "WHERE wid = '" + worldId + "' AND x = '" + x + "' AND z = '" + z + "' AND y = '" + y
+                    + "' AND action = '1' AND (LENGTH(line_1) > 0 OR LENGTH(line_2) > 0 OR LENGTH(line_3) > 0 OR LENGTH(line_4) > 0 OR LENGTH(line_5) > 0 OR LENGTH(line_6) > 0 OR LENGTH(line_7) > 0 OR LENGTH(line_8) > 0) LIMIT 0, 1";
             ResultSet results = statement.executeQuery(query);
 
             while (results.next()) {
@@ -65,7 +63,11 @@ public class SignMessageLookup {
 
             int totalPages = (int) Math.ceil(count / (limit + 0.0));
 
-            query = "SELECT time,user,face,line_1,line_2,line_3,line_4,line_5,line_6,line_7,line_8 FROM " + ConfigHandler.prefix + "sign " + Util.getWidIndex("sign") + "WHERE wid = '" + worldId + "' AND x = '" + x + "' AND z = '" + z + "' AND y = '" + y + "' AND action = '1' AND (LENGTH(line_1) > 0 OR LENGTH(line_2) > 0 OR LENGTH(line_3) > 0 OR LENGTH(line_4) > 0 OR LENGTH(line_5) > 0 OR LENGTH(line_6) > 0 OR LENGTH(line_7) > 0 OR LENGTH(line_8) > 0) ORDER BY rowid DESC LIMIT " + pageStart + ", " + limit + "";
+            query = "SELECT time,user,face,line_1,line_2,line_3,line_4,line_5,line_6,line_7,line_8 FROM "
+                    + ConfigHandler.prefix + "sign " + Util.getWidIndex("sign") + "WHERE wid = '" + worldId
+                    + "' AND x = '" + x + "' AND z = '" + z + "' AND y = '" + y
+                    + "' AND action = '1' AND (LENGTH(line_1) > 0 OR LENGTH(line_2) > 0 OR LENGTH(line_3) > 0 OR LENGTH(line_4) > 0 OR LENGTH(line_5) > 0 OR LENGTH(line_6) > 0 OR LENGTH(line_7) > 0 OR LENGTH(line_8) > 0) ORDER BY rowid DESC LIMIT "
+                    + pageStart + ", " + limit + "";
             results = statement.executeQuery(query);
 
             while (results.next()) {
@@ -133,7 +135,9 @@ public class SignMessageLookup {
 
                 String parsedMessage = message.toString();
                 if (parsedMessage.contains("§x")) {
-                    for (Matcher matcher = pattern.matcher(parsedMessage); matcher.find(); matcher = pattern.matcher(parsedMessage)) {
+                    for (Matcher matcher = pattern.matcher(parsedMessage);
+                            matcher.find();
+                            matcher = pattern.matcher(parsedMessage)) {
                         String color = parsedMessage.substring(matcher.start(), matcher.end());
                         parsedMessage = parsedMessage.replace(color, "");
                     }
@@ -147,11 +151,17 @@ public class SignMessageLookup {
                 String timeAgo = Util.getTimeSince(resultTime, time, true);
 
                 if (!found) {
-                    result.add(new StringBuilder(Color.WHITE + "----- " + Color.DARK_AQUA + Phrase.build(Phrase.SIGN_HEADER) + Color.WHITE + " ----- " + Util.getCoordinates(command, worldId, x, y, z, false, false) + "").toString());
+                    result.add(new StringBuilder(Color.WHITE + "----- " + Color.DARK_AQUA
+                                    + Phrase.build(Phrase.SIGN_HEADER) + Color.WHITE + " ----- "
+                                    + Util.getCoordinates(command, worldId, x, y, z, false, false) + "")
+                            .toString());
                 }
                 found = true;
-                result.add(timeAgo + Color.WHITE + " - " + Color.DARK_AQUA + resultUser + ": " + Color.WHITE + "\n" + parsedMessage + Color.WHITE);
-                PluginChannelListener.getInstance().sendMessageData(commandSender, resultTime, resultUser, message.toString(), true, x, y, z, worldId);
+                result.add(timeAgo + Color.WHITE + " - " + Color.DARK_AQUA + resultUser + ": " + Color.WHITE + "\n"
+                        + parsedMessage + Color.WHITE);
+                PluginChannelListener.getInstance()
+                        .sendMessageData(
+                                commandSender, resultTime, resultUser, message.toString(), true, x, y, z, worldId);
             }
             results.close();
 
@@ -160,25 +170,24 @@ public class SignMessageLookup {
                     result.add(Color.WHITE + "-----");
                     result.add(Util.getPageNavigation(command, page, totalPages));
                 }
-            }
-            else {
+            } else {
                 if (rowMax > count && count > 0) {
-                    result.add(Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_RESULTS_PAGE, Selector.SECOND));
-                }
-                else {
-                    result.add(Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(Phrase.NO_DATA_LOCATION, Selector.FOURTH));
+                    result.add(Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                            + Phrase.build(Phrase.NO_RESULTS_PAGE, Selector.SECOND));
+                } else {
+                    result.add(Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
+                            + Phrase.build(Phrase.NO_DATA_LOCATION, Selector.FOURTH));
                 }
             }
 
             ConfigHandler.lookupType.put(commandSender.getName(), 8);
             ConfigHandler.lookupPage.put(commandSender.getName(), page);
-            ConfigHandler.lookupCommand.put(commandSender.getName(), x + "." + y + "." + z + "." + worldId + ".8." + limit);
-        }
-        catch (Exception e) {
+            ConfigHandler.lookupCommand.put(
+                    commandSender.getName(), x + "." + y + "." + z + "." + worldId + ".8." + limit);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return result;
     }
-
 }

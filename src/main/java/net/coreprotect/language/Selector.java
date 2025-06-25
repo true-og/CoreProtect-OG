@@ -3,17 +3,17 @@ package net.coreprotect.language;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
 import net.coreprotect.utility.Color;
 
 public class Selector {
 
-    final public static String FIRST = "{1}";
-    final public static String SECOND = "{2}";
-    final public static String THIRD = "{3}";
-    final public static String FOURTH = "{4}";
+    public static final String FIRST = "{1}";
+    public static final String SECOND = "{2}";
+    public static final String THIRD = "{3}";
+    public static final String FOURTH = "{4}";
 
-    final protected static Set<String> SELECTORS = new HashSet<>(Arrays.asList(Selector.FIRST, Selector.SECOND, Selector.THIRD, Selector.FOURTH));
+    protected static final Set<String> SELECTORS =
+            new HashSet<>(Arrays.asList(Selector.FIRST, Selector.SECOND, Selector.THIRD, Selector.FOURTH));
 
     private Selector() {
         throw new IllegalStateException("Utility class");
@@ -24,8 +24,7 @@ public class Selector {
         try {
             substring = substring.substring(substring.indexOf("{") + 1);
             substring = substring.substring(0, substring.indexOf("}"));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             substring = "";
         }
 
@@ -34,9 +33,12 @@ public class Selector {
             int index = substring(substring, "|", selector);
             if (index == -1) {
                 param = substring.substring(0, substring.indexOf("|"));
-            }
-            else {
-                param = substring.substring(index + 1, (substring.lastIndexOf("|") > index ? substring(substring, "|", selector + 1) : substring.length()));
+            } else {
+                param = substring.substring(
+                        index + 1,
+                        (substring.lastIndexOf("|") > index
+                                ? substring(substring, "|", selector + 1)
+                                : substring.length()));
             }
 
             output = output.replace("{" + substring + "}", color + param + (color.length() > 0 ? Color.WHITE : color));
@@ -60,5 +62,4 @@ public class Selector {
 
         return result;
     }
-
 }

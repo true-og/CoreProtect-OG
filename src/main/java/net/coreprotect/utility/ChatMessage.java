@@ -116,7 +116,10 @@ public class ChatMessage {
             return result;
         }
 
-        int count = (string.length() - string.replace(String.valueOf(ChatColor.COLOR_CHAR), "").length()) * 2;
+        int count = (string.length()
+                        - string.replace(String.valueOf(ChatColor.COLOR_CHAR), "")
+                                .length())
+                * 2;
         int length = (int) ((string.length() - count) * 1.4);
         if (seperatorOffset) {
             length += 2;
@@ -129,12 +132,12 @@ public class ChatMessage {
     }
 
     public String build() {
-        return (this.useTag ? pluginName : createSpaces(pluginName, true, this.useSpaces)) + this.textColor + " " + this.separator + " " + this.textStyle + this.message;
+        return (this.useTag ? pluginName : createSpaces(pluginName, true, this.useSpaces)) + this.textColor + " "
+                + this.separator + " " + this.textStyle + this.message;
     }
 
     @Override
     public String toString() {
         return this.message;
     }
-
 }

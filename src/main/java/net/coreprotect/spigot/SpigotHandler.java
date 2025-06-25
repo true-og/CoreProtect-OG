@@ -1,10 +1,6 @@
 package net.coreprotect.spigot;
 
 import java.util.regex.Matcher;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-
 import net.coreprotect.config.Config;
 import net.coreprotect.utility.Chat;
 import net.coreprotect.utility.Color;
@@ -15,6 +11,8 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 
 public class SpigotHandler extends SpigotAdapter implements SpigotInterface {
 
@@ -69,12 +67,10 @@ public class SpigotHandler extends SpigotAdapter implements SpigotInterface {
                 BaseComponent[] displayComponent = TextComponent.fromLegacyText(processComponent(tooltipText));
                 component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(displayComponent)));
                 ((TextComponent) message).addExtra(component);
-            }
-            else {
+            } else {
                 super.addHoverComponent(message, data);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -82,7 +78,9 @@ public class SpigotHandler extends SpigotAdapter implements SpigotInterface {
     @Override
     public void setHoverEvent(Object component, String text) {
         if (Config.getGlobal().HOVER_EVENTS) {
-            ((TextComponent) component).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(text))));
+            ((TextComponent) component)
+                    .setHoverEvent(
+                            new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(text))));
         }
     }
 
@@ -109,12 +107,10 @@ public class SpigotHandler extends SpigotAdapter implements SpigotInterface {
                     component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, data[1]));
                     SpigotAdapter.ADAPTER.setHoverEvent(component, Util.hoverCommandFilter(data[1]));
                     message.addExtra(component);
-                }
-                else if (data[0].equals(Chat.COMPONENT_POPUP)) {
+                } else if (data[0].equals(Chat.COMPONENT_POPUP)) {
                     SpigotAdapter.ADAPTER.addHoverComponent(message, data);
                 }
-            }
-            else {
+            } else {
                 builder.append(matcher.group(2));
             }
         }
@@ -137,13 +133,11 @@ public class SpigotHandler extends SpigotAdapter implements SpigotInterface {
                 TextComponent textComponent = new TextComponent(splitBuilder[i]);
                 textComponent.setColor(SpigotHandler.DARK_AQUA);
                 message.addExtra(textComponent);
-            }
-            else {
+            } else {
                 message.addExtra(splitBuilder[i]);
             }
         }
 
         builder.setLength(0);
     }
-
 }
