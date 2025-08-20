@@ -9,10 +9,7 @@ CoreProtect-OG is a soft fork of [CoreProtect](https://github.com/PlayPro/CorePr
 
 For a detailed description of the plugin, please visit [coreprotect.net](https://coreprotect.net).
 
-
 # Changes from CoreProtect:
-- Updated gradle to 8.8.
-- Fixed build
 - Replaced FAWE with standard WorldEdit
 - Removed 1.21 code.
 - Replaced deprecated function calls.
