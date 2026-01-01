@@ -16,48 +16,55 @@ public final class PortalCreateListener extends Queue implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     protected void onPortalCreate(PortalCreateEvent event) {
+
         World world = event.getWorld();
         if (event.isCancelled() || !Config.getConfig(world).PORTALS) {
+
             return;
+
         }
 
         String user = "#portal";
         for (BlockState block : event.getBlocks()) {
+
             Material type = block.getType();
             if (type == Material.NETHER_PORTAL || type == Material.FIRE) {
+
                 String resultData = Lookup.whoPlacedCache(block);
                 if (resultData.length() > 0) {
+
                     user = resultData;
                     break;
+
                 }
+
             }
+
         }
 
         for (BlockState blockState : event.getBlocks()) {
+
             Material type = blockState.getType();
             BlockState oldBlock = blockState.getBlock().getState();
             if (oldBlock.equals(blockState)) {
+
                 continue;
+
             }
 
             if (Util.isAir(type)) {
-                Queue.queueBlockBreak(
-                        user,
-                        oldBlock,
-                        oldBlock.getType(),
-                        oldBlock.getBlockData().getAsString(),
-                        0);
+
+                Queue.queueBlockBreak(user, oldBlock, oldBlock.getType(), oldBlock.getBlockData().getAsString(), 0);
+
             } else {
-                Queue.queueBlockPlace(
-                        user,
-                        blockState,
-                        oldBlock.getType(),
-                        oldBlock,
-                        type,
-                        -1,
-                        0,
+
+                Queue.queueBlockPlace(user, blockState, oldBlock.getType(), oldBlock, type, -1, 0,
                         blockState.getBlockData().getAsString());
+
             }
+
         }
+
     }
+
 }

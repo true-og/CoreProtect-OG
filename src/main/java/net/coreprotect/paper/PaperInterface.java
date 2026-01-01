@@ -25,4 +25,5 @@ public interface PaperInterface {
     public void setSkullOwner(Skull skull, String owner);
 
     public void setSkullSkin(Skull skull, String skin);
+
 }

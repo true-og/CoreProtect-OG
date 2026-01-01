@@ -15,27 +15,40 @@ import org.bukkit.block.BlockState;
 public class PlayerKillLogger {
 
     private PlayerKillLogger() {
+
         throw new IllegalStateException("Database class");
+
     }
 
-    public static void log(
-            PreparedStatement preparedStmt, int batchCount, String user, BlockState block, String player) {
+    public static void log(PreparedStatement preparedStmt, int batchCount, String user, BlockState block,
+            String player)
+    {
+
         try {
+
             if (ConfigHandler.blacklist.get(user.toLowerCase(Locale.ROOT)) != null) {
+
                 return;
+
             }
 
             if (ConfigHandler.playerIdCache.get(player.toLowerCase(Locale.ROOT)) == null) {
+
                 UserStatement.loadId(preparedStmt.getConnection(), player, null);
+
             }
 
             CoreProtectPreLogEvent event = new CoreProtectPreLogEvent(user);
             if (Config.getGlobal().API_ENABLED && !Bukkit.isPrimaryThread()) {
+
                 CoreProtect.getInstance().getServer().getPluginManager().callEvent(event);
+
             }
 
             if (event.isCancelled()) {
+
                 return;
+
             }
 
             int userId = UserStatement.getId(preparedStmt, event.getUser(), true);
@@ -46,8 +59,13 @@ public class PlayerKillLogger {
             int y = block.getY();
             int z = block.getZ();
             BlockStatement.insert(preparedStmt, batchCount, time, userId, wid, x, y, z, 0, playerId, null, null, 3, 0);
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
+
 }

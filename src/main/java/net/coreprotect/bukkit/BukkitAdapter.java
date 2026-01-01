@@ -43,7 +43,9 @@ public class BukkitAdapter implements BukkitInterface {
     public static final int BUKKIT_V1_20 = 20;
 
     public static void loadAdapter() {
+
         switch (ConfigHandler.SERVER_VERSION) {
+
             case BUKKIT_V1_13:
             case BUKKIT_V1_14:
             case BUKKIT_V1_15:
@@ -62,54 +64,69 @@ public class BukkitAdapter implements BukkitInterface {
             default:
                 BukkitAdapter.ADAPTER = new Bukkit_v1_19();
                 break;
+
         }
+
     }
 
     @Override
     public String parseLegacyName(String name) {
+
         return name;
+
     }
 
     @Override
     public int getLegacyBlockId(Material material) {
+
         return -1;
+
     }
 
     @Override
     public boolean getEntityMeta(LivingEntity entity, List<Object> info) {
+
         return false;
+
     }
 
     @Override
     public boolean setEntityMeta(Entity entity, Object value, int count) {
+
         return false;
+
     }
 
     @Override
-    public boolean getItemMeta(
-            ItemMeta itemMeta, List<Map<String, Object>> list, List<List<Map<String, Object>>> metadata, int slot) {
+    public boolean getItemMeta(ItemMeta itemMeta, List<Map<String, Object>> list,
+            List<List<Map<String, Object>>> metadata, int slot)
+    {
+
         return false;
+
     }
 
     @Override
     public boolean setItemMeta(Material rowType, ItemStack itemstack, List<Map<String, Object>> map) {
+
         return false;
+
     }
 
     @Override
     public boolean isAttached(Block block, Block scanBlock, BlockData blockData, int scanMin) {
+
         if (blockData instanceof Directional && blockData instanceof FaceAttachable) {
+
             Directional directional = (Directional) blockData;
             FaceAttachable faceAttachable = (FaceAttachable) blockData;
 
             boolean scanButton = false;
             switch (faceAttachable.getAttachedFace()) {
+
                 case WALL:
-                    scanButton = (scanMin < 5
-                            && scanBlock
-                                    .getRelative(directional.getFacing().getOppositeFace())
-                                    .getLocation()
-                                    .equals(block.getLocation()));
+                    scanButton = (scanMin < 5 && scanBlock.getRelative(directional.getFacing().getOppositeFace())
+                            .getLocation().equals(block.getLocation()));
                     break;
                 case FLOOR:
                     scanButton = (scanMin == 5);
@@ -119,95 +136,132 @@ public class BukkitAdapter implements BukkitInterface {
                     break;
                 default:
                     break;
+
             }
 
             return scanButton;
+
         }
 
         return true; // unvalidated attachments default to true
+
     }
 
     @Override
     public int getMinHeight(World world) {
+
         return 0;
+
     }
 
     @Override
     public Material getBucketContents(Material material) {
+
         return Material.AIR;
+
     }
 
     @Override
     public boolean isItemFrame(Material material) {
+
         return (material == Material.ITEM_FRAME);
+
     }
 
     @Override
     public Material getFrameType(Entity entity) {
+
         return Material.ITEM_FRAME;
+
     }
 
     @Override
     public Material getFrameType(EntityType type) {
+
         return type == EntityType.ITEM_FRAME ? Material.ITEM_FRAME : null;
+
     }
 
     @Override
     public Class<?> getFrameClass(Material material) {
+
         return ItemFrame.class;
+
     }
 
     @Override
     public boolean isGlowing(Sign sign, boolean isFront) {
+
         return false;
+
     }
 
     @Override
     public boolean isWaxed(Sign sign) {
+
         return false;
+
     }
 
     @Override
     public boolean isInvisible(Material material) {
+
         return Util.isAir(material);
+
     }
 
     @Override
     public ItemStack adjustIngredient(MerchantRecipe recipe, ItemStack itemStack) {
+
         return null;
+
     }
 
     @Override
     public void setGlowing(Sign sign, boolean isFront, boolean isGlowing) {
+
         return;
+
     }
 
     @Override
     public void setColor(Sign sign, boolean isFront, int color) {
+
         if (!isFront) {
+
             return;
+
         }
 
         sign.setColor(DyeColor.getByColor(Color.fromRGB(color)));
+
     }
 
     @Override
     public void setWaxed(Sign sign, boolean isWaxed) {
+
         return;
+
     }
 
     @Override
     public int getColor(Sign sign, boolean isFront) {
+
         if (isFront) {
+
             return sign.getColor().getColor().asRGB();
+
         }
 
         return 0;
+
     }
 
     @Override
     public Material getPlantSeeds(Material material) {
+
         switch (material) {
+
             case WHEAT:
                 material = Material.WHEAT_SEEDS;
                 break;
@@ -221,99 +275,143 @@ public class BukkitAdapter implements BukkitInterface {
                 material = Material.BEETROOT_SEEDS;
                 break;
             default:
+
         }
 
         return material;
+
     }
 
     @Override
     public boolean isDecoratedPot(Material material) {
+
         return false;
+
     }
 
     @Override
     public boolean isSuspiciousBlock(Material material) {
+
         return false;
+
     }
 
     @Override
     public boolean isSign(Material material) {
+
         return Tag.SIGNS.isTagged(material);
+
     }
 
     @Override
     public boolean isChiseledBookshelf(Material material) {
+
         return false;
+
     }
 
     @Override
     public boolean isBookshelfBook(Material material) {
+
         return false;
+
     }
 
     @Override
     public ItemStack getChiseledBookshelfBook(BlockState blockState, PlayerInteractEvent event) {
+
         return null;
+
     }
 
     @Override
     public String getLine(Sign sign, int line) {
+
         if (line < 4) {
+
             return sign.getLine(line);
+
         } else {
+
             return "";
+
         }
+
     }
 
     @Override
     public void setLine(Sign sign, int line, String string) {
+
         if (string == null) {
+
             string = "";
+
         }
 
         if (line < 4) {
+
             sign.setLine(line, string);
+
         }
+
     }
 
     @Override
     public boolean isSignFront(SignChangeEvent event) {
+
         return true;
+
     }
 
     @Override
     public ItemStack getArrowMeta(Arrow arrow, ItemStack itemStack) {
+
         PotionData data = arrow.getBasePotionData();
         if (data.getType() != PotionType.valueOf("UNCRAFTABLE")) {
+
             itemStack = new ItemStack(Material.TIPPED_ARROW);
             PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
             meta.setBasePotionData(data);
             for (PotionEffect effect : arrow.getCustomEffects()) {
+
                 meta.addCustomEffect(effect, false);
+
             }
+
             itemStack.setItemMeta(meta);
+
         }
 
         return itemStack;
+
     }
 
     @Override
     public EntityType getEntityType(Material material) {
+
         switch (material) {
+
             case END_CRYSTAL:
                 return EntityType.valueOf("ENDER_CRYSTAL");
             default:
                 return EntityType.UNKNOWN;
+
         }
+
     }
 
     @Override
     public Object getRegistryKey(Object value) {
+
         return value;
+
     }
 
     @Override
     public Object getRegistryValue(String key, Object tClass) {
+
         return null;
+
     }
+
 }

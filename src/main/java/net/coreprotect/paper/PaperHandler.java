@@ -10,16 +10,23 @@ public class PaperHandler extends PaperAdapter implements PaperInterface {
 
     @Override
     public boolean isStopping(Server server) {
+
         return server.isStopping();
+
     }
 
     @Override
     public void teleportAsync(Entity entity, Location location) {
+
         entity.teleportAsync(location);
+
     }
 
     @Override
     public InventoryHolder getHolder(Inventory holder, boolean useSnapshot) {
+
         return holder.getHolder(useSnapshot);
+
     }
+
 }

@@ -32,8 +32,10 @@ public final class BlockPlaceListener extends Queue implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     protected void onBlockPlace(BlockPlaceEvent event) {
+
         World world = event.getBlockPlaced().getWorld();
         if (!event.isCancelled() && Config.getConfig(world).BLOCK_PLACE) {
+
             Player player = event.getPlayer();
             Block blockPlaced = event.getBlockPlaced();
             Block blockLogged = blockPlaced;
@@ -45,90 +47,112 @@ public final class BlockPlaceListener extends Queue implements Listener {
             boolean abort = false;
 
             if (blockType == Material.LECTERN && blockReplaced.getType() == Material.LECTERN) {
-                // Placing a book in a lectern - log this as a new item being placed in the existing lectern
-                InventoryChangeListener.inventoryTransaction(
-                        player.getName(), blockLogged.getLocation(), new ItemStack[1]);
+
+                // Placing a book in a lectern - log this as a new item being placed in the
+                // existing lectern
+                InventoryChangeListener.inventoryTransaction(player.getName(), blockLogged.getLocation(),
+                        new ItemStack[1]);
                 abort = true;
+
             } else if (Util.listContains(BlockGroup.CONTAINERS, blockType)
                     || Util.listContains(BlockGroup.DIRECTIONAL_BLOCKS, blockType)
-                    || blockType.name().toUpperCase(Locale.ROOT).endsWith("_STAIRS")) {
+                    || blockType.name().toUpperCase(Locale.ROOT).endsWith("_STAIRS"))
+            {
+
                 BlockData blockData = blockPlaced.getBlockData();
                 Waterlogged waterlogged = Util.checkWaterlogged(blockData, blockReplaced);
                 if (waterlogged != null) {
+
                     bBlockData = waterlogged.getAsString();
                     blockReplaced = null;
+
                 }
-                Queue.queueBlockPlaceDelayed(
-                        player.getName(),
-                        blockLogged.getLocation(),
-                        blockLogged.getType(),
-                        bBlockData,
-                        blockReplaced,
-                        0);
+
+                Queue.queueBlockPlaceDelayed(player.getName(), blockLogged.getLocation(), blockLogged.getType(),
+                        bBlockData, blockReplaced, 0);
                 abort = true;
+
             } else if (BlockGroup.FIRE.contains(blockType)) {
+
                 ItemStack item = event.getItemInHand();
                 Material itemType = item.getType();
 
                 if (!BlockGroup.FIRE.contains(itemType)) {
+
                     abort = true;
+
                 }
+
             } else if (BlockGroup.LIGHTABLES.contains(blockType) && blockType == blockReplaced.getType()) {
-                // Lighting blocks is logged in BlockIgniteListener, extinguishing is logged in PlayerInteractListener
+
+                // Lighting blocks is logged in BlockIgniteListener, extinguishing is logged in
+                // PlayerInteractListener
                 BlockData blockPlacedData = blockPlaced.getBlockData();
                 BlockData blockReplacedData = blockReplaced.getBlockData();
-                if (blockPlacedData instanceof Lightable
-                        && blockReplacedData instanceof Lightable
-                        && ((Lightable) blockPlacedData).isLit() != ((Lightable) blockReplacedData).isLit()) {
+                if (blockPlacedData instanceof Lightable && blockReplacedData instanceof Lightable
+                        && ((Lightable) blockPlacedData).isLit() != ((Lightable) blockReplacedData).isLit())
+                {
+
                     abort = true;
+
                 }
+
             }
 
             if (!abort) {
+
                 if (Config.getConfig(world).BLOCK_MOVEMENT) {
-                    blockLogged =
-                            BlockUtil.gravityScan(blockLogged.getLocation(), blockLogged.getType(), player.getName());
+
+                    blockLogged = BlockUtil.gravityScan(blockLogged.getLocation(), blockLogged.getType(),
+                            player.getName());
                     if (!blockLogged.equals(blockPlaced)) {
+
                         forceType = blockType;
                         blockReplaced = blockLogged.getState();
+
                     }
+
                 }
 
                 BlockData blockData = blockLogged.getBlockData();
                 Waterlogged waterlogged = Util.checkWaterlogged(blockData, blockReplaced);
                 if (waterlogged != null) {
+
                     bBlockData = waterlogged.getAsString();
                     blockReplaced = null;
+
                 }
 
-                // fix for placed bisected blocks randomly returning the top or bottom of the block in this event
+                // fix for placed bisected blocks randomly returning the top or bottom of the
+                // block in this event
                 BlockState blockState = blockLogged.getState();
-                if (blockState.getBlockData() instanceof Bisected
-                        && !(blockState.getBlockData() instanceof Stairs
-                                || blockState.getBlockData() instanceof TrapDoor)) {
+                if (blockState.getBlockData() instanceof Bisected && !(blockState.getBlockData() instanceof Stairs
+                        || blockState.getBlockData() instanceof TrapDoor))
+                {
+
                     if (((Bisected) blockState.getBlockData()).getHalf().equals(Half.TOP)) {
+
                         if (blockPlaced.getY() > BukkitAdapter.ADAPTER.getMinHeight(world)) {
-                            blockState = blockPlaced
-                                    .getWorld()
+
+                            blockState = blockPlaced.getWorld()
                                     .getBlockAt(blockPlaced.getX(), blockPlaced.getY() - 1, blockPlaced.getZ())
                                     .getState();
+
                         }
+
                     }
+
                 }
 
-                Queue.queueBlockPlace(
-                        player.getName(),
-                        blockState,
-                        blockPlaced.getType(),
-                        blockReplaced,
-                        forceType,
-                        forceData,
-                        0,
-                        bBlockData);
+                Queue.queueBlockPlace(player.getName(), blockState, blockPlaced.getType(), blockReplaced, forceType,
+                        forceData, 0, bBlockData);
 
                 if (BukkitAdapter.ADAPTER.isSign(blockType)) {
+
                     if (Config.getConfig(world).SIGN_TEXT) {
+
                         try {
+
                             Location location = blockState.getLocation();
                             Sign sign = (Sign) blockState;
                             String line1 = PaperAdapter.ADAPTER.getLine(sign, 0);
@@ -147,40 +171,31 @@ public final class BlockPlaceListener extends Queue implements Listener {
                             boolean backGlowing = BukkitAdapter.ADAPTER.isGlowing(sign, !isFront);
                             boolean isWaxed = BukkitAdapter.ADAPTER.isWaxed(sign);
 
-                            if (line1.length() > 0
-                                    || line2.length() > 0
-                                    || line3.length() > 0
-                                    || line4.length() > 0
-                                    || line5.length() > 0
-                                    || line6.length() > 0
-                                    || line7.length() > 0
-                                    || line8.length() > 0) {
-                                Queue.queueSignText(
-                                        player.getName(),
-                                        location,
-                                        1,
-                                        color,
-                                        colorSecondary,
-                                        frontGlowing,
-                                        backGlowing,
-                                        isWaxed,
-                                        isFront,
-                                        line1,
-                                        line2,
-                                        line3,
-                                        line4,
-                                        line5,
-                                        line6,
-                                        line7,
-                                        line8,
-                                        0);
+                            if (line1.length() > 0 || line2.length() > 0 || line3.length() > 0 || line4.length() > 0
+                                    || line5.length() > 0 || line6.length() > 0 || line7.length() > 0
+                                    || line8.length() > 0)
+                            {
+
+                                Queue.queueSignText(player.getName(), location, 1, color, colorSecondary, frontGlowing,
+                                        backGlowing, isWaxed, isFront, line1, line2, line3, line4, line5, line6, line7,
+                                        line8, 0);
+
                             }
+
                         } catch (Exception e) {
+
                             e.printStackTrace();
+
                         }
+
                     }
+
                 }
+
             }
+
         }
+
     }
+
 }

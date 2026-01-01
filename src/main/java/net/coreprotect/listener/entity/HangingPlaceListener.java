@@ -20,46 +20,54 @@ public final class HangingPlaceListener extends Queue implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     protected void onHangingPlace(HangingPlaceEvent event) {
+
         Entity entity = event.getEntity();
         Player player = event.getPlayer();
 
         if (entity instanceof ItemFrame || entity instanceof Painting) {
+
             Block blockEvent = event.getEntity().getLocation().getBlock();
             String blockData = null;
             Material material;
             int artId;
 
             if (entity instanceof ItemFrame) {
+
                 material = BukkitAdapter.ADAPTER.getFrameType(entity);
                 ItemFrame itemFrame = (ItemFrame) entity;
                 blockData = "FACING=" + itemFrame.getFacing().name();
                 artId = 0;
+
             } else {
+
                 material = Material.PAINTING;
                 Painting painting = (Painting) entity;
                 blockData = "FACING=" + painting.getFacing().name();
                 artId = Util.getArtId(painting.getArt().toString(), true);
+
             }
 
             int inspect = 0;
             if (ConfigHandler.inspecting.get(player.getName()) != null) {
+
                 if (ConfigHandler.inspecting.get(player.getName())) {
+
                     inspect = 1;
                     event.setCancelled(true);
+
                 }
+
             }
 
             if (!event.isCancelled() && Config.getConfig(blockEvent.getWorld()).BLOCK_PLACE && inspect == 0) {
-                Queue.queueBlockPlace(
-                        player.getName(),
-                        blockEvent.getState(),
-                        blockEvent.getType(),
-                        null,
-                        material,
-                        artId,
-                        1,
-                        blockData);
+
+                Queue.queueBlockPlace(player.getName(), blockEvent.getState(), blockEvent.getType(), null, material,
+                        artId, 1, blockData);
+
             }
+
         }
+
     }
+
 }

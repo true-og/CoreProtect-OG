@@ -22,22 +22,30 @@ public final class BlockPreDispenseListener extends Queue implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPreDispense(BlockPreDispenseEvent event) {
+
         Block block = event.getBlock();
         World world = block.getWorld();
         if (!Config.getConfig(world).BLOCK_PLACE) {
+
             return;
+
         }
 
         BlockData blockData = block.getBlockData();
         if (blockData instanceof Dispenser) {
+
             if (!useForDroppers && block.getType() == Material.DROPPER) {
+
                 useForDroppers = true;
+
             }
 
             String user = "#dispenser";
-            ItemStack[] inventory =
-                    ((InventoryHolder) block.getState()).getInventory().getStorageContents();
+            ItemStack[] inventory = ((InventoryHolder) block.getState()).getInventory().getStorageContents();
             InventoryChangeListener.inventoryTransaction(user, block.getLocation(), inventory);
+
         }
+
     }
+
 }

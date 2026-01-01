@@ -26,12 +26,16 @@ public class PaperAdapter implements PaperInterface {
     public static final int PAPER_V1_20 = BukkitAdapter.BUKKIT_V1_20;
 
     public static void loadAdapter() {
+
         int paperVersion = ConfigHandler.SERVER_VERSION;
         if (!ConfigHandler.isPaper) {
+
             paperVersion = PAPER_UNAVAILABLE;
+
         }
 
         switch (paperVersion) {
+
             case PAPER_UNAVAILABLE:
                 PaperAdapter.ADAPTER = new PaperAdapter();
                 break;
@@ -50,48 +54,69 @@ public class PaperAdapter implements PaperInterface {
             default:
                 PaperAdapter.ADAPTER = new Paper_v1_17();
                 break;
+
         }
+
     }
 
     @Override
     public InventoryHolder getHolder(Inventory holder, boolean useSnapshot) {
+
         return holder.getHolder();
+
     }
 
     @Override
     public boolean isStopping(Server server) {
+
         return false;
+
     }
 
     @Override
     public String getLine(Sign sign, int line) {
+
         return BukkitAdapter.ADAPTER.getLine(sign, line);
+
     }
 
     @Override
     public void teleportAsync(Entity entity, Location location) {
+
         entity.teleport(location);
+
     }
 
     @Override
     public String getSkullOwner(Skull skull) {
+
         return skull.getOwningPlayer().getUniqueId().toString();
+
     }
 
     @Override
     public void setSkullOwner(Skull skull, String owner) {
+
         if (owner != null && owner.length() >= 32 && owner.contains("-")) {
+
             skull.setOwningPlayer(Bukkit.getOfflinePlayer(UUID.fromString(owner)));
+
         }
+
     }
 
     @Override
     public String getSkullSkin(Skull skull) {
+
         return null;
+
     }
 
     @Override
     public void setSkullSkin(Skull skull, String skin) {
+
         return;
+
     }
+
 }

@@ -9,4 +9,5 @@ public interface SpigotInterface {
     public void setHoverEvent(Object message, String text);
 
     public void sendComponent(CommandSender sender, String string, String bypass);
+
 }

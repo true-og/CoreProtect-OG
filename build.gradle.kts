@@ -1,17 +1,16 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.apache.tools.ant.filters.ReplaceTokens
-import org.gradle.jvm.tasks.Jar
 
 /* ------------------------------ Plugins ------------------------------ */
 plugins {
     id("java") // Import Java plugin.
     id("java-library") // Import Java Library plugin.
-    id("com.diffplug.spotless") version "7.0.4" // Import Spotless plugin.
-    id("com.gradleup.shadow") version "8.3.6" // Import Shadow plugin.
+    id("com.diffplug.spotless") version "8.1.0" // Import Spotless plugin.
+    id("com.gradleup.shadow") version "8.3.9" // Import Shadow plugin.
     id("checkstyle") // Import Checkstyle plugin.
     eclipse // Import Eclipse plugin.
     kotlin("jvm") version "2.1.21" // Import Kotlin JVM plugin.
 }
+
 /* --------------------------- JDK / Kotlin ---------------------------- */
 java {
     sourceCompatibility = JavaVersion.VERSION_17 // Compile with JDK 17 compatibility.
@@ -23,7 +22,7 @@ java {
 
 kotlin { jvmToolchain(17) }
 
-/* ----------------------------- // Declare bundle identifier. Metadata ------------------------------ */
+/* ----------------------------- Metadata ------------------------------ */
 group = "net.coreprotect"
 
 val version = "22.4" // Declare plugin version (will be in .jar).
@@ -54,9 +53,9 @@ repositories {
 
 /* ---------------------- Java project deps ---------------------------- */
 dependencies {
-    implementation(platform("com.intellectualsites.bom:bom-newest:1.45"))
     compileOnly("io.papermc.paper:paper-api:1.19-R0.1-SNAPSHOT")
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:7.3.0-SNAPSHOT")
+    implementation(platform("com.intellectualsites.bom:bom-newest:1.45"))
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("com.github.oshi:oshi-core:6.6.5")
 }
@@ -94,9 +93,30 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8" // Use UTF-8 file encoding.
 }
 
+/* ----------------------------- Auto Formatting ------------------------ */
+spotless {
+    java {
+        eclipse().configFile("config/formatter/eclipse-java-formatter.xml") // Eclipse java formatting.
+        leadingTabsToSpaces() // Convert leftover leading tabs to spaces.
+        removeUnusedImports() // Remove imports that aren't being called.
+    }
+    kotlinGradle {
+        ktfmt().kotlinlangStyle().configure { it.setMaxWidth(120) } // JetBrains Kotlin formatting.
+        target("build.gradle.kts", "settings.gradle.kts") // Gradle files to format.
+    }
+}
+
 checkstyle {
     toolVersion = "10.18.1" // Declare checkstyle version to use.
     configFile = file("config/checkstyle/checkstyle.xml") // Point checkstyle to config file.
     isIgnoreFailures = true // Don't fail the build if checkstyle does not pass.
     isShowViolations = true // Show the violations in any IDE with the checkstyle plugin.
+}
+
+tasks.named("compileJava") {
+    dependsOn("spotlessApply") // Run spotless before compiling with the JDK.
+}
+
+tasks.named("spotlessCheck") {
+    dependsOn("spotlessApply") // Run spotless before checking if spotless ran.
 }

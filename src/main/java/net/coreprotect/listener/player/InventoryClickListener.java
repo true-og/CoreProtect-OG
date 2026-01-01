@@ -10,6 +10,9 @@ public final class InventoryClickListener extends Queue implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     protected void onVillagerTrade(InventoryClickEvent event) {
+
         CraftItemListener.playerCraftItem(event, true);
+
     }
+
 }

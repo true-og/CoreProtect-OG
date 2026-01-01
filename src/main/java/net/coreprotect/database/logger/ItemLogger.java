@@ -34,13 +34,19 @@ public class ItemLogger {
     public static final int ITEM_BUY = 12;
 
     private ItemLogger() {
+
         throw new IllegalStateException("Database class");
+
     }
 
     public static void log(PreparedStatement preparedStmt, int batchCount, Location location, int offset, String user) {
+
         try {
+
             if (ConfigHandler.blacklist.get(user.toLowerCase(Locale.ROOT)) != null) {
+
                 return;
+
             }
 
             String loggingItemId = user.toLowerCase(Locale.ROOT) + "." + location.getBlockX() + "."
@@ -109,35 +115,44 @@ public class ItemLogger {
             logTransaction(preparedStmt, batchCount, offset, user, location, itemCreates, ITEM_CREATE);
             logTransaction(preparedStmt, batchCount, offset, user, location, itemSells, ITEM_SELL);
             logTransaction(preparedStmt, batchCount, offset, user, location, itemBuys, ITEM_BUY);
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
 
-    protected static void logTransaction(
-            PreparedStatement preparedStmt,
-            int batchCount,
-            int offset,
-            String user,
-            Location location,
-            ItemStack[] items,
-            int action) {
+    protected static void logTransaction(PreparedStatement preparedStmt, int batchCount, int offset, String user,
+            Location location, ItemStack[] items, int action)
+    {
+
         try {
+
             for (ItemStack item : items) {
+
                 if (item != null && item.getAmount() > 0 && !Util.isAir(item.getType())) {
+
                     // Object[] metadata = new Object[] { slot, item.getItemMeta() };
                     List<List<Map<String, Object>>> data = ItemMetaHandler.serialize(item, null, null, 0);
                     if (data.size() == 0) {
+
                         data = null;
+
                     }
 
                     CoreProtectPreLogEvent event = new CoreProtectPreLogEvent(user);
                     if (Config.getGlobal().API_ENABLED && !Bukkit.isPrimaryThread()) {
+
                         CoreProtect.getInstance().getServer().getPluginManager().callEvent(event);
+
                     }
 
                     if (event.isCancelled()) {
+
                         return;
+
                     }
 
                     int userId = UserStatement.getId(preparedStmt, event.getUser(), true);
@@ -148,12 +163,19 @@ public class ItemLogger {
                     int z = location.getBlockZ();
                     int typeId = Util.getBlockId(item.getType().name(), true);
                     int amount = item.getAmount();
-                    ItemStatement.insert(
-                            preparedStmt, batchCount, time, userId, wid, x, y, z, typeId, data, amount, action);
+                    ItemStatement.insert(preparedStmt, batchCount, time, userId, wid, x, y, z, typeId, data, amount,
+                            action);
+
                 }
+
             }
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
+
 }

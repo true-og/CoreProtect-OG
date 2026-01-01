@@ -12,12 +12,17 @@ import org.bukkit.block.data.type.Chest.Type;
 public class ChestTool {
 
     private ChestTool() {
+
         throw new IllegalStateException("Utility class");
+
     }
 
     public static void updateDoubleChest(Block block, BlockData blockData, boolean forceValidation) {
+
         if (!(blockData instanceof Chest) || ((Chest) blockData).getType() == Type.SINGLE) {
+
             return;
+
         }
 
         Directional directional = (Directional) blockData;
@@ -26,7 +31,9 @@ public class ChestTool {
 
         Type chestType = ((Chest) blockData).getType();
         if (chestType == Type.LEFT) {
+
             switch (blockFace) {
+
                 case NORTH:
                     newFace = BlockFace.EAST;
                     break;
@@ -41,9 +48,13 @@ public class ChestTool {
                     break;
                 default:
                     break;
+
             }
+
         } else if (chestType == Type.RIGHT) {
+
             switch (blockFace) {
+
                 case NORTH:
                     newFace = BlockFace.WEST;
                     break;
@@ -58,42 +69,56 @@ public class ChestTool {
                     break;
                 default:
                     break;
+
             }
+
         }
 
         if (newFace != null) {
+
             Type newType = (chestType == Type.LEFT) ? Type.RIGHT : Type.LEFT;
             Block relativeBlock = block.getRelative(newFace);
-            if (!forceValidation
-                    && (relativeBlock.getBlockData() instanceof Chest)
-                    && ((Chest) relativeBlock.getBlockData()).getType() == newType) {
+            if (!forceValidation && (relativeBlock.getBlockData() instanceof Chest)
+                    && ((Chest) relativeBlock.getBlockData()).getType() == newType)
+            {
+
                 return;
+
             }
 
             validateContainer(blockData, newType, block, relativeBlock);
+
         }
+
     }
 
     private static void validateContainer(BlockData blockData, Type newType, Block block, Block relativeBlock) {
-        Scheduler.scheduleSyncDelayedTask(
-                CoreProtect.getInstance(),
-                () -> {
-                    try {
-                        BlockData relativeBlockData = relativeBlock.getBlockData();
-                        if (!blockData.getAsString().equals(block.getBlockData().getAsString())
-                                || !(relativeBlockData instanceof Chest)
-                                || ((Chest) relativeBlockData).getType() == newType) {
-                            return;
-                        }
 
-                        Chest chestData = (Chest) blockData;
-                        chestData.setType(newType);
-                        relativeBlock.setBlockData(chestData, true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                },
-                relativeBlock.getLocation(),
-                2);
+        Scheduler.scheduleSyncDelayedTask(CoreProtect.getInstance(), () -> {
+
+            try {
+
+                BlockData relativeBlockData = relativeBlock.getBlockData();
+                if (!blockData.getAsString().equals(block.getBlockData().getAsString())
+                        || !(relativeBlockData instanceof Chest) || ((Chest) relativeBlockData).getType() == newType)
+                {
+
+                    return;
+
+                }
+
+                Chest chestData = (Chest) blockData;
+                chestData.setType(newType);
+                relativeBlock.setBlockData(chestData, true);
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+
+            }
+
+        }, relativeBlock.getLocation(), 2);
+
     }
+
 }

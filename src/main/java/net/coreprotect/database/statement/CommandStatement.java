@@ -5,20 +5,17 @@ import java.sql.PreparedStatement;
 public class CommandStatement {
 
     private CommandStatement() {
+
         throw new IllegalStateException("Database class");
+
     }
 
-    public static void insert(
-            PreparedStatement preparedStmt,
-            int batchCount,
-            long time,
-            int user,
-            int wid,
-            int x,
-            int y,
-            int z,
-            String message) {
+    public static void insert(PreparedStatement preparedStmt, int batchCount, long time, int user, int wid, int x,
+            int y, int z, String message)
+    {
+
         try {
+
             preparedStmt.setLong(1, time);
             preparedStmt.setInt(2, user);
             preparedStmt.setInt(3, wid);
@@ -29,10 +26,17 @@ public class CommandStatement {
             preparedStmt.addBatch();
 
             if (batchCount > 0 && batchCount % 1000 == 0) {
+
                 preparedStmt.executeBatch();
+
             }
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
+
 }

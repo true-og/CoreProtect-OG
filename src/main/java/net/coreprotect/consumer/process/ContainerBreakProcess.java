@@ -10,22 +10,24 @@ import org.bukkit.inventory.ItemStack;
 
 class ContainerBreakProcess {
 
-    static void process(
-            PreparedStatement preparedStmt,
-            int batchCount,
-            int processId,
-            int id,
-            Material type,
-            String user,
-            Object object) {
+    static void process(PreparedStatement preparedStmt, int batchCount, int processId, int id, Material type,
+            String user, Object object)
+    {
+
         if (object instanceof Location) {
+
             Location location = (Location) object;
             Map<Integer, ItemStack[]> containers = Consumer.consumerContainers.get(processId);
             if (containers.get(id) != null) {
+
                 ItemStack[] container = containers.get(id);
                 ContainerBreakLogger.log(preparedStmt, batchCount, user, location, type, container);
                 containers.remove(id);
+
             }
+
         }
+
     }
+
 }

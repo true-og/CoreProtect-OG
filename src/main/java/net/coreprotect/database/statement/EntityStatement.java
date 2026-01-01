@@ -16,11 +16,15 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 public class EntityStatement {
 
     private EntityStatement() {
+
         throw new IllegalStateException("Database class");
+
     }
 
     public static ResultSet insert(PreparedStatement preparedStmt, int time, List<Object> data) {
+
         try {
+
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             BukkitObjectOutputStream oos = new BukkitObjectOutputStream(bos);
             oos.writeObject(data);
@@ -32,23 +36,34 @@ public class EntityStatement {
             preparedStmt.setInt(1, time);
             preparedStmt.setObject(2, byte_data);
             if (Database.hasReturningKeys()) {
+
                 return preparedStmt.executeQuery();
+
             } else {
+
                 preparedStmt.executeUpdate();
+
             }
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
 
         return null;
+
     }
 
     public static List<Object> getData(Statement statement, BlockState block, String query) {
+
         List<Object> result = new ArrayList<>();
 
         try {
+
             ResultSet resultSet = statement.executeQuery(query);
             while (resultSet.next()) {
+
                 byte[] data = resultSet.getBytes("data");
                 ByteArrayInputStream bais = new ByteArrayInputStream(data);
                 BukkitObjectInputStream ins = new BukkitObjectInputStream(bais);
@@ -57,15 +72,23 @@ public class EntityStatement {
                 ins.close();
                 bais.close();
                 result = input;
+
             }
 
             resultSet.close();
+
         } catch (Exception e) { // only display exception on development branch
+
             if (!ConfigHandler.EDITION_BRANCH.contains("-dev")) {
+
                 e.printStackTrace();
+
             }
+
         }
 
         return result;
+
     }
+
 }

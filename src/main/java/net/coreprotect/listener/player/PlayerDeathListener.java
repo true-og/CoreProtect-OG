@@ -16,28 +16,41 @@ public final class PlayerDeathListener extends Queue implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     protected void onPlayerDeath(PlayerDeathEvent event) {
+
         if (event.getKeepInventory()) {
+
             return;
+
         }
 
         Entity entity = event.getEntity();
         if (!(entity instanceof Player)) {
+
             return;
+
         }
 
         Location location = entity.getLocation();
         if (!Config.getConfig(location.getWorld()).ITEM_DROPS) {
+
             return;
+
         }
 
         String user = ((Player) entity).getName();
         List<ItemStack> items = event.getDrops();
         if (items == null || items.size() == 0) {
+
             return;
+
         }
 
         for (ItemStack itemStack : items) {
+
             PlayerDropItemListener.playerDropItem(location, user, itemStack);
+
         }
+
     }
+
 }

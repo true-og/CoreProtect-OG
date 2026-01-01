@@ -118,6 +118,9 @@ public final class Color {
     public static final String RESET = ChatColor.COLOR_CHAR + "r";
 
     private Color() {
+
         throw new IllegalStateException("Utility class");
+
     }
+
 }

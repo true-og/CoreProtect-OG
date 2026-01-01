@@ -11,33 +11,18 @@ import org.bukkit.block.Sign;
 public class SignStatement {
 
     private SignStatement() {
+
         throw new IllegalStateException("Database class");
+
     }
 
-    public static void insert(
-            PreparedStatement preparedStmt,
-            int batchCount,
-            int time,
-            int id,
-            int wid,
-            int x,
-            int y,
-            int z,
-            int action,
-            int color,
-            int colorSecondary,
-            int data,
-            int waxed,
-            int face,
-            String line1,
-            String line2,
-            String line3,
-            String line4,
-            String line5,
-            String line6,
-            String line7,
-            String line8) {
+    public static void insert(PreparedStatement preparedStmt, int batchCount, int time, int id, int wid, int x, int y,
+            int z, int action, int color, int colorSecondary, int data, int waxed, int face, String line1, String line2,
+            String line3, String line4, String line5, String line6, String line7, String line8)
+    {
+
         try {
+
             preparedStmt.setInt(1, time);
             preparedStmt.setInt(2, id);
             preparedStmt.setInt(3, wid);
@@ -61,23 +46,34 @@ public class SignStatement {
             preparedStmt.addBatch();
 
             if (batchCount > 0 && batchCount % 1000 == 0) {
+
                 preparedStmt.executeBatch();
+
             }
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
 
     public static void getData(Statement statement, BlockState block, String query) {
+
         try {
+
             if (!(block instanceof Sign)) {
+
                 return;
+
             }
 
             Sign sign = (Sign) block;
             ResultSet resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
+
                 int color = resultSet.getInt("color");
                 int colorSecondary = resultSet.getInt("color_secondary");
                 int data = resultSet.getInt("data");
@@ -93,10 +89,15 @@ public class SignStatement {
                 String line8 = resultSet.getString("line_8");
 
                 if (color > 0) {
+
                     BukkitAdapter.ADAPTER.setColor(sign, true, color);
+
                 }
+
                 if (colorSecondary > 0) {
+
                     BukkitAdapter.ADAPTER.setColor(sign, false, colorSecondary);
+
                 }
 
                 boolean frontGlowing = Util.isSideGlowing(true, data);
@@ -112,11 +113,17 @@ public class SignStatement {
                 BukkitAdapter.ADAPTER.setLine(sign, 6, line7);
                 BukkitAdapter.ADAPTER.setLine(sign, 7, line8);
                 BukkitAdapter.ADAPTER.setWaxed(sign, isWaxed);
+
             }
 
             resultSet.close();
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
+
 }

@@ -12,10 +12,14 @@ public final class PlayerTakeLecternBookListener extends Queue implements Listen
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerTakeLecternBook(PlayerTakeLecternBookEvent event) {
+
         Player player = event.getPlayer();
         if (Config.getConfig(player.getWorld()).ITEM_TRANSACTIONS) {
-            InventoryChangeListener.inventoryTransaction(
-                    player.getName(), event.getLectern().getLocation(), null);
+
+            InventoryChangeListener.inventoryTransaction(player.getName(), event.getLectern().getLocation(), null);
+
         }
+
     }
+
 }

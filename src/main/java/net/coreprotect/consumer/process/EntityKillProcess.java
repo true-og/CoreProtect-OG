@@ -11,24 +11,26 @@ import org.bukkit.entity.EntityType;
 
 class EntityKillProcess {
 
-    static void process(
-            PreparedStatement preparedStmt,
-            PreparedStatement preparedStmtEntities,
-            int batchCount,
-            int processId,
-            int id,
-            Object object,
-            String user) {
+    static void process(PreparedStatement preparedStmt, PreparedStatement preparedStmtEntities, int batchCount,
+            int processId, int id, Object object, String user)
+    {
+
         if (object instanceof Object[]) {
+
             BlockState block = (BlockState) ((Object[]) object)[0];
             EntityType type = (EntityType) ((Object[]) object)[1];
             Map<Integer, List<Object>> objectLists = Consumer.consumerObjectList.get(processId);
             if (objectLists.get(id) != null) {
+
                 List<Object> objectList = objectLists.get(id);
                 int entityId = Util.getEntityId(type);
                 EntityKillLogger.log(preparedStmt, preparedStmtEntities, batchCount, user, block, objectList, entityId);
                 objectLists.remove(id);
+
             }
+
         }
+
     }
+
 }

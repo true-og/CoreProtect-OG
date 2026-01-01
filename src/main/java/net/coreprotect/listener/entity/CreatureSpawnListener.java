@@ -22,38 +22,43 @@ public final class CreatureSpawnListener extends Queue implements Listener {
 
     @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
+
         if (event.isCancelled() || !event.getEntityType().equals(EntityType.ARMOR_STAND)) {
+
             return;
+
         }
 
         World world = event.getEntity().getWorld();
         if (!Config.getConfig(world).BLOCK_PLACE) {
+
             return;
+
         }
 
         Location location = event.getEntity().getLocation();
-        String key =
-                world.getName() + "-" + location.getBlockX() + "-" + location.getBlockY() + "-" + location.getBlockZ();
-        Iterator<Entry<String, Object[]>> it =
-                ConfigHandler.entityBlockMapper.entrySet().iterator();
+        String key = world.getName() + "-" + location.getBlockX() + "-" + location.getBlockY() + "-"
+                + location.getBlockZ();
+        Iterator<Entry<String, Object[]>> it = ConfigHandler.entityBlockMapper.entrySet().iterator();
         while (it.hasNext()) {
+
             Map.Entry<String, Object[]> pair = it.next();
             String name = pair.getKey();
             Object[] data = pair.getValue();
             if ((data[1].equals(key) || data[2].equals(key))
-                    && Util.getEntityMaterial(event.getEntityType()) == ((ItemStack) data[3]).getType()) {
+                    && Util.getEntityMaterial(event.getEntityType()) == ((ItemStack) data[3]).getType())
+            {
+
                 Block gravityLocation = BlockUtil.gravityScan(location, Material.ARMOR_STAND, name);
-                Queue.queueBlockPlace(
-                        name,
-                        gravityLocation.getState(),
-                        location.getBlock().getType(),
-                        location.getBlock().getState(),
-                        ((ItemStack) data[3]).getType(),
-                        (int) event.getEntity().getLocation().getYaw(),
-                        1,
-                        null);
+                Queue.queueBlockPlace(name, gravityLocation.getState(), location.getBlock().getType(),
+                        location.getBlock().getState(), ((ItemStack) data[3]).getType(),
+                        (int) event.getEntity().getLocation().getYaw(), 1, null);
                 it.remove();
+
             }
+
         }
+
     }
+
 }

@@ -16,26 +16,37 @@ import org.bukkit.block.BlockState;
 public class PlayerInteractLogger {
 
     private PlayerInteractLogger() {
+
         throw new IllegalStateException("Database class");
+
     }
 
-    public static void log(
-            PreparedStatement preparedStmt, int batchCount, String user, BlockState block, Material blockType) {
+    public static void log(PreparedStatement preparedStmt, int batchCount, String user, BlockState block,
+            Material blockType)
+    {
+
         try {
+
             int type = Util.getBlockId(blockType.name(), true);
             if (ConfigHandler.blacklist.get(user.toLowerCase(Locale.ROOT)) != null
-                    || Util.getType(type).equals(Material.AIR)
-                    || Util.getType(type).equals(Material.CAVE_AIR)) {
+                    || Util.getType(type).equals(Material.AIR) || Util.getType(type).equals(Material.CAVE_AIR))
+            {
+
                 return;
+
             }
 
             CoreProtectPreLogEvent event = new CoreProtectPreLogEvent(user);
             if (Config.getGlobal().API_ENABLED && !Bukkit.isPrimaryThread()) {
+
                 CoreProtect.getInstance().getServer().getPluginManager().callEvent(event);
+
             }
 
             if (event.isCancelled()) {
+
                 return;
+
             }
 
             int userId = UserStatement.getId(preparedStmt, event.getUser(), true);
@@ -46,8 +57,13 @@ public class PlayerInteractLogger {
             int z = block.getZ();
             int data = 0;
             BlockStatement.insert(preparedStmt, batchCount, time, userId, wid, x, y, z, type, data, null, null, 2, 0);
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
+
 }

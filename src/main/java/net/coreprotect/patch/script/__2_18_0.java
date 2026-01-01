@@ -20,54 +20,68 @@ public class __2_18_0 {
     protected static boolean createIndexes = true;
 
     protected static boolean patch(Statement statement) {
+
         try {
 
             try {
+
                 if (Config.getGlobal().MYSQL) {
+
                     statement.executeUpdate("ALTER TABLE " + ConfigHandler.prefix + "block ADD COLUMN blockdata BLOB");
+
                 }
+
             } catch (Exception e) {
+
                 String error = e.getMessage().toLowerCase();
                 if (!error.contains("duplicate") && !error.contains("error 1060")) {
+
                     e.printStackTrace();
                     return false;
+
                 }
+
             }
 
             if (!Patch.continuePatch()) {
+
                 return false;
+
             }
 
             String query = "SELECT rowid, id, material FROM " + ConfigHandler.prefix
                     + "material_map WHERE material LIKE 'minecraft:legacy_%' LIMIT 0, 1";
             String preparedBlockQuery = "SELECT rowid as id, data, blockdata FROM " + ConfigHandler.prefix
                     + "block WHERE type = ? AND action < '3'";
-            String preparedContainerQuery =
-                    "SELECT rowid as id FROM " + ConfigHandler.prefix + "container WHERE type = ?";
-            String preparedBlockUpdateQuery =
-                    "UPDATE " + ConfigHandler.prefix + "block SET type = ?, blockdata = ? WHERE rowid = ?";
-            String preparedContainerUpdateQuery =
-                    "UPDATE " + ConfigHandler.prefix + "container SET type = ? WHERE rowid = ?";
+            String preparedContainerQuery = "SELECT rowid as id FROM " + ConfigHandler.prefix
+                    + "container WHERE type = ?";
+            String preparedBlockUpdateQuery = "UPDATE " + ConfigHandler.prefix
+                    + "block SET type = ?, blockdata = ? WHERE rowid = ?";
+            String preparedContainerUpdateQuery = "UPDATE " + ConfigHandler.prefix
+                    + "container SET type = ? WHERE rowid = ?";
             String preparedMaterialDeleteQuery = "DELETE FROM " + ConfigHandler.prefix + "material_map WHERE rowid = ?";
 
             boolean hasLegacy = true;
             while (hasLegacy) {
+
                 hasLegacy = false;
 
-                PreparedStatement preparedBlockStatement =
-                        statement.getConnection().prepareStatement(preparedBlockQuery);
-                PreparedStatement preparedBlockUpdateStatement =
-                        statement.getConnection().prepareStatement(preparedBlockUpdateQuery);
-                PreparedStatement preparedContainerStatement =
-                        statement.getConnection().prepareStatement(preparedContainerQuery);
-                PreparedStatement preparedContainerUpdateStatement =
-                        statement.getConnection().prepareStatement(preparedContainerUpdateQuery);
-                PreparedStatement preparedMaterialDeleteStatement =
-                        statement.getConnection().prepareStatement(preparedMaterialDeleteQuery);
+                PreparedStatement preparedBlockStatement = statement.getConnection()
+                        .prepareStatement(preparedBlockQuery);
+                PreparedStatement preparedBlockUpdateStatement = statement.getConnection()
+                        .prepareStatement(preparedBlockUpdateQuery);
+                PreparedStatement preparedContainerStatement = statement.getConnection()
+                        .prepareStatement(preparedContainerQuery);
+                PreparedStatement preparedContainerUpdateStatement = statement.getConnection()
+                        .prepareStatement(preparedContainerUpdateQuery);
+                PreparedStatement preparedMaterialDeleteStatement = statement.getConnection()
+                        .prepareStatement(preparedMaterialDeleteQuery);
                 Database.beginTransaction(statement, Config.getGlobal().MYSQL);
                 try {
+
                     ResultSet resultSet = statement.executeQuery(query);
                     while (resultSet.next()) {
+
                         int blockCount = 1;
                         int containerCount = 1;
                         int rowid = resultSet.getInt("rowid");
@@ -76,6 +90,7 @@ public class __2_18_0 {
 
                         boolean legacy = true;
                         switch (materialName) {
+
                             case "minecraft:legacy_wall_sign":
                                 materialName = "minecraft:oak_wall_sign";
                                 legacy = false;
@@ -92,6 +107,7 @@ public class __2_18_0 {
                                 materialName = "minecraft:tall_grass";
                                 legacy = false;
                                 break;
+
                         }
 
                         Material material = Material.matchMaterial(materialName, legacy);
@@ -100,6 +116,7 @@ public class __2_18_0 {
                         preparedBlockStatement.setInt(1, oldID);
                         ResultSet blockResults = preparedBlockStatement.executeQuery();
                         while (blockResults.next()) {
+
                             int blockID = blockResults.getInt("id");
                             int blockData = blockResults.getInt("data");
                             byte[] blockBlockData = blockResults.getBytes("blockdata");
@@ -107,32 +124,50 @@ public class __2_18_0 {
                             Material validatedMaterial = material;
                             int validatedID = newID;
                             if (validatedMaterial == Material.WHITE_WOOL) {
+
                                 validatedMaterial = getWoolColor(blockData);
                                 validatedID = Util.getBlockId(validatedMaterial);
+
                             }
 
                             if (blockBlockData == null && validatedMaterial.isBlock()) {
+
                                 BlockData newBlockData = null;
                                 try {
+
                                     newBlockData = Bukkit.getUnsafe().fromLegacy(validatedMaterial, (byte) blockData);
+
                                 } catch (Exception e) {
+
                                     // unable to generate block data
                                 }
+
                                 if (newBlockData != null) {
+
                                     if (validatedMaterial == Material.OAK_WALL_SIGN
-                                            && newBlockData instanceof Directional) {
+                                            && newBlockData instanceof Directional)
+                                    {
+
                                         Directional directional = (Directional) newBlockData;
                                         BlockFace newDirection = getLegacyDirection(blockData);
                                         directional.setFacing(newDirection);
+
                                     }
+
                                     if (validatedMaterial == Material.SKELETON_SKULL
-                                            && newBlockData instanceof Rotatable) {
+                                            && newBlockData instanceof Rotatable)
+                                    {
+
                                         Rotatable rotatable = (Rotatable) newBlockData;
                                         BlockFace newRotation = getLegacyRotation(blockData);
                                         rotatable.setRotation(newRotation);
+
                                     }
+
                                     blockBlockData = Util.stringToByteData(newBlockData.getAsString(), validatedID);
+
                                 }
+
                             }
 
                             preparedBlockUpdateStatement.setInt(1, validatedID);
@@ -140,36 +175,53 @@ public class __2_18_0 {
                             preparedBlockUpdateStatement.setInt(3, blockID);
                             preparedBlockUpdateStatement.addBatch();
                             if (blockCount % 1000 == 0) {
+
                                 preparedBlockUpdateStatement.executeBatch();
+
                             }
+
                             blockCount++;
+
                         }
+
                         preparedBlockUpdateStatement.executeBatch();
                         blockResults.close();
 
                         preparedContainerStatement.setInt(1, oldID);
                         ResultSet containerResults = preparedContainerStatement.executeQuery();
                         while (containerResults.next()) {
+
                             int containerID = containerResults.getInt("id");
                             preparedContainerUpdateStatement.setInt(1, newID);
                             preparedContainerUpdateStatement.setInt(2, containerID);
                             preparedContainerUpdateStatement.addBatch();
                             if (containerCount % 1000 == 0) {
+
                                 preparedContainerUpdateStatement.executeBatch();
+
                             }
+
                             containerCount++;
+
                         }
+
                         preparedContainerUpdateStatement.executeBatch();
                         containerResults.close();
 
                         preparedMaterialDeleteStatement.setInt(1, rowid);
                         preparedMaterialDeleteStatement.executeUpdate();
                         hasLegacy = true;
+
                     }
+
                     resultSet.close();
+
                 } catch (Exception e) {
+
                     e.printStackTrace();
+
                 }
+
                 Database.commitTransaction(statement, Config.getGlobal().MYSQL);
 
                 preparedBlockStatement.close();
@@ -179,19 +231,27 @@ public class __2_18_0 {
                 preparedMaterialDeleteStatement.close();
 
                 if (!Patch.continuePatch()) {
+
                     return false;
+
                 }
+
             }
 
             if (createIndexes) {
+
                 try {
+
                     if (Config.getGlobal().MYSQL) {
+
                         statement.executeUpdate("ALTER TABLE " + ConfigHandler.prefix + "art_map ADD INDEX(id)");
                         statement.executeUpdate("ALTER TABLE " + ConfigHandler.prefix + "entity_map ADD INDEX(id)");
                         statement.executeUpdate("ALTER TABLE " + ConfigHandler.prefix + "material_map ADD INDEX(id)");
                         statement.executeUpdate("ALTER TABLE " + ConfigHandler.prefix + "world ADD INDEX(id)");
                         statement.executeUpdate("ALTER TABLE " + ConfigHandler.prefix + "blockdata_map ADD INDEX(id)");
+
                     } else {
+
                         statement.executeUpdate("CREATE INDEX IF NOT EXISTS art_map_id_index ON " + ConfigHandler.prefix
                                 + "art_map(id);");
                         statement.executeUpdate("CREATE INDEX IF NOT EXISTS blockdata_map_id_index ON "
@@ -202,21 +262,31 @@ public class __2_18_0 {
                                 + ConfigHandler.prefix + "material_map(id);");
                         statement.executeUpdate(
                                 "CREATE INDEX IF NOT EXISTS world_id_index ON " + ConfigHandler.prefix + "world(id);");
+
                     }
+
                 } catch (Exception e) {
+
                     e.printStackTrace();
+
                 }
+
             }
 
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
 
         return true;
+
     }
 
     protected static Material getWoolColor(int data) {
+
         switch (data) {
+
             case 0:
                 return Material.WHITE_WOOL;
             case 1:
@@ -251,11 +321,15 @@ public class __2_18_0 {
                 return Material.BLACK_WOOL;
             default:
                 return Material.WHITE_WOOL;
+
         }
+
     }
 
     private static BlockFace getLegacyDirection(int data) {
+
         switch (data) {
+
             case 2:
                 return BlockFace.NORTH;
             case 3:
@@ -266,11 +340,15 @@ public class __2_18_0 {
                 return BlockFace.EAST;
             default:
                 return BlockFace.NORTH;
+
         }
+
     }
 
     private static BlockFace getLegacyRotation(int data) {
+
         switch (data) {
+
             case 1:
                 return BlockFace.SOUTH_SOUTH_WEST;
             case 2:
@@ -303,6 +381,9 @@ public class __2_18_0 {
                 return BlockFace.SOUTH_SOUTH_EAST;
             default:
                 return BlockFace.SOUTH;
+
         }
+
     }
+
 }

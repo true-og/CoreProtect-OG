@@ -19,8 +19,11 @@ import org.bukkit.inventory.ItemStack;
 public final class EntityPickupItemListener extends Queue implements Listener {
 
     public static void onItemPickup(Player player, Location location, ItemStack itemStack) {
+
         if (itemStack == null || location == null || !Config.getConfig(location.getWorld()).ITEM_PICKUPS) {
+
             return;
+
         }
 
         String loggingItemId = player.getName().toLowerCase(Locale.ROOT) + "." + location.getBlockX() + "."
@@ -33,16 +36,22 @@ public final class EntityPickupItemListener extends Queue implements Listener {
 
         int time = (int) (System.currentTimeMillis() / 1000L) + 1;
         Queue.queueItemTransaction(player.getName(), location.clone(), time, 0, itemId);
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     protected void onEntityPickupItem(EntityPickupItemEvent event) {
+
         if (event.getEntityType() != EntityType.PLAYER) {
+
             return;
+
         }
 
         Player player = (Player) event.getEntity();
         Item item = event.getItem();
         onItemPickup(player, item.getLocation(), item.getItemStack());
+
     }
+
 }

@@ -19,17 +19,22 @@ public class CacheHandler implements Runnable {
     public static ConcurrentHashMap<String, Object[]> spreadCache = new ConcurrentHashMap<>(16, 0.75f, 2);
     public static ConcurrentHashMap<Location, Object[]> redstoneCache = new ConcurrentHashMap<>(16, 0.75f, 2);
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void run() {
+
         while (ConfigHandler.serverRunning) {
+
             try {
+
                 for (int id = 0; id < 8; id++) {
+
                     Thread.sleep(1000);
                     int scanTime = 30;
                     Map cache = CacheHandler.lookupCache;
 
                     switch (id) {
+
                         case 1:
                             cache = CacheHandler.breakCache;
                             break;
@@ -57,30 +62,49 @@ public class CacheHandler implements Runnable {
                             cache = ConfigHandler.entityBlockMapper;
                             scanTime = 5;
                             break;
+
                     }
 
                     int timestamp = (int) (System.currentTimeMillis() / 1000L) - scanTime;
                     Iterator<Entry> iterator = cache.entrySet().iterator();
                     while (iterator.hasNext()) {
+
                         try {
+
                             Map.Entry entry = iterator.next();
                             Object[] data = (Object[]) entry.getValue();
                             int time = (data[0] instanceof Long) ? (int) ((long) data[0] / 1000L) : (int) data[0];
 
                             if (time < timestamp) {
+
                                 try {
+
                                     iterator.remove();
+
                                 } catch (Exception e) {
+
                                 }
+
                             }
+
                         } catch (Exception e) {
+
                             break;
+
                         }
+
                     }
+
                 }
+
             } catch (Exception e) {
+
                 e.printStackTrace();
+
             }
+
         }
+
     }
+
 }

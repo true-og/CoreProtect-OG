@@ -36,6 +36,7 @@ import org.bukkit.plugin.PluginManager;
 import oshi.hardware.CentralProcessor;
 
 public class ConfigHandler extends Queue {
+
     public static int SERVER_VERSION = 0;
     public static final int EDITION_VERSION = 2;
     public static final String EDITION_BRANCH = Util.getBranch();
@@ -74,7 +75,9 @@ public class ConfigHandler extends Queue {
     public static volatile int artId = 0;
 
     private static <K, V> Map<K, V> syncMap() {
+
         return Collections.synchronizedMap(new HashMap<>());
+
     }
 
     public static Map<String, Integer> worlds = syncMap();
@@ -131,50 +134,73 @@ public class ConfigHandler extends Queue {
     public static List<String> databaseTables = new ArrayList<>();
 
     private static void checkPlayers(Connection connection) {
+
         ConfigHandler.playerIdCache.clear();
         ConfigHandler.playerIdCacheReversed.clear();
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+
             if (ConfigHandler.playerIdCache.get(player.getName().toLowerCase(Locale.ROOT)) == null) {
-                UserStatement.loadId(
-                        connection, player.getName(), player.getUniqueId().toString());
+
+                UserStatement.loadId(connection, player.getName(), player.getUniqueId().toString());
+
             }
+
         }
+
     }
 
     private static void loadBlacklist() {
+
         try {
+
             ConfigHandler.blacklist.clear();
             String blacklist = ConfigHandler.path + "blacklist.txt";
             boolean exists = (new File(blacklist)).exists();
             if (exists) {
+
                 RandomAccessFile blfile = new RandomAccessFile(blacklist, "rw");
                 long blc = blfile.length();
                 if (blc > 0) {
+
                     while (blfile.getFilePointer() < blfile.length()) {
-                        String blacklistUser =
-                                blfile.readLine().replaceAll(" ", "").toLowerCase(Locale.ROOT);
+
+                        String blacklistUser = blfile.readLine().replaceAll(" ", "").toLowerCase(Locale.ROOT);
                         if (blacklistUser.length() > 0) {
+
                             ConfigHandler.blacklist.put(blacklistUser, true);
+
                         }
+
                     }
+
                 }
+
                 blfile.close();
+
             }
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
 
     private static void loadConfig() {
+
         try {
+
             Config.init();
             ConfigFile.init(ConfigFile.LANGUAGE); // load user phrases
             ConfigFile.init(ConfigFile.LANGUAGE_CACHE); // load translation cache
 
             // Enforce "co_" table prefix if using SQLite.
             if (!Config.getGlobal().MYSQL) {
+
                 ConfigHandler.prefixConfig = Config.getGlobal().PREFIX;
                 Config.getGlobal().PREFIX = "co_";
+
             }
 
             ConfigHandler.host = Config.getGlobal().MYSQL_HOST;
@@ -186,49 +212,73 @@ public class ConfigHandler extends Queue {
             ConfigHandler.prefix = Config.getGlobal().PREFIX;
 
             ConfigHandler.loadBlacklist(); // Load the blacklist file if it exists.
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
 
     public static void loadDatabase() {
+
         // close old pool when we reload the database, e.g. in purge command
         Database.closeConnection();
 
         if (!Config.getGlobal().MYSQL) {
+
             try {
+
                 File tempFile = File.createTempFile("CoreProtect_" + System.currentTimeMillis(), ".tmp");
                 tempFile.setExecutable(true);
 
                 boolean canExecute = false;
                 try {
+
                     canExecute = tempFile.canExecute();
+
                 } catch (Exception exception) {
+
                     // execute access denied by security manager
                 }
 
                 if (!canExecute) {
+
                     File tempFolder = new File("cache");
                     boolean exists = tempFolder.exists();
                     if (!exists) {
+
                         tempFolder.mkdir();
+
                     }
+
                     System.setProperty("java.io.tmpdir", "cache");
+
                 }
 
                 tempFile.delete();
 
                 Class.forName("org.sqlite.JDBC");
+
             } catch (Exception e) {
+
                 e.printStackTrace();
+
             }
+
         } else {
+
             HikariConfig config = new HikariConfig();
             try {
+
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+
             } catch (Exception e) {
+
                 config.setDriverClassName("com.mysql.jdbc.Driver");
+
             }
 
             config.setJdbcUrl(
@@ -240,7 +290,10 @@ public class ConfigHandler extends Queue {
             config.addDataSourceProperty("characterEncoding", "UTF-8");
             config.addDataSourceProperty("connectionTimeout", "10000");
             /* https://github.com/brettwooldridge/HikariCP/wiki/MySQL-Configuration */
-            /* https://cdn.oreillystatic.com/en/assets/1/event/21/Connector_J%20Performance%20Gems%20Presentation.pdf */
+            /*
+             * https://cdn.oreillystatic.com/en/assets/1/event/21/Connector_J%20Performance%
+             * 20Gems%20Presentation.pdf
+             */
             config.addDataSourceProperty("cachePrepStmts", "true");
             config.addDataSourceProperty("prepStmtCacheSize", "250");
             config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -254,13 +307,17 @@ public class ConfigHandler extends Queue {
             config.addDataSourceProperty("useSSL", Config.getGlobal().ENABLE_SSL);
 
             ConfigHandler.hikariDataSource = new HikariDataSource(config);
+
         }
 
         Database.createDatabaseTables(ConfigHandler.prefix, null, Config.getGlobal().MYSQL, false);
+
     }
 
     public static void loadTypes(Statement statement) {
+
         try {
+
             String query = "SELECT id,material FROM " + ConfigHandler.prefix + "material_map";
             ResultSet rs = statement.executeQuery(query);
             ConfigHandler.materials.clear();
@@ -268,14 +325,19 @@ public class ConfigHandler extends Queue {
             materialId = 0;
 
             while (rs.next()) {
+
                 int id = rs.getInt("id");
                 String material = rs.getString("material");
                 ConfigHandler.materials.put(material, id);
                 ConfigHandler.materialsReversed.put(id, material);
                 if (id > materialId) {
+
                     materialId = id;
+
                 }
+
             }
+
             rs.close();
 
             query = "SELECT id,data FROM " + ConfigHandler.prefix + "blockdata_map";
@@ -285,14 +347,19 @@ public class ConfigHandler extends Queue {
             blockdataId = 0;
 
             while (rs.next()) {
+
                 int id = rs.getInt("id");
                 String data = rs.getString("data");
                 ConfigHandler.blockdata.put(data, id);
                 ConfigHandler.blockdataReversed.put(id, data);
                 if (id > blockdataId) {
+
                     blockdataId = id;
+
                 }
+
             }
+
             rs.close();
 
             query = "SELECT id,art FROM " + ConfigHandler.prefix + "art_map";
@@ -302,14 +369,19 @@ public class ConfigHandler extends Queue {
             artId = 0;
 
             while (rs.next()) {
+
                 int id = rs.getInt("id");
                 String art = rs.getString("art");
                 ConfigHandler.art.put(art, id);
                 ConfigHandler.artReversed.put(id, art);
                 if (id > artId) {
+
                     artId = id;
+
                 }
+
             }
+
             rs.close();
 
             query = "SELECT id,entity FROM " + ConfigHandler.prefix + "entity_map";
@@ -319,22 +391,33 @@ public class ConfigHandler extends Queue {
             entityId = 0;
 
             while (rs.next()) {
+
                 int id = rs.getInt("id");
                 String entity = rs.getString("entity");
                 ConfigHandler.entities.put(entity, id);
                 ConfigHandler.entitiesReversed.put(id, entity);
                 if (id > entityId) {
+
                     entityId = id;
+
                 }
+
             }
+
             rs.close();
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
 
     public static void loadWorlds(Statement statement) {
+
         try {
+
             String query = "SELECT id,world FROM " + ConfigHandler.prefix + "world";
             ResultSet rs = statement.executeQuery(query);
             ConfigHandler.worlds.clear();
@@ -342,40 +425,57 @@ public class ConfigHandler extends Queue {
             worldId = 0;
 
             while (rs.next()) {
+
                 int id = rs.getInt("id");
                 String world = rs.getString("world");
                 ConfigHandler.worlds.put(world, id);
                 ConfigHandler.worldsReversed.put(id, world);
                 if (id > worldId) {
+
                     worldId = id;
+
                 }
+
             }
+
             rs.close();
 
             List<World> worlds = Bukkit.getServer().getWorlds();
             for (World world : worlds) {
+
                 String worldname = world.getName();
                 if (ConfigHandler.worlds.get(worldname) == null) {
+
                     int id = worldId + 1;
                     ConfigHandler.worlds.put(worldname, id);
                     ConfigHandler.worldsReversed.put(id, worldname);
                     worldId = id;
                     Queue.queueWorldInsert(id, worldname);
+
                 }
+
             }
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
 
     private static boolean checkDatabaseLock(Statement statement) {
+
         try {
+
             if (Config.getGlobal().DATABASE_LOCK) {
+
                 boolean locked = true;
                 boolean lockMessage = false;
                 int unixtimestamp = (int) (System.currentTimeMillis() / 1000L);
                 int waitTime = unixtimestamp + 15;
                 while (locked) {
+
                     locked = false;
                     unixtimestamp = (int) (System.currentTimeMillis() / 1000L);
                     int checkTime = unixtimestamp - 15;
@@ -383,13 +483,20 @@ public class ConfigHandler extends Queue {
                             + "database_lock WHERE rowid='1' AND status='1' AND time >= '" + checkTime + "' LIMIT 1";
                     ResultSet rs = statement.executeQuery(query);
                     while (rs.next()) {
+
                         if (unixtimestamp < waitTime) {
+
                             if (!lockMessage) {
+
                                 Chat.sendConsoleMessage("[CoreProtect] " + Phrase.build(Phrase.DATABASE_LOCKED_1));
                                 lockMessage = true;
+
                             }
+
                             Thread.sleep(1000);
+
                         } else {
+
                             Chat.sendConsoleMessage(
                                     Color.RED + "[CoreProtect] " + Phrase.build(Phrase.DATABASE_LOCKED_2));
                             Chat.sendConsoleMessage(
@@ -397,22 +504,33 @@ public class ConfigHandler extends Queue {
                             Chat.sendConsoleMessage(
                                     Color.GREY + "[CoreProtect] " + Phrase.build(Phrase.DATABASE_LOCKED_4));
                             return false;
+
                         }
 
                         locked = true;
+
                     }
+
                     rs.close();
+
                 }
+
             }
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
 
         return true;
+
     }
 
     public static boolean performInitialization(boolean startup) {
+
         try {
+
             BukkitAdapter.loadAdapter();
             SpigotAdapter.loadAdapter();
             PaperAdapter.loadAdapter();
@@ -422,13 +540,19 @@ public class ConfigHandler extends Queue {
             ConfigHandler.loadDatabase(); // Initialize MySQL and create tables if necessary.
 
             if (startup) {
+
                 ListenerHandler.registerNetworking(); // Register channels for networking API
+
             }
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
 
         try (Connection connection = Database.getConnection(true, 0)) {
+
             Statement statement = connection.createStatement();
 
             ConfigHandler.checkPlayers(connection);
@@ -437,39 +561,58 @@ public class ConfigHandler extends Queue {
 
             // Initialize WorldEdit logging
             if (Util.checkWorldEdit()) {
+
                 PluginManager pluginManager = Bukkit.getServer().getPluginManager();
                 Plugin worldEditPlugin = pluginManager.getPlugin("WorldEdit");
                 if (worldEditPlugin != null && worldEditPlugin.isEnabled()) {
+
                     Util.loadWorldEdit();
+
                 }
+
             } else if (ConfigHandler.worldeditEnabled) {
+
                 Util.unloadWorldEdit();
+
             }
 
             ConfigHandler.serverRunning = true; // Set as running before patching
             boolean validVersion = Patch.versionCheck(statement); // Minor upgrades & version check
             boolean databaseLock = true;
             if (startup) {
+
                 // Check that database isn't already in use
                 databaseLock = ConfigHandler.checkDatabaseLock(statement);
+
             }
 
             statement.close();
 
             return validVersion && databaseLock;
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
 
         return false;
+
     }
 
     public static void performDisable() {
+
         try {
+
             Database.closeConnection();
             ListenerHandler.unregisterNetworking(); // Unregister channels for networking API
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
+
 }

@@ -17,9 +17,12 @@ public final class SignChangeListener extends Queue implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     protected void onSignChange(SignChangeEvent event) {
+
         Block block = event.getBlock();
         if (event.isCancelled() || !Config.getConfig(block.getWorld()).SIGN_TEXT) {
+
             return;
+
         }
 
         String player = event.getPlayer().getName();
@@ -47,6 +50,7 @@ public final class SignChangeListener extends Queue implements Listener {
         boolean existingText = false;
 
         if (blockState instanceof Sign) {
+
             Sign sign = (Sign) blockState;
             line1 = PaperAdapter.ADAPTER.getLine(sign, 0);
             line2 = PaperAdapter.ADAPTER.getLine(sign, 1);
@@ -63,93 +67,54 @@ public final class SignChangeListener extends Queue implements Listener {
             isWaxed = BukkitAdapter.ADAPTER.isWaxed(sign);
 
             if (isFront && line1.equals(edit1) && line2.equals(edit2) && line3.equals(edit3) && line4.equals(edit4)) {
+
                 return;
-            } else if (!isFront
-                    && line5.equals(edit1)
-                    && line6.equals(edit2)
-                    && line7.equals(edit3)
-                    && line8.equals(edit4)) {
+
+            } else if (!isFront && line5.equals(edit1) && line6.equals(edit2) && line7.equals(edit3)
+                    && line8.equals(edit4))
+            {
+
                 return;
-            } else if (line1.length() > 0
-                    || line2.length() > 0
-                    || line3.length() > 0
-                    || line4.length() > 0
-                    || line5.length() > 0
-                    || line6.length() > 0
-                    || line7.length() > 0
-                    || line8.length() > 0) {
+
+            } else if (line1.length() > 0 || line2.length() > 0 || line3.length() > 0 || line4.length() > 0
+                    || line5.length() > 0 || line6.length() > 0 || line7.length() > 0 || line8.length() > 0)
+            {
+
                 existingText = true;
-                Queue.queueSignText(
-                        player,
-                        location,
-                        0,
-                        color,
-                        colorSecondary,
-                        frontGlowing,
-                        backGlowing,
-                        isWaxed,
-                        isFront,
-                        line1,
-                        line2,
-                        line3,
-                        line4,
-                        line5,
-                        line6,
-                        line7,
-                        line8,
-                        1);
-                Queue.queueBlockPlace(
-                        player,
-                        blockState,
-                        block.getType(),
-                        blockState,
-                        block.getType(),
-                        -1,
-                        0,
+                Queue.queueSignText(player, location, 0, color, colorSecondary, frontGlowing, backGlowing, isWaxed,
+                        isFront, line1, line2, line3, line4, line5, line6, line7, line8, 1);
+                Queue.queueBlockPlace(player, blockState, block.getType(), blockState, block.getType(), -1, 0,
                         blockState.getBlockData().getAsString());
+
             }
+
         }
 
         if (isFront) {
+
             line1 = edit1;
             line2 = edit2;
             line3 = edit3;
             line4 = edit4;
+
         } else {
+
             line5 = edit1;
             line6 = edit2;
             line7 = edit3;
             line8 = edit4;
+
         }
 
-        if (existingText
-                || line1.length() > 0
-                || line2.length() > 0
-                || line3.length() > 0
-                || line4.length() > 0
-                || line5.length() > 0
-                || line6.length() > 0
-                || line7.length() > 0
-                || line8.length() > 0) {
-            Queue.queueSignText(
-                    player,
-                    location,
-                    1,
-                    color,
-                    colorSecondary,
-                    frontGlowing,
-                    backGlowing,
-                    isWaxed,
-                    isFront,
-                    line1,
-                    line2,
-                    line3,
-                    line4,
-                    line5,
-                    line6,
-                    line7,
-                    line8,
-                    0);
+        if (existingText || line1.length() > 0 || line2.length() > 0 || line3.length() > 0 || line4.length() > 0
+                || line5.length() > 0 || line6.length() > 0 || line7.length() > 0 || line8.length() > 0)
+        {
+
+            Queue.queueSignText(player, location, 1, color, colorSecondary, frontGlowing, backGlowing, isWaxed, isFront,
+                    line1, line2, line3, line4, line5, line6, line7, line8, 0);
+
         }
+
     }
+
 }

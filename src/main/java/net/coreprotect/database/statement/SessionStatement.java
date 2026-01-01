@@ -5,20 +5,17 @@ import java.sql.PreparedStatement;
 public class SessionStatement {
 
     private SessionStatement() {
+
         throw new IllegalStateException("Database class");
+
     }
 
-    public static void insert(
-            PreparedStatement preparedStmt,
-            int batchCount,
-            int time,
-            int user,
-            int wid,
-            int x,
-            int y,
-            int z,
-            int action) {
+    public static void insert(PreparedStatement preparedStmt, int batchCount, int time, int user, int wid, int x, int y,
+            int z, int action)
+    {
+
         try {
+
             preparedStmt.setInt(1, time);
             preparedStmt.setInt(2, user);
             preparedStmt.setInt(3, wid);
@@ -29,10 +26,17 @@ public class SessionStatement {
             preparedStmt.addBatch();
 
             if (batchCount > 0 && batchCount % 1000 == 0) {
+
                 preparedStmt.executeBatch();
+
             }
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
     }
+
 }

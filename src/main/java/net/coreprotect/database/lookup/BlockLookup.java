@@ -16,31 +16,40 @@ import org.bukkit.command.CommandSender;
 
 public class BlockLookup {
 
-    public static String performLookup(
-            String command,
-            Statement statement,
-            BlockState block,
-            CommandSender commandSender,
-            int offset,
-            int page,
-            int limit) {
+    public static String performLookup(String command, Statement statement, BlockState block,
+            CommandSender commandSender, int offset, int page, int limit)
+    {
+
         String resultText = "";
 
         try {
+
             if (block == null) {
+
                 return resultText;
+
             }
 
             if (command == null) {
+
                 if (commandSender.hasPermission("coreprotect.co")) {
+
                     command = "co";
+
                 } else if (commandSender.hasPermission("coreprotect.core")) {
+
                     command = "core";
+
                 } else if (commandSender.hasPermission("coreprotect.coreprotect")) {
+
                     command = "coreprotect";
+
                 } else {
+
                     command = "co";
+
                 }
+
             }
 
             boolean found = false;
@@ -54,7 +63,9 @@ public class BlockLookup {
             int rowMax = page * limit;
             int page_start = rowMax - limit;
             if (offset > 0) {
+
                 checkTime = time - offset;
+
             }
 
             String blockName = block.getType().name().toLowerCase(Locale.ROOT);
@@ -64,8 +75,11 @@ public class BlockLookup {
                     + "' AND y = '" + y + "' AND action IN(0,1) AND time >= '" + checkTime + "' LIMIT 0, 1";
             ResultSet results = statement.executeQuery(query);
             while (results.next()) {
+
                 count = results.getInt("count");
+
             }
+
             results.close();
             int totalPages = (int) Math.ceil(count / (limit + 0.0));
 
@@ -78,6 +92,7 @@ public class BlockLookup {
             StringBuilder resultTextBuilder = new StringBuilder();
 
             while (results.next()) {
+
                 int resultUserId = results.getInt("user");
                 int resultAction = results.getInt("action");
                 int resultType = results.getInt("type");
@@ -86,118 +101,140 @@ public class BlockLookup {
                 int resultRolledBack = results.getInt("rolled_back");
 
                 if (ConfigHandler.playerIdCacheReversed.get(resultUserId) == null) {
+
                     UserStatement.loadName(statement.getConnection(), resultUserId);
+
                 }
 
                 String resultUser = ConfigHandler.playerIdCacheReversed.get(resultUserId);
                 String timeAgo = Util.getTimeSince(resultTime, time, true);
 
                 if (!found) {
-                    resultTextBuilder =
-                            new StringBuilder(Color.WHITE + "----- " + Color.DARK_AQUA + "CoreProtect " + Color.WHITE
-                                    + "----- " + Util.getCoordinates(command, worldId, x, y, z, false, false) + "\n");
+
+                    resultTextBuilder = new StringBuilder(
+                            Color.WHITE + "----- " + Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "----- "
+                                    + Util.getCoordinates(command, worldId, x, y, z, false, false) + "\n");
+
                 }
+
                 found = true;
 
                 Phrase phrase = Phrase.LOOKUP_BLOCK;
                 String selector = Selector.FIRST;
                 String tag = Color.WHITE + "-";
                 if (resultAction == 2 || resultAction == 3) {
+
                     phrase = Phrase.LOOKUP_INTERACTION; // {clicked|killed}
                     selector = (resultAction != 3 ? Selector.FIRST : Selector.SECOND);
                     tag = (resultAction != 3 ? Color.WHITE + "-" : Color.RED + "-");
+
                 } else {
+
                     phrase = Phrase.LOOKUP_BLOCK; // {placed|broke}
                     selector = (resultAction != 0 ? Selector.FIRST : Selector.SECOND);
                     tag = (resultAction != 0 ? Color.GREEN + "+" : Color.RED + "-");
+
                 }
 
                 String rbFormat = "";
                 if (resultRolledBack == 1 || resultRolledBack == 3) {
+
                     rbFormat = Color.STRIKETHROUGH;
+
                 }
 
                 String target;
                 if (resultAction == 3) {
+
                     target = Util.getEntityType(resultType).name();
+
                 } else {
+
                     Material resultMaterial = Util.getType(resultType);
                     if (resultMaterial == null) {
+
                         resultMaterial = Material.AIR;
+
                     }
+
                     target = Util.nameFilter(resultMaterial.name().toLowerCase(Locale.ROOT), resultData);
                     target = "minecraft:" + target.toLowerCase(Locale.ROOT);
+
                 }
+
                 if (target.length() > 0) {
+
                     target = "" + target + "";
+
                 }
 
                 // Hide "minecraft:" for now.
                 if (target.startsWith("minecraft:")) {
+
                     target = target.split(":")[1];
+
                 }
 
-                resultTextBuilder
-                        .append(timeAgo + " " + tag + " ")
-                        .append(Phrase.build(
-                                phrase,
-                                Color.DARK_AQUA + rbFormat + resultUser + Color.WHITE + rbFormat,
-                                Color.DARK_AQUA + rbFormat + target + Color.WHITE,
-                                selector))
+                resultTextBuilder.append(timeAgo + " " + tag + " ")
+                        .append(Phrase.build(phrase, Color.DARK_AQUA + rbFormat + resultUser + Color.WHITE + rbFormat,
+                                Color.DARK_AQUA + rbFormat + target + Color.WHITE, selector))
                         .append("\n");
-                PluginChannelListener.getInstance()
-                        .sendData(
-                                commandSender,
-                                resultTime,
-                                phrase,
-                                selector,
-                                resultUser,
-                                target,
-                                -1,
-                                x,
-                                y,
-                                z,
-                                worldId,
-                                rbFormat,
-                                false,
-                                tag.contains("+"));
+                PluginChannelListener.getInstance().sendData(commandSender, resultTime, phrase, selector, resultUser,
+                        target, -1, x, y, z, worldId, rbFormat, false, tag.contains("+"));
+
             }
 
             resultText = resultTextBuilder.toString();
             results.close();
 
             if (found) {
+
                 if (count > limit) {
+
                     String pageInfo = Color.WHITE + "-----\n";
                     pageInfo = pageInfo + Util.getPageNavigation(command, page, totalPages) + "\n";
                     resultText = resultText + pageInfo;
+
                 }
+
             } else {
+
                 if (rowMax > count && count > 0) {
+
                     resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
                             + Phrase.build(Phrase.NO_RESULTS_PAGE, Selector.SECOND);
+
                 } else {
-                    // resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Color.WHITE + "No block data
+
+                    // resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " +
+                    // Color.WHITE + "No block data
                     // found at " + Color.ITALIC + "x" + x + "/y" + y + "/z" + z + ".";
                     resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
                             + Phrase.build(Phrase.NO_DATA_LOCATION, Selector.FIRST);
                     if (!blockName.equals("air") && !blockName.equals("cave_air")) {
-                        resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- "
-                                + Phrase.build(
-                                        Phrase.NO_DATA,
-                                        Color.ITALIC + block.getType().name().toLowerCase(Locale.ROOT))
-                                + "\n";
+
+                        resultText = Color.DARK_AQUA + "CoreProtect " + Color.WHITE + "- " + Phrase.build(
+                                Phrase.NO_DATA, Color.ITALIC + block.getType().name().toLowerCase(Locale.ROOT)) + "\n";
+
                     }
+
                 }
+
             }
 
             ConfigHandler.lookupPage.put(commandSender.getName(), page);
             ConfigHandler.lookupType.put(commandSender.getName(), 2);
-            ConfigHandler.lookupCommand.put(
-                    commandSender.getName(), x + "." + y + "." + z + "." + worldId + ".0." + limit);
+            ConfigHandler.lookupCommand.put(commandSender.getName(),
+                    x + "." + y + "." + z + "." + worldId + ".0." + limit);
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
+
         return resultText;
+
     }
+
 }

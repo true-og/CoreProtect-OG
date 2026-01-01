@@ -17,8 +17,11 @@ import org.bukkit.inventory.ItemStack;
 public final class PlayerDropItemListener extends Queue implements Listener {
 
     public static void playerDropItem(Location location, String user, ItemStack itemStack) {
+
         if (!Config.getConfig(location.getWorld()).ITEM_DROPS || itemStack == null) {
+
             return;
+
         }
 
         String loggingItemId = user.toLowerCase(Locale.ROOT) + "." + location.getBlockX() + "." + location.getBlockY()
@@ -31,12 +34,16 @@ public final class PlayerDropItemListener extends Queue implements Listener {
 
         int time = (int) (System.currentTimeMillis() / 1000L) + 1;
         Queue.queueItemTransaction(user, location.clone(), time, 0, itemId);
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     protected void onPlayerDropItem(PlayerDropItemEvent event) {
+
         Item item = event.getItemDrop();
         ItemStack itemStack = item.getItemStack();
         playerDropItem(item.getLocation(), event.getPlayer().getName(), itemStack);
+
     }
+
 }

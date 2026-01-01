@@ -24,20 +24,28 @@ public class CoreProtectLogger extends AbstractDelegateExtent {
     private final Extent eventExtent;
 
     protected CoreProtectLogger(Actor actor, World world, Extent extent) {
+
         super(extent);
         this.eventActor = actor;
         this.eventWorld = world;
         this.eventExtent = extent;
+
     }
 
     @Override
     public <T extends BlockStateHolder<T>> boolean setBlock(BlockVector3 position, T block) throws WorldEditException {
+
         if (!(eventWorld instanceof BukkitWorld)) {
+
             return eventExtent.setBlock(position, block);
+
         }
+
         org.bukkit.World world = ((BukkitWorld) eventWorld).getWorld();
         if (!Config.getConfig(world).WORLDEDIT) {
+
             return eventExtent.setBlock(position, block);
+
         }
 
         BlockState oldBlock = eventExtent.getBlock(position);
@@ -51,11 +59,15 @@ public class CoreProtectLogger extends AbstractDelegateExtent {
         ItemStack[] containerData = Util.getContainerContents(oldType, null, location);
 
         if (eventExtent.setBlock(position, block)) {
-            WorldEditLogger.postProcess(
-                    eventExtent, eventActor, position, location, block, baseBlock, oldType, oldBlock, containerData);
+
+            WorldEditLogger.postProcess(eventExtent, eventActor, position, location, block, baseBlock, oldType,
+                    oldBlock, containerData);
             return true;
+
         }
 
         return false;
+
     }
+
 }

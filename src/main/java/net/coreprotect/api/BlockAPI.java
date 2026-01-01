@@ -14,11 +14,15 @@ import org.bukkit.block.Block;
 public class BlockAPI {
 
     public static List<String[]> performLookup(Block block, int offset) {
+
         List<String[]> result = new ArrayList<>();
 
         try (Connection connection = Database.getConnection(false, 1000)) {
+
             if (block == null) {
+
                 return result;
+
             }
 
             int x = block.getX();
@@ -28,11 +32,15 @@ public class BlockAPI {
             int worldId = Util.getWorldId(block.getWorld().getName());
             int checkTime = 0;
             if (offset > 0) {
+
                 checkTime = time - offset;
+
             }
 
             if (connection == null) {
+
                 return result;
+
             }
 
             Statement statement = connection.createStatement();
@@ -42,6 +50,7 @@ public class BlockAPI {
             ResultSet results = statement.executeQuery(query);
 
             while (results.next()) {
+
                 String resultTime = results.getString("time");
                 int resultUserId = results.getInt("user");
                 String resultAction = results.getString("action");
@@ -50,33 +59,33 @@ public class BlockAPI {
                 byte[] resultBlockData = results.getBytes("blockdata");
                 String resultRolledBack = results.getString("rolled_back");
                 if (ConfigHandler.playerIdCacheReversed.get(resultUserId) == null) {
+
                     UserStatement.loadName(connection, resultUserId);
+
                 }
+
                 String resultUser = ConfigHandler.playerIdCacheReversed.get(resultUserId);
                 String blockData = Util.byteDataToString(resultBlockData, resultType);
 
-                String[] lookupData = new String[] {
-                    resultTime,
-                    resultUser,
-                    String.valueOf(x),
-                    String.valueOf(y),
-                    String.valueOf(z),
-                    String.valueOf(resultType),
-                    resultData,
-                    resultAction,
-                    resultRolledBack,
-                    String.valueOf(worldId),
-                    blockData
-                };
+                String[] lookupData = new String[] { resultTime, resultUser, String.valueOf(x), String.valueOf(y),
+                        String.valueOf(z), String.valueOf(resultType), resultData, resultAction, resultRolledBack,
+                        String.valueOf(worldId), blockData };
                 String[] lineData = Util.toStringArray(lookupData);
                 result.add(lineData);
+
             }
+
             results.close();
             statement.close();
+
         } catch (Exception e) {
+
             e.printStackTrace();
+
         }
 
         return result;
+
     }
+
 }

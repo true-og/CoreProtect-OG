@@ -9,26 +9,37 @@ public class Language {
     private static ConcurrentHashMap<Phrase, String> translatedPhrases = new ConcurrentHashMap<>();
 
     protected static String getPhrase(Phrase phrase) {
+
         return phrases.get(phrase);
+
     }
 
     protected static String getUserPhrase(Phrase phrase) {
+
         return userPhrases.get(phrase);
+
     }
 
     protected static String getTranslatedPhrase(Phrase phrase) {
+
         return translatedPhrases.get(phrase);
+
     }
 
     protected static void setUserPhrase(Phrase phrase, String value) {
+
         userPhrases.put(phrase, value);
+
     }
 
     protected static void setTranslatedPhrase(Phrase phrase, String value) {
+
         translatedPhrases.put(phrase, value);
+
     }
 
     public static void loadPhrases() {
+
         phrases.put(Phrase.ACTION_NOT_SUPPORTED, "That action is not supported by the command.");
         phrases.put(Phrase.AMOUNT_BLOCK, "{0} {block|blocks}");
         phrases.put(Phrase.AMOUNT_CHUNK, "{0} {chunk|chunks}");
@@ -65,8 +76,7 @@ public class Language {
         phrases.put(Phrase.GLOBAL_LOOKUP, "Don't specify a radius to do a global lookup.");
         phrases.put(Phrase.GLOBAL_ROLLBACK, "Use \"{0}\" to do a global {rollback|restore}");
         phrases.put(Phrase.HELP_ACTION_1, "Restrict the lookup to a certain action.");
-        phrases.put(
-                Phrase.HELP_ACTION_2,
+        phrases.put(Phrase.HELP_ACTION_2,
                 "Examples: [a:block], [a:+block], [a:-block] [a:click], [a:container], [a:inventory], [a:item], [a:kill], [a:chat], [a:command], [a:sign], [a:session], [a:username]");
         phrases.put(Phrase.HELP_COMMAND, "Display more info for that command.");
         phrases.put(Phrase.HELP_EXCLUDE_1, "Exclude blocks/users.");
@@ -96,8 +106,7 @@ public class Language {
         phrases.put(Phrase.HELP_PARAMS_6, "Include specific blocks/entities in the {lookup|rollback|restore}.");
         phrases.put(Phrase.HELP_PARAMS_7, "Exclude blocks/users from the {lookup|rollback|restore}.");
         phrases.put(Phrase.HELP_PURGE_1, "Delete data older than specified time.");
-        phrases.put(
-                Phrase.HELP_PURGE_2,
+        phrases.put(Phrase.HELP_PURGE_2,
                 "For example, \"{0}\" will delete all data older than one month, and only keep the last 30 days of data.");
         phrases.put(Phrase.HELP_PURGE_COMMAND, "Delete old block data.");
         phrases.put(Phrase.HELP_RADIUS_1, "Specify a radius area.");
@@ -243,5 +252,7 @@ public class Language {
 
         userPhrases.putAll(phrases);
         translatedPhrases.putAll(phrases);
+
     }
+
 }
