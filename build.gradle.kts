@@ -77,6 +77,7 @@ tasks.named<ShadowJar>("shadowJar") {
         exclude(dependency("org.jetbrains:.*"))
         exclude(dependency("org.slf4j:.*"))
     }
+    exclude("io.github.miniplaceholders.*") // Exclude the MiniPlaceholders package from being shadowed.
     archiveClassifier.set("") // Use empty string instead of null.
     minimize()
 }

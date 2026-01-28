@@ -2,7 +2,7 @@
 
 # CoreProtect is donationware. Obtain a donation key from coreprotect.net/donate/
 # Note from TrueOG Network: you can donate to CoreProtect here if you want, but using
-# unreleased jarfiles instead of building from source is generally not a wise idea.
+# unreleased .jar files instead of building from source with the TrueOG Bootstrap is unwise.
 donation-key:
 
 # MySQL is optional and not required.
@@ -12,8 +12,8 @@ table-prefix: co_
 mysql-host: localhost
 mysql-port: 3306
 mysql-database: core_protect
-mysql-username: $MARIADB_USER
-mysql-password: $MARIADB_PASSWORD
+mysql-username: ^{MARIADB_USER}
+mysql-password: ^{MARIADB_PASSWORD}
 
 # If modified, will automatically attempt to translate languages phrases.
 # List of language codes: https://coreprotect.net/languages/
@@ -32,11 +32,11 @@ verbose: true
 
 # If no radius is specified in a rollback or restore, this value will be
 # used as the radius. Set to "0" to disable automatically adding a radius.
-default-radius: 0
+default-radius: 30
 
 # The maximum radius that can be used in a command. Set to "0" to disable.
 # To run a rollback or restore without a radius, you can use "r:#global".
-max-radius: 0
+max-radius: 300
 
 # If enabled, items taken from containers (etc) will be included in rollbacks.
 rollback-items: true
@@ -77,7 +77,7 @@ explosions: true
 entity-change: true
 
 # Logs killed entities, such as killed cows and enderman.
-entity-kills: true
+entity-kills: false
 
 # Logs text on signs. If disabled, signs will be blank when rolled back.
 sign-text: true
@@ -86,7 +86,7 @@ sign-text: true
 buckets: true
 
 # Logs natural tree leaf decay.
-leaf-decay: true
+leaf-decay: false
 
 # Logs tree growth. Trees are linked to the player who planted the sapling.
 tree-growth: true

@@ -64,9 +64,9 @@ public class Language {
         phrases.put(Phrase.DATABASE_LOCKED_4, "Disabling database locking can result in data corruption.");
         phrases.put(Phrase.DATABASE_UNREACHABLE, "Database is unreachable. Discarding data and shutting down.");
         phrases.put(Phrase.DEVELOPMENT_BRANCH, "Development branch detected, skipping patch scripts.");
-        phrases.put(Phrase.DIRT_BLOCK, "Placed a temporary safety block under you.");
+        phrases.put(Phrase.DIRT_BLOCK, "Placed a temporary safety block underneath you.");
         phrases.put(Phrase.DISABLE_SUCCESS, "Success! Disabled {0}");
-        phrases.put(Phrase.DONATION_KEY_REQUIRED, "A valid donation key is required for that command.");
+        phrases.put(Phrase.DONATION_KEY_REQUIRED, "ERROR: A valid donation key is required for that command.");
         phrases.put(Phrase.ENABLE_FAILED, "{0} was unable to start.");
         phrases.put(Phrase.ENABLE_SUCCESS, "{0} has been successfully enabled!");
         phrases.put(Phrase.ENJOY_COREPROTECT, "Enjoy {0}? Join our Discord!");
@@ -190,7 +190,7 @@ public class Language {
         phrases.put(Phrase.PREVIEW_CANCELLING, "Cancelling preview...");
         phrases.put(Phrase.PREVIEW_IN_GAME, "You can only preview rollbacks in-game.");
         phrases.put(Phrase.PREVIEW_TRANSACTION, "You can't preview {container|inventory} transactions.");
-        phrases.put(Phrase.PRIMARY_THREAD_ERROR, "That API method can't be used on the primary thread.");
+        phrases.put(Phrase.PRIMARY_THREAD_ERROR, "ERROR: That API method can't be used on the primary thread.");
         phrases.put(Phrase.PURGE_ABORTED, "Purge failed. Database may be corrupt.");
         phrases.put(Phrase.PURGE_ERROR, "Unable to process {0} data!");
         phrases.put(Phrase.PURGE_FAILED, "Purge failed. Please try again later.");

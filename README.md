@@ -13,7 +13,7 @@ For a detailed description of the plugin, please visit [coreprotect.net](https:/
 - Replaced FAWE with standard WorldEdit
 - Removed 1.21 code.
 - Replaced deprecated function calls.
-
+- Builds with TrueOG Network config files.
 
 API
 ------
