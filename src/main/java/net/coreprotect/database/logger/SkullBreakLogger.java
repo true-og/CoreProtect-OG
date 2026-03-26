@@ -6,6 +6,7 @@ import java.util.Locale;
 import net.coreprotect.config.ConfigHandler;
 import net.coreprotect.database.Database;
 import net.coreprotect.database.statement.SkullStatement;
+import net.coreprotect.extensions.PlayerBountiesHeadCompatibility;
 import net.coreprotect.paper.PaperAdapter;
 import net.coreprotect.utility.Util;
 import org.bukkit.block.BlockState;
@@ -36,12 +37,31 @@ public class SkullBreakLogger {
             Skull skull = (Skull) block;
             String skullOwner = "";
             String skullSkin = null;
+            String metadata = PlayerBountiesHeadCompatibility.serializeSkullMetadata(skull);
             int skullKey = 0;
             if (skull.hasOwner()) {
 
                 skullOwner = PaperAdapter.ADAPTER.getSkullOwner(skull);
                 skullSkin = PaperAdapter.ADAPTER.getSkullSkin(skull);
-                ResultSet resultSet = SkullStatement.insert(preparedStmt2, time, skullOwner, skullSkin);
+                ResultSet resultSet = SkullStatement.insert(preparedStmt2, time, skullOwner, skullSkin, metadata);
+                if (Database.hasReturningKeys()) {
+
+                    resultSet.next();
+                    skullKey = resultSet.getInt(1);
+                    resultSet.close();
+
+                } else {
+
+                    ResultSet keys = preparedStmt2.getGeneratedKeys();
+                    keys.next();
+                    skullKey = keys.getInt(1);
+                    keys.close();
+
+                }
+
+            } else if (metadata != null) {
+
+                ResultSet resultSet = SkullStatement.insert(preparedStmt2, time, skullOwner, skullSkin, metadata);
                 if (Database.hasReturningKeys()) {
 
                     resultSet.next();

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import net.coreprotect.bukkit.BukkitAdapter;
+import net.coreprotect.extensions.PlayerBountiesHeadCompatibility;
 import net.coreprotect.utility.Color;
 import net.coreprotect.utility.Util;
 import org.bukkit.Bukkit;
@@ -322,6 +323,8 @@ public class ItemMetaHandler {
                 metadata.add(list);
 
             }
+
+            PlayerBountiesHeadCompatibility.appendItemMetadata(item, itemMeta, metadata);
 
         }
 

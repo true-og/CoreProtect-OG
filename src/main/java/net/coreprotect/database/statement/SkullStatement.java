@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import net.coreprotect.database.Database;
+import net.coreprotect.extensions.PlayerBountiesHeadCompatibility;
 import net.coreprotect.paper.PaperAdapter;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
@@ -16,13 +17,16 @@ public class SkullStatement {
 
     }
 
-    public static ResultSet insert(PreparedStatement preparedStmt, int time, String owner, String skin) {
+    public static ResultSet insert(PreparedStatement preparedStmt, int time, String owner, String skin,
+            String metadata)
+    {
 
         try {
 
             preparedStmt.setInt(1, time);
             preparedStmt.setString(2, owner);
             preparedStmt.setString(3, skin);
+            preparedStmt.setString(4, metadata);
             if (Database.hasReturningKeys()) {
 
                 return preparedStmt.executeQuery();
@@ -71,6 +75,8 @@ public class SkullStatement {
                     PaperAdapter.ADAPTER.setSkullSkin(skull, skin);
 
                 }
+
+                PlayerBountiesHeadCompatibility.applySkullMetadata(skull, resultSet.getString("metadata"));
 
             }
 

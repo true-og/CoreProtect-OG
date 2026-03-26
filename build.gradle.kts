@@ -25,7 +25,7 @@ kotlin { jvmToolchain(17) }
 /* ----------------------------- Metadata ------------------------------ */
 group = "net.coreprotect"
 
-val version = "22.4" // Declare plugin version (will be in .jar).
+val version = "22.5" // Declare plugin version (will be in .jar).
 
 val apiVersion = "1.19" // Declare minecraft server target version.
 

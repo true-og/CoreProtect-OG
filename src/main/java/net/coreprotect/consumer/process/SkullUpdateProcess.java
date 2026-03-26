@@ -17,7 +17,7 @@ class SkullUpdateProcess {
         if (object instanceof BlockState) {
 
             BlockState block = (BlockState) object;
-            String query = "SELECT owner, skin FROM " + ConfigHandler.prefix + "skull WHERE rowid='" + rowId
+            String query = "SELECT owner, skin, metadata FROM " + ConfigHandler.prefix + "skull WHERE rowid='" + rowId
                     + "' LIMIT 0, 1";
             SkullStatement.getData(statement, block, query);
             Util.updateBlock(block);

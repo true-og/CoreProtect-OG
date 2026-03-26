@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import net.coreprotect.bukkit.BukkitAdapter;
 import net.coreprotect.database.Lookup;
+import net.coreprotect.extensions.PlayerBountiesHeadCompatibility;
 import net.coreprotect.model.BlockGroup;
 import net.coreprotect.utility.Util;
 import org.bukkit.FireworkEffect;
@@ -459,6 +460,12 @@ public class RollbackUtil extends Lookup {
                 }
 
                 Map<String, Object> mapData = map.get(0);
+
+                if (PlayerBountiesHeadCompatibility.applyItemMetadata(itemstack, mapData)) {
+
+                    continue;
+
+                }
 
                 if (mapData.get("slot") != null) {
 
