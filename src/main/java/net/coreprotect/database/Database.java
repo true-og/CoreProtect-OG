@@ -1,6 +1,7 @@
 package net.coreprotect.database;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -40,6 +41,8 @@ public class Database extends Queue {
     public static final int ENTITY_MAP = 11;
     public static final int BLOCKDATA = 12;
     public static final int ITEM = 13;
+    private static volatile Boolean skullHasSkinColumn = null;
+    private static volatile Boolean skullHasMetadataColumn = null;
 
     public static void beginTransaction(Statement statement, boolean isMySQL) {
 
@@ -139,6 +142,48 @@ public class Database extends Queue {
     public static boolean hasReturningKeys() {
 
         return (!Config.getGlobal().MYSQL && ConfigHandler.SERVER_VERSION >= 20);
+
+    }
+
+    public static boolean hasSkullSkinColumn() {
+
+        return Boolean.TRUE.equals(skullHasSkinColumn);
+
+    }
+
+    public static boolean hasSkullMetadataColumn() {
+
+        return Boolean.TRUE.equals(skullHasMetadataColumn);
+
+    }
+
+    public static void initializeSkullColumnCache(Connection connection) {
+
+        if (connection == null) {
+
+            return;
+
+        }
+
+        try {
+
+            if (skullHasSkinColumn == null) {
+
+                skullHasSkinColumn = hasColumn(connection, ConfigHandler.prefix + "skull", "skin");
+
+            }
+
+            if (skullHasMetadataColumn == null) {
+
+                skullHasMetadataColumn = hasColumn(connection, ConfigHandler.prefix + "skull", "metadata");
+
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
 
     }
 
@@ -319,8 +364,25 @@ public class Database extends Queue {
                     + "sign (time, user, wid, x, y, z, action, color, color_secondary, data, waxed, face, line_1, line_2, line_3, line_4, line_5, line_6, line_7, line_8) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             String blockInsert = "INSERT INTO " + ConfigHandler.prefix
                     + "block (time, user, wid, x, y, z, type, data, meta, blockdata, action, rolled_back) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            String skullInsert = "INSERT INTO " + ConfigHandler.prefix
-                    + "skull (time, owner, skin, metadata) VALUES (?, ?, ?, ?)";
+            initializeSkullColumnCache(connection);
+            String skullColumns = "time, owner";
+            String skullValues = "?, ?";
+            if (hasSkullSkinColumn()) {
+
+                skullColumns = skullColumns + ", skin";
+                skullValues = skullValues + ", ?";
+
+            }
+
+            if (hasSkullMetadataColumn()) {
+
+                skullColumns = skullColumns + ", metadata";
+                skullValues = skullValues + ", ?";
+
+            }
+
+            String skullInsert = "INSERT INTO " + ConfigHandler.prefix + "skull (" + skullColumns + ") VALUES ("
+                    + skullValues + ")";
             String containerInsert = "INSERT INTO " + ConfigHandler.prefix
                     + "container (time, user, wid, x, y, z, type, data, amount, metadata, action, rolled_back) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             String itemInsert = "INSERT INTO " + ConfigHandler.prefix
@@ -476,6 +538,9 @@ public class Database extends Queue {
 
     public static void createDatabaseTables(String prefix, Connection forceConnection, boolean mySQL, boolean purge) {
 
+        skullHasSkinColumn = null;
+        skullHasMetadataColumn = null;
+
         ConfigHandler.databaseTables.clear();
         ConfigHandler.databaseTables.addAll(Arrays.asList("art_map", "block", "chat", "command", "container", "item",
                 "database_lock", "entity", "entity_map", "material_map", "blockdata_map", "session", "sign", "skull",
@@ -542,6 +607,7 @@ public class Database extends Queue {
                             + index + ") ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4");
                     statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + prefix
                             + "skull(rowid int NOT NULL AUTO_INCREMENT,PRIMARY KEY(rowid), time int, owner varchar(255), skin varchar(255), metadata MEDIUMTEXT) ENGINE=InnoDB DEFAULT CHARACTER SET utf8mb4");
+                    ensureSkullColumns(connection, statement, prefix);
                     index = ", INDEX(user), INDEX(uuid)";
                     statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + prefix
                             + "user(rowid int NOT NULL AUTO_INCREMENT,PRIMARY KEY(rowid),time int,user varchar(100),uuid varchar(64)"
@@ -718,6 +784,8 @@ public class Database extends Queue {
                             + "skull (id INTEGER PRIMARY KEY ASC, time INTEGER, owner TEXT, skin TEXT, metadata TEXT);");
 
                 }
+
+                ensureSkullColumns(connection, statement, prefix);
 
                 if (!tableData.contains(prefix + "user")) {
 
@@ -982,6 +1050,64 @@ public class Database extends Queue {
                 e.printStackTrace();
 
             }
+
+        }
+
+    }
+
+    private static boolean hasColumn(Connection connection, String tableName, String columnName) throws SQLException {
+
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet resultSet = metaData.getColumns(connection.getCatalog(), null, tableName, columnName)) {
+
+            if (resultSet.next()) {
+
+                return true;
+
+            }
+
+        }
+
+        try (ResultSet resultSet = metaData.getColumns(connection.getCatalog(), null,
+                tableName.toUpperCase(Locale.ROOT), columnName.toUpperCase(Locale.ROOT)))
+        {
+
+            return resultSet.next();
+
+        }
+
+    }
+
+    private static void ensureSkullColumns(Connection connection, Statement statement, String prefix) {
+
+        try {
+
+            String tableName = prefix + "skull";
+            boolean hasMetadata = hasColumn(connection, tableName, "metadata");
+            boolean hasSkin = hasColumn(connection, tableName, "skin");
+
+            if (!hasMetadata) {
+
+                statement.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN metadata "
+                        + (Config.getGlobal().MYSQL ? "MEDIUMTEXT" : "TEXT") + ";");
+                hasMetadata = true;
+
+            }
+
+            if (!hasSkin) {
+
+                statement.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN skin "
+                        + (Config.getGlobal().MYSQL ? "VARCHAR(255)" : "TEXT") + ";");
+                hasSkin = true;
+
+            }
+
+            skullHasMetadataColumn = hasMetadata;
+            skullHasSkinColumn = hasSkin;
+
+        } catch (Exception e) {
+
+            initializeSkullColumnCache(connection);
 
         }
 

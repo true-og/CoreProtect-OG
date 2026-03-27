@@ -2,6 +2,7 @@ package net.coreprotect.consumer.process;
 
 import java.sql.Statement;
 import net.coreprotect.config.ConfigHandler;
+import net.coreprotect.database.Database;
 import net.coreprotect.database.statement.SkullStatement;
 import net.coreprotect.utility.Util;
 import org.bukkit.block.BlockState;
@@ -17,9 +18,22 @@ class SkullUpdateProcess {
         if (object instanceof BlockState) {
 
             BlockState block = (BlockState) object;
-            String query = "SELECT owner, skin, metadata FROM " + ConfigHandler.prefix + "skull WHERE rowid='" + rowId
-                    + "' LIMIT 0, 1";
-            SkullStatement.getData(statement, block, query);
+            StringBuilder query = new StringBuilder("SELECT owner");
+            if (Database.hasSkullSkinColumn()) {
+
+                query.append(", skin");
+
+            }
+
+            if (Database.hasSkullMetadataColumn()) {
+
+                query.append(", metadata");
+
+            }
+
+            query.append(" FROM ").append(ConfigHandler.prefix).append("skull WHERE rowid='").append(rowId)
+                    .append("' LIMIT 0, 1");
+            SkullStatement.getData(statement, block, query.toString());
             Util.updateBlock(block);
 
         }

@@ -186,3 +186,4 @@ docs/dev/
 # Extensions
 /src/main/java/net/coreprotect/extensions/*.java
 !/src/main/java/net/coreprotect/extensions/Extensions.java
+!/src/main/java/net/coreprotect/extensions/PlayerBountiesHeadCompatibility.java

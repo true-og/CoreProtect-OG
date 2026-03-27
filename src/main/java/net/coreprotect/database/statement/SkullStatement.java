@@ -25,8 +25,19 @@ public class SkullStatement {
 
             preparedStmt.setInt(1, time);
             preparedStmt.setString(2, owner);
-            preparedStmt.setString(3, skin);
-            preparedStmt.setString(4, metadata);
+            int parameterIndex = 3;
+            if (Database.hasSkullSkinColumn()) {
+
+                preparedStmt.setString(parameterIndex++, skin);
+
+            }
+
+            if (Database.hasSkullMetadataColumn()) {
+
+                preparedStmt.setString(parameterIndex, metadata);
+
+            }
+
             if (Database.hasReturningKeys()) {
 
                 return preparedStmt.executeQuery();
@@ -69,14 +80,22 @@ public class SkullStatement {
 
                 }
 
-                String skin = resultSet.getString("skin");
-                if (owner != null && skin != null && skin.length() > 0) {
+                if (Database.hasSkullSkinColumn()) {
 
-                    PaperAdapter.ADAPTER.setSkullSkin(skull, skin);
+                    String skin = resultSet.getString("skin");
+                    if (owner != null && skin != null && skin.length() > 0) {
+
+                        PaperAdapter.ADAPTER.setSkullSkin(skull, skin);
+
+                    }
 
                 }
 
-                PlayerBountiesHeadCompatibility.applySkullMetadata(skull, resultSet.getString("metadata"));
+                if (Database.hasSkullMetadataColumn()) {
+
+                    PlayerBountiesHeadCompatibility.applySkullMetadata(skull, resultSet.getString("metadata"));
+
+                }
 
             }
 
