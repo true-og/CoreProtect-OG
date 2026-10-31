@@ -10,7 +10,7 @@ CoreProtect-OG is a soft fork of [CoreProtect](https://github.com/PlayPro/CorePr
 For a detailed description of the plugin, please visit [coreprotect.net](https://coreprotect.net).
 
 # Changes from CoreProtect:
-- Compatibility with [PlayerBounties-OG](https://github.com/true-og/PlayerBounties-OG) player heads in backups and restores.
+- Compatibility with [PlayerBounties-OG](https://git.trueog.net/trueog/PlayerBounties-OG) player heads in backups and restores.
 - Replaced FAWE with standard WorldEdit.
 - Removed 1.21 server code.
 - Replaced deprecated function calls (<1.19.4).
